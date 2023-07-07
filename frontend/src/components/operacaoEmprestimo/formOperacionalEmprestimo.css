@@ -1,0 +1,90 @@
+.formOperacionalEmprestimo {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(223, 224, 225);
+    padding: 20px;
+}
+
+.boxGeralOperacionalEmprestimo {
+    display: flex;
+    flex-direction: row;
+}
+
+.formOperacionalEmprestimo label {
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 3px;
+}
+
+.formOperacionalEmprestimo input {
+    border: 0;
+    border-radius: 2px;
+    padding: 0.5em 0.5em;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.25s;
+    width: 100px;
+}
+
+#inputCliente {
+    width: 300px;
+}
+
+.boxRight {
+    display: flex;
+    flex-direction: column;
+}
+
+.boxLeft {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+}
+
+.boxCol {
+    display: flex;
+    flex-direction: column;
+}
+
+.boxRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.boxResumoOpE {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(185, 185, 188);
+
+    padding: 0px 0px 0px 12px;
+}
+
+#obsEmprestimo {
+    height: 60px;
+    padding: 10px;
+    width: 95%;
+}
+
+@media only screen and (max-width: 700px) {
+    .boxGeralOperacionalEmprestimo {
+        flex-direction: column;
+    }
+
+    #obsEmprestimo {
+        height: 100px;
+        padding: 10px;
+        width: 95%;
+    }
+
+    .boxResumoOpE {
+        display: flex;
+        flex-direction: row;
+        background-color: rgb(185, 185, 188);
+        padding: 0px 0px 0px 12px;
+    }
+}

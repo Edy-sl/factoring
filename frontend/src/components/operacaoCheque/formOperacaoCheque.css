@@ -1,0 +1,138 @@
+.formOperacaoCheque {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(223, 224, 225);
+    padding: 20px;
+}
+
+.formOperacaoCheque label {
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 3px;
+    margin-left: 5px;
+}
+
+.formOperacaoCheque input {
+    border: 0;
+    border-radius: 2px;
+    padding: 0.5em 0.5em;
+
+    margin: 0px 7px 7px 7px;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.25s;
+    max-width: 500px;
+}
+
+.boxOpChequeRight {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding-left: 20px;
+    background-color: rgb(185, 185, 188);
+}
+
+.boxResumo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-right: 10px;
+}
+
+#inputCliente {
+    width: 350px;
+}
+
+.boxResumo input {
+    width: 100px;
+}
+
+.boxRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.boxCol {
+    display: flex;
+    flex-direction: column;
+}
+
+#inputDataBase {
+    width: 110px;
+}
+
+#inputTxTed {
+    width: 100px;
+}
+
+#inputJurosM {
+    width: 100px;
+}
+
+#inputJurosD {
+    width: 100px;
+}
+
+#inputNbco {
+    width: 30px;
+}
+
+#inputBanco {
+    width: 110px;
+}
+
+#inputAgencia {
+    width: 60px;
+}
+
+#inputNcheque {
+    width: 100px;
+}
+
+#inputCpfCnpj {
+    width: 145px;
+}
+
+#inputNomeC {
+    width: 300px;
+}
+
+#inputVencimento {
+    width: 110px;
+}
+
+#inputValorC {
+    width: 100px;
+}
+
+#inputDias {
+    width: 30px;
+}
+
+#inputValorJuros {
+    width: 100px;
+}
+
+#inputValorLiquido {
+    width: 100px;
+}
+
+@media only screen and (max-width: 700px) {
+    .formOperacaoCheque {
+        flex-direction: column;
+    }
+    .boxResumo {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        max-width: 300px;
+    }
+    .boxOpChequeRight {
+        align-self: flex-start;
+    }
+}
