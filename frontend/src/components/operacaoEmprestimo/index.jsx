@@ -44,6 +44,9 @@ export const FormOperacionalEmprestimo = () => {
                     <div className="boxRight">
                         <div className="boxResumoOpE">
                             <div className="boxCol">
+                                <label>RESUMO</label>
+                            </div>
+                            <div className="boxCol">
                                 <label>Emprestimo</label> <input type="text" />
                             </div>
                             <div className="boxCol">

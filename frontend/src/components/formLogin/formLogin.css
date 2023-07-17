@@ -17,3 +17,9 @@
     cursor: pointer;
     transition: border-color 0.25s;
 }
+
+#linkCadastro {
+    align-self: center;
+    padding: 20px;
+    color: brown;
+}

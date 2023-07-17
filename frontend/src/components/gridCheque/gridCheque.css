@@ -1,0 +1,11 @@
+.gridCheque {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+
+    background-color: rgb(185, 185, 188);
+}
+
+.gridLinha {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+}

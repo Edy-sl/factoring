@@ -1,9 +1,6 @@
 instalar JWT
-$ npm install jsonwebtoken
-
-comandos git
-git add .
-git commit -m "Mensagem de atualização"
-git push -u origin main
-
-git status /para ver se tem arquivos para atualizar
+npm install jsonwebtoken
+npm install express
+npm install mysql2
+npm install dotenv
+npm install bcrypt

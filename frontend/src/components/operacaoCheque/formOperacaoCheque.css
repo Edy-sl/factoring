@@ -13,20 +13,6 @@
     margin-left: 5px;
 }
 
-.formOperacaoCheque input {
-    border: 0;
-    border-radius: 2px;
-    padding: 0.5em 0.5em;
-
-    margin: 0px 7px 7px 7px;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    transition: border-color 0.25s;
-    max-width: 500px;
-}
-
 .boxOpChequeRight {
     display: flex;
     flex-direction: column;

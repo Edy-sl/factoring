@@ -12,3 +12,10 @@ npm install cpf-cnpj-validator -s
 
 instalar react-router-dom
 npm install react-router-dom
+npm install nodemailer
+
+COMANDOS GITHUB
+git status
+git add .
+git commit -m "MENSAGEM"
+git push origin main / PARA EMPURRAR P/ GITHUB

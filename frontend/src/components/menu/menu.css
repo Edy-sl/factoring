@@ -3,6 +3,10 @@
     flex-direction: column;
 }
 
+#btnSair {
+    margin-top: 20px;
+}
+
 @media only screen and (max-width: 700px) {
     .divMenu {
         display: none;

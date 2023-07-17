@@ -14,25 +14,55 @@ import { FormCadastroUsuario } from './components/formCadastroUsuario/index.jsx'
 import { FormCliente } from './components/formCliente/index.jsx';
 import { GridCheque } from './components/gridCheque/index.jsx';
 import { FormOperacionalEmprestimo } from './components/operacaoEmprestimo/index.jsx';
+import { PrivateRouter } from './pages/rotaPrivada/rotaPrivada.jsx';
+import { AuthProvider } from './context/authContext.jsx';
+import { FormRecuperaSenha } from './components/formRecuperaSenha/index.jsx';
+import { BemVindo } from './pages/bemVindo/index.jsx';
+import { FormFactoring } from './components/formFactoring/index.jsx';
+import { Permissoes } from './components/permissoes/permissoes.jsx';
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <App />,
+        element: (
+            <AuthProvider>
+                <App />
+            </AuthProvider>
+        ),
         //3 - pagina de erro
         errorElement: <ErrorPage />,
         children: [
             {
                 path: '/',
-                element: <FormLogin />,
+                element: <BemVindo />,
             },
             {
                 path: '/login',
                 element: <FormLogin />,
             },
             {
+                path: '/empresa',
+                element: (
+                    <PrivateRouter>
+                        <FormFactoring />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/permissoes',
+                element: (
+                    <PrivateRouter>
+                        <Permissoes />
+                    </PrivateRouter>
+                ),
+            },
+            {
                 path: '/bordero',
-                element: <FormOperacaoCheque />,
+                element: (
+                    <PrivateRouter>
+                        <FormOperacaoCheque />
+                    </PrivateRouter>
+                ),
             },
             {
                 path: '/cadastro-usuario',
@@ -41,11 +71,24 @@ const router = createBrowserRouter([
 
             {
                 path: '/cadastro-cliente',
-                element: <FormCliente />,
+                element: (
+                    <PrivateRouter>
+                        <FormCliente />
+                    </PrivateRouter>
+                ),
             },
             {
                 path: '/emprestimo',
-                element: <FormOperacionalEmprestimo />,
+                element: (
+                    <PrivateRouter>
+                        <FormOperacionalEmprestimo />
+                    </PrivateRouter>
+                ),
+            },
+
+            {
+                path: '/recupera-senha',
+                element: <FormRecuperaSenha />,
             },
 
             /* {
