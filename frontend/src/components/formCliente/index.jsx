@@ -4,20 +4,29 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { apiCep, apiFactoring } from '../../services/api';
 import { useEffect, useRef, useState } from 'react';
-import { cpfCnpjMask, keyDown } from '../../biblitoteca';
+import {
+    cpfCnpjMask,
+    keyDown,
+    converteMoedaFloat,
+    retornaDataAtual,
+} from '../../biblitoteca';
 import { BuscaClienteNome } from '../buscaCliente';
 import { FiSearch } from 'react-Icons/fi';
+import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
+import { CheckboxPersonalizado } from '../checkbox/checkboxPersonalizado';
 
 export const FormCliente = () => {
     const [formBusca, setFormBusca] = useState(false);
-
+    const [vlBusca, setVlBusca] = useState('');
     const [inputCep, setInputCep] = useState('');
 
     const [cpfCnpj, setCpfCnpj] = useState('');
     const [vlimpo, setVlimpo] = useState('');
     const [onEdit, setOnEdit] = useState(false);
 
-    const [vlBusca, setVlBusca] = useState('');
+    const [idCliente, setIdCliente] = useState();
+
+    const [checkEspecial, setCheckEspecial] = useState();
 
     const ref = useRef();
 
@@ -36,7 +45,6 @@ export const FormCliente = () => {
         }
         try {
             const respostaCep = await apiCep.get(`${inputCep}/json`);
-            console.log(respostaCep);
 
             dadosFactoring.rua.value = respostaCep.data.logradouro;
             dadosFactoring.bairro.value = respostaCep.data.bairro;
@@ -75,18 +83,21 @@ export const FormCliente = () => {
         const telefone = dadosCliente.telefone.value;
         const dataNascimento = dadosCliente.dataNascimento.value;
         const observacao = dadosCliente.observacao.value;
+        const taxaJuros = dadosCliente.taxaJuros.value;
+
+        const especial = dadosCliente.especial.value;
+
         const idFactoring = localStorage.getItem('factoring');
 
         if (
             !cnpjCpf ||
-            !ieRg ||
             !nome ||
-            !cep ||
             !rua ||
             !numero ||
             !bairro ||
             !cidade ||
-            !uf
+            !uf ||
+            !taxaJuros
         ) {
             toast.error('( * ) Campos obrigatórios!');
         } else {
@@ -107,6 +118,8 @@ export const FormCliente = () => {
                         telefone: telefone,
                         dataNascimento: dataNascimento,
                         observacao: observacao,
+                        taxaJuros: taxaJuros,
+                        especial: especial,
                         idFactoring: idFactoring,
                     },
                     {
@@ -122,6 +135,7 @@ export const FormCliente = () => {
                     limpaDadosForm();
 
                     setOnEdit(false);
+                    setCheckEspecial('NAO');
                 })
                 .catch(({ data }) => toast.error(data));
         }
@@ -129,8 +143,10 @@ export const FormCliente = () => {
 
     const limpaDadosForm = () => {
         if (onEdit == false) {
-            // setCpfCnpj('');
-            //setInputCep('');
+            setCpfCnpj('');
+            setInputCep('');
+
+            setIdCliente(0);
             const dadosCliente = ref.current;
             //  dadosCliente.cnpj_cpf.value = '';
             dadosCliente.ie_rg.value = '';
@@ -143,7 +159,9 @@ export const FormCliente = () => {
             dadosCliente.cidade.value = '';
             dadosCliente.telefone.value = '';
             dadosCliente.observacao.value = '';
-            dadosCliente.observacao.value = '';
+            dadosCliente.taxaJuros.value = '';
+
+            dadosCliente.dataNascimento.value = retornaDataAtual();
         }
     };
 
@@ -163,18 +181,19 @@ export const FormCliente = () => {
         const telefone = dadosCliente.telefone.value;
         const dataNascimento = dadosCliente.dataNascimento.value;
         const observacao = dadosCliente.observacao.value;
+        const taxaJuros = dadosCliente.taxaJuros.value;
+        const especial = dadosCliente.especial.value;
         const idFactoring = localStorage.getItem('factoring');
 
         if (
             !cnpjCpf ||
-            !ieRg ||
             !nome ||
-            !cep ||
             !rua ||
             !numero ||
             !bairro ||
             !cidade ||
-            !uf
+            !uf ||
+            !taxaJuros
         ) {
             toast.error('( * ) Campos obrigatórios!');
         } else {
@@ -195,6 +214,8 @@ export const FormCliente = () => {
                         telefone: telefone,
                         dataNascimento: dataNascimento,
                         observacao: observacao,
+                        taxaJuros: taxaJuros,
+                        especial: especial,
                         idFactoring: idFactoring,
                     },
                     {
@@ -209,7 +230,6 @@ export const FormCliente = () => {
                     }
                     if (!data.code) {
                         toast.success('Cliente cadastrado com sucesso!');
-                        limpaDadosForm();
                     }
                 })
                 .catch(({ data }) => toast.error(data));
@@ -232,7 +252,6 @@ export const FormCliente = () => {
                 }
             )
             .then(({ data }) => {
-                console.log(data);
                 if (data.length > 0) {
                     data.map((dados) => {
                         dadosCliente.ie_rg.value = dados.ie_rg;
@@ -247,6 +266,10 @@ export const FormCliente = () => {
                         dadosCliente.dataNascimento.value =
                             dados.data_nascimento;
                         dadosCliente.observacao.value = dados.observacao;
+                        dadosCliente.taxaJuros.value = dados.taxa_juros;
+                        setIdCliente(dados.idcliente);
+                        setCheckEspecial(dados.especial);
+
                         setOnEdit(true);
                     });
                 } else {
@@ -260,9 +283,71 @@ export const FormCliente = () => {
         setVlimpo('');
     };
 
+    const buscaClienteCodigo = async () => {
+        const dadosCliente = ref.current;
+
+        await apiFactoring
+            .post(
+                '/busca-cliente-id',
+                {
+                    idCliente: idCliente,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                if (data.length > 0) {
+                    data.map((dados) => {
+                        setCpfCnpj(dados.cnpj_cpf);
+
+                        dadosCliente.ie_rg.value = dados.ie_rg;
+                        dadosCliente.nome.value = dados.nome;
+                        setInputCep(dados.cep);
+                        dadosCliente.rua.value = dados.rua;
+                        dadosCliente.numero.value = dados.numero;
+                        dadosCliente.complemento.value = dados.complemento;
+                        dadosCliente.bairro.value = dados.bairro;
+                        dadosCliente.cidade.value = dados.cidade;
+                        dadosCliente.telefone.value = dados.telefone;
+                        dadosCliente.dataNascimento.value =
+                            dados.data_nascimento;
+                        dadosCliente.observacao.value = dados.observacao;
+                        dadosCliente.taxaJuros.value = dados.taxa_juros;
+
+                        setCheckEspecial(dados.especial);
+
+                        setOnEdit(true);
+                    });
+                } else {
+                    setOnEdit(false);
+                }
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+    };
+
     const exibeFormBusca = () => {
         setFormBusca(!formBusca);
-        console.log(formBusca);
+    };
+
+    const formataTaxa = () => {
+        const dadosTaxa = ref.current;
+        dadosTaxa.taxaJuros.value = converteMoedaFloat(
+            dadosTaxa.taxaJuros.value
+        );
+    };
+
+    const toogle = () => {
+        if (checkEspecial == 'NAO') {
+            setCheckEspecial('SIM');
+        }
+        if (checkEspecial == 'SIM') {
+            setCheckEspecial('NAO');
+        }
     };
 
     useEffect(() => {
@@ -277,12 +362,16 @@ export const FormCliente = () => {
         buscaCliente();
     }, [cpfCnpj]);
 
+    useEffect(() => {
+        buscaClienteCodigo();
+    }, [idCliente]);
+
     return (
         <>
             {formBusca == true && (
                 <BuscaClienteNome
                     setFormBusca={setFormBusca}
-                    setCpfCnpj={setCpfCnpj}
+                    setIdCliente={setIdCliente}
                 />
             )}
 
@@ -330,17 +419,36 @@ export const FormCliente = () => {
                     </div>
                 </div>
 
-                <label>Nome</label>
                 <div className="boxRow">
-                    <input
-                        type="text"
-                        id="inputNome"
-                        name="nome"
-                        placeholder=""
-                        onKeyDown={(e) => keyDown(e, 'inputCep')}
-                    />
-                    <FiSearch size="25" onClick={exibeFormBusca} />
+                    <div className="boxCol">
+                        <label>Código</label>
+
+                        <input
+                            type="text"
+                            id="inputIdCliente"
+                            name="idCliente"
+                            placeholder=""
+                            value={idCliente}
+                            onKeyDown={(e) => keyDown(e, 'inputNome')}
+                            onChange={(e) => setIdCliente(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="boxCol">
+                        <label>Nome</label>
+                        <div className="boxRow">
+                            <input
+                                type="text"
+                                id="inputNome"
+                                name="nome"
+                                placeholder=""
+                                onKeyDown={(e) => keyDown(e, 'inputCep')}
+                            />
+                            <FiSearch size="25" onClick={exibeFormBusca} />
+                        </div>
+                    </div>
                 </div>
+
                 <div className="boxRow">
                     <div className="boxCol">
                         <label>Cep</label>
@@ -401,6 +509,7 @@ export const FormCliente = () => {
                         />
                     </div>
                 </div>
+
                 <div className="boxRow">
                     <div className="boxCol">
                         <label>Cidade</label>
@@ -425,15 +534,48 @@ export const FormCliente = () => {
                         </select>
                     </div>
                 </div>
-                <div className="boxCol">
-                    <label>Telefone</label>
-                    <input
-                        id="inputTelefone"
-                        type="text"
-                        name="telefone"
-                        placeholder="(000)0000-0000"
-                        onKeyDown={(e) => keyDown(e, 'textObservacao')}
-                    />
+                <div className="boxRow">
+                    <div className="boxCol">
+                        <label>Telefone</label>
+                        <input
+                            id="inputTelefone"
+                            type="text"
+                            name="telefone"
+                            placeholder="(000)0000-0000"
+                            onKeyDown={(e) => keyDown(e, 'inputTaxaCliente')}
+                        />
+                    </div>
+                    <div className="boxCol">
+                        <label>Taxa Mensal</label>
+                        <input
+                            id="inputTaxaCliente"
+                            type="text"
+                            name="taxaJuros"
+                            placeholder=""
+                            onKeyDown={(e) => keyDown(e, 'textObservacao')}
+                            onBlur={formataTaxa}
+                        />
+                    </div>
+                    <div className="boxCol">
+                        <label>Especial</label>
+                        <div className="boxRow">
+                            {checkEspecial == 'SIM' ? (
+                                <ImCheckboxChecked size={25} onClick={toogle} />
+                            ) : (
+                                <ImCheckboxUnchecked
+                                    size={25}
+                                    onClick={toogle}
+                                />
+                            )}{' '}
+                            <input
+                                type="text"
+                                id="inputEspecial"
+                                name="especial"
+                                value={checkEspecial}
+                                readOnly
+                            />
+                        </div>
+                    </div>
                 </div>
                 <textarea
                     id="textObservacao"

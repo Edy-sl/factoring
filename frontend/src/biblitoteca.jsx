@@ -27,7 +27,105 @@ export const cpfCnpjMask = (value) => {
 export const keyDown = (e, elemento) => {
     if (e.key === 'Enter') {
         e.preventDefault();
-        console.log(elemento);
+
         document.getElementById(elemento).focus();
     }
+};
+
+export const converteMoedaFloat = (valor) => {
+    if (valor === '') {
+        valor = 0;
+    } else {
+        // valor = valor.replace(',', '.');
+        // valor = parseFloat(valor);
+
+        valor = valor.replace('.', '');
+        valor = valor.replace(',', '.');
+
+        valor = parseFloat(valor);
+    }
+    return valor;
+};
+
+export const converteFloatMoeda = (valor) => {
+    valor = valor.replace('.', ',');
+    //  valor = valor.replace(',', '.');
+    // valor = parseFloat(valor);
+
+    return valor;
+};
+
+export const retornaDataAtual = () => {
+    const data = new Date();
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+    const atual = ano + '-' + mes + '-' + dia;
+
+    return atual;
+};
+
+export const feriadosFixos = (data) => {
+    //Array de datas no formato mes/dia.
+
+    //OBS: O primeiro mes é 0 e o último mes é 11
+
+    //se for feriado retorna a data + 1 dia
+
+    var datas_feriado = [
+        [0, 1],
+        [3, 21],
+        [4, 1],
+        [8, 7],
+        [9, 12],
+        [10, 2],
+        [10, 15],
+        [11, 25],
+    ];
+    var add_dias = false;
+    var mes = parseInt(data.getMonth());
+    var dia = parseInt(data.getDate());
+
+    for (let z = 0; z < datas_feriado.length; z++) {
+        if (datas_feriado[z][0] == mes && datas_feriado[z][1] == dia) {
+            var add_dia = true;
+
+            return add_dia;
+        }
+    }
+};
+
+export const calculaParcelaEmprestimo = (
+    intervalo,
+    jurosMensal,
+    jurosDiario,
+    parcelas,
+    valorEmprestimo
+) => {
+    if (intervalo == 0) {
+        var juros = parseFloat(jurosMensal);
+    } else {
+        var juros = parseFloat(jurosDiario);
+        var juros = juros * intervalo;
+    }
+
+    juros = juros / 100;
+    const parcela = parseInt(parcelas);
+    const capital = converteMoedaFloat(valorEmprestimo);
+
+    const fator1 = Math.pow(1 + juros, parcela) * juros;
+    const fator2 = Math.pow(1 + juros, parcela) - 1;
+    const prestacao = (fator1 / fator2) * capital;
+
+    const valorTotalJuros = prestacao * parcela - capital;
+    const valorTotal = valorTotalJuros + capital;
+
+    const calculos = [
+        {
+            prestacao: prestacao,
+            valorTotalJuros: valorTotalJuros,
+            valorTotal: valorTotal,
+        },
+    ];
+    return [calculos];
 };

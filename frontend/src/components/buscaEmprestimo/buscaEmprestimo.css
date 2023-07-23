@@ -1,0 +1,63 @@
+.divBuscaEmprestimo {
+    position: fixed;
+    z-index: 999;
+    top: 100px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(142, 151, 161);
+    padding: 20px;
+    justify-content: center;
+
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+.divResultadoBuscaEmprestimo {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    cursor: pointer;
+    overflow: scroll;
+    max-height: 350px;
+}
+
+.divEmprestimo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.divEmprestimo:hover {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(11, 34, 57);
+    color: #fff;
+}
+
+#divIdEmprestimo {
+    margin-right: 5px;
+}
+
+#divData {
+    margin-right: 25px;
+}
+
+.formBuscaEmprestimo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 15px;
+}
+
+#iconeSair {
+    padding-left: 15px;
+    font-size: 25px;
+    color: #fff;
+    cursor: pointer;
+}
+
+#iconeLupa {
+    font-size: 25px;
+    color: #fff;
+    cursor: pointer;
+}

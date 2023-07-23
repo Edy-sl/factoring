@@ -16,6 +16,7 @@ export const Menu = () => {
         <div className="divMenu">
             <Link to="/cadastro-cliente">Cliente</Link>
             <Link to="/bordero">Cheques</Link>
+            <Link to="/devolucao">Devolução</Link>
             <Link to="/emprestimo">Emprestimo</Link>
             <h1>-------</h1>
             <Link to="/empresa">Empresa</Link>

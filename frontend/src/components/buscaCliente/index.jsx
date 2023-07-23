@@ -8,7 +8,7 @@ import { ImExit } from 'react-icons/im';
 import './BuscaClienteNome.css';
 import { FormCliente } from '../formCliente';
 
-export const BuscaClienteNome = ({ setFormBusca, setCpfCnpj }) => {
+export const BuscaClienteNome = ({ setFormBusca, setIdCliente }) => {
     const [clientes, setClientes] = useState([]);
     const ref = useRef();
     const dadosCliente = ref.current;
@@ -34,15 +34,14 @@ export const BuscaClienteNome = ({ setFormBusca, setCpfCnpj }) => {
             )
             .then(({ data }) => {
                 setClientes(data);
-                console.log(clientes);
             })
             .catch(({ data }) => {
                 toast.error(data);
             });
     };
 
-    const handleSel = (cpfCnpj) => {
-        setCpfCnpj(cpfCnpj);
+    const handleSel = (idCli) => {
+        setIdCliente(idCli);
         setFormBusca(false);
     };
 
@@ -59,12 +58,13 @@ export const BuscaClienteNome = ({ setFormBusca, setCpfCnpj }) => {
                 <FiSearch id="iconeLupa" onClick={buscaClientePorNome} />
                 <ImExit id="iconeSair" onClick={() => setFormBusca(false)} />
             </form>
+
             <div className="divResultadoBuscaCliente">
                 {clientes.map((cli) => (
                     <div
                         className="divNomes"
                         key={cli.idcliente}
-                        onClick={() => handleSel(cli.cnpj_cpf)}
+                        onClick={() => handleSel(cli.idcliente)}
                     >
                         {cli.nome}
                     </div>

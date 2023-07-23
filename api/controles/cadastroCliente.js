@@ -1,7 +1,6 @@
 import nodemon from 'nodemon';
 import { db } from '../db.js';
 import {} from 'dotenv/config';
-import { createPool } from 'mysql2';
 
 export const postCliente = (req, res) => {
     const { cnpjCpf } = req.body;
@@ -17,10 +16,13 @@ export const postCliente = (req, res) => {
     const { telefone } = req.body;
     const { dataNascimento } = req.body;
     const { observacao } = req.body;
-    const dataCadastro = new Date()
-        .toISOString()
-        .replace(/T/, ' ')
-        .replace(/\..+/, '');
+
+    const data = new Date();
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+
+    const dataCadastro = ano + '-' + mes + '-' + dia;
 
     const { idFactoring } = req.body;
 
@@ -67,8 +69,11 @@ export const alterarCliente = (req, res) => {
     const { dataNascimento } = req.body;
     const { observacao } = req.body;
 
+    const { taxaJuros } = req.body;
+    const { especial } = req.body;
+
     const sql =
-        'update clientes set ie_rg = ?, nome = ?, cep = ?, rua = ?, numero = ?, bairro = ?, complemento = ?, cidade = ?, uf = ?, telefone = ?, data_nascimento = ?, observacao = ? where cnpj_cpf = ?';
+        'update clientes set ie_rg = ?, nome = ?, cep = ?, rua = ?, numero = ?, bairro = ?, complemento = ?, cidade = ?, uf = ?, telefone = ?, data_nascimento = ?, observacao = ?, taxa_juros = ?, especial = ? where cnpj_cpf = ?';
     db.query(
         sql,
         [
@@ -84,6 +89,8 @@ export const alterarCliente = (req, res) => {
             telefone,
             dataNascimento,
             observacao,
+            taxaJuros,
+            especial,
             cnpjCpf,
         ],
         (err, data) => {
@@ -109,6 +116,16 @@ export const buscaClienteNome = (req, res) => {
 
     const sql = 'select * from clientes where `nome` like ? order by `nome`';
     db.query(sql, [nome], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};
+
+export const buscaClienteId = (req, res) => {
+    const { idCliente } = req.body;
+
+    const sql = 'select * from clientes where `idcliente` = ?';
+    db.query(sql, [idCliente], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });

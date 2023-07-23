@@ -16,6 +16,7 @@
     font-family: inherit;
     cursor: pointer;
     transition: border-color 0.25s;
+    text-transform: lowercase;
 }
 
 #linkCadastro {

@@ -6,7 +6,10 @@ export const CheckboxPersonalizado = (props) => {
     const toogle = () => {
         setChecado(!checado);
         console.log(checado);
+        props.setCheckeboxEspecial(checado);
     };
+
+    console.log(checado);
 
     return (
         <>
@@ -15,7 +18,8 @@ export const CheckboxPersonalizado = (props) => {
                 checked={checado}
                 onClick={toogle}
                 onChange={(e) => {}}
-                readOnly
+                name={props.name}
+                id={props.id}
             />
         </>
     );

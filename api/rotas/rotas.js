@@ -7,11 +7,27 @@ import { postFactoring } from '../controles/cadastroEmpresa.js';
 import { postSelecionaFactoring } from '../controles/cadastroEmpresa.js';
 import { putAtualizaFactoring } from '../controles/cadastroEmpresa.js';
 import { getPermissoes } from '../controles/permissoes.js';
+import {
+    buscaEmprestimo,
+    buscaEmprestimoId,
+    gravarEmprestimo,
+    buscaParcelasIdEmprestimo,
+} from '../controles/emprestimo.js';
+import {
+    gravarBordero,
+    buscaBordero,
+    buscaBorderoId,
+    alterarBordero,
+} from '../controles/bordero.js';
+import {
+    gravarLancamento,
+    listarLancamento,
+} from '../controles/borderoLancamento.js';
 
-import { rotaTeste } from '../controles/teste.js';
 import {
     alterarCliente,
     buscaClienteCnpjCpf,
+    buscaClienteId,
     buscaClienteNome,
     postCliente,
 } from '../controles/cadastroCliente.js';
@@ -64,8 +80,24 @@ rotaFactoring.post('/cad-cliente', verifyJWT, postCliente);
 rotaFactoring.post('/alterar-cliente', verifyJWT, alterarCliente);
 rotaFactoring.post('/busca-cliente', verifyJWT, buscaClienteCnpjCpf);
 rotaFactoring.post('/busca-cliente-nome', verifyJWT, buscaClienteNome);
+rotaFactoring.post('/busca-cliente-id', verifyJWT, buscaClienteId);
 
-rotaFactoring.get('/teste', rotaTeste);
+rotaFactoring.post('/gravar-bordero', verifyJWT, gravarBordero);
+rotaFactoring.post('/alterar-bordero', verifyJWT, alterarBordero);
+rotaFactoring.post('/busca-bordero', verifyJWT, buscaBordero);
+rotaFactoring.post('/busca-bordero-id', verifyJWT, buscaBorderoId);
+rotaFactoring.post('/gravar-lancamento', verifyJWT, gravarLancamento);
+rotaFactoring.post('/listar-lancamento', verifyJWT, listarLancamento);
+
+rotaFactoring.post('/gravar-emprestimo', verifyJWT, gravarEmprestimo);
+rotaFactoring.post('/busca-emprestimo', verifyJWT, buscaEmprestimo);
+rotaFactoring.post('/busca-emprestimo-id', verifyJWT, buscaEmprestimoId);
+
+rotaFactoring.post(
+    '/busca-parcelas-idemprestimo',
+    verifyJWT,
+    buscaParcelasIdEmprestimo
+);
 
 rotaFactoring.get('/permissoes', verifyJWT, getPermissoes);
 

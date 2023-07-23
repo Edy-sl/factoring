@@ -51,9 +51,74 @@
 }
 
 #obsEmprestimo {
-    height: 60px;
+    height: 40px;
     padding: 10px;
     width: 95%;
+}
+
+.gridEmprestimo {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    background-color: rgb(185, 185, 188);
+
+    margin-top: 20px;
+}
+
+#divResultadoEmprestimo {
+    max-height: 250px;
+    overflow: scroll;
+}
+
+.gridLinha {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: #fff;
+}
+.gridLinha:hover {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: #035ff3e7;
+    color: #fff;
+}
+
+#inputCnpjCpfCredor {
+    max-width: 150px;
+}
+
+#inputCredor {
+    width: 250px;
+}
+
+#inputJurosMensal {
+    max-width: 60px;
+    background-color: rgb(160, 200, 241);
+}
+#inputJurosDiario {
+    max-width: 60px;
+    background-color: rgb(160, 200, 241);
+}
+
+#inputValorEmprestimo {
+    max-width: 100px;
+}
+#inputQtdParcelas {
+    max-width: 100px;
+}
+#inputIntervalo {
+    max-width: 100px;
+}
+#inputValorParcela {
+    max-width: 100px;
+    background-color: rgb(160, 200, 241);
+}
+
+#inputIdClienteEmprestimo {
+    max-width: 60px;
+}
+
+#btnGravarEmprestimo {
+    margin: 15px;
 }
 
 @media only screen and (max-width: 700px) {
