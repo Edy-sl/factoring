@@ -7,7 +7,7 @@ import { AuthContext } from '../../context/authContext';
 import { apiCep, apiFactoring } from '../../services/api';
 
 import { FiSearch } from 'react-Icons/fi';
-import { cpfCnpjMask, keyDown } from '../../biblitoteca';
+import { cpfCnpjMask, keyDown, converteMoedaFloat } from '../../biblitoteca';
 
 export const FormFactoring = () => {
     const { setFactoring } = useContext(AuthContext);
@@ -41,6 +41,7 @@ export const FormFactoring = () => {
         let cidade = dadosFactoring.cidade.value;
         let uf = dadosFactoring.uf.value;
         let telefone = dadosFactoring.telefone.value;
+        let taxaMinima = converteMoedaFloat(dadosFactoring.taxaMinima.value);
 
         if (
             !cnpj ||
@@ -70,6 +71,7 @@ export const FormFactoring = () => {
                         cidade: cidade,
                         uf: uf,
                         telefone: telefone,
+                        taxaMinima: taxaMinima,
                     },
                     {
                         headers: {
@@ -99,6 +101,7 @@ export const FormFactoring = () => {
         let cidade = dadosFactoring.cidade.value;
         let uf = dadosFactoring.uf.value;
         let telefone = dadosFactoring.telefone.value;
+        let taxaMinima = converteMoedaFloat(dadosFactoring.taxaMinima.value);
         let id = localStorage.getItem('factoring');
 
         if (
@@ -129,6 +132,7 @@ export const FormFactoring = () => {
                         cidade: cidade,
                         uf: uf,
                         telefone: telefone,
+                        taxaMinima: taxaMinima,
                         id: id,
                     },
                     {
@@ -177,6 +181,7 @@ export const FormFactoring = () => {
                     dadosFactoring.cidade.value = dados.cidade;
                     dadosFactoring.uf.value = dados.uf;
                     dadosFactoring.telefone.value = dados.telefone;
+                    dadosFactoring.taxaMinima.value = dados.taxa_minima;
                 });
             })
             .catch(({ data }) => {
@@ -343,15 +348,27 @@ export const FormFactoring = () => {
                         </select>
                     </div>
                 </div>
-                <div className="boxCol">
-                    <label>Telefone</label>
-                    <input
-                        id="inputTelefone"
-                        type="text"
-                        name="telefone"
-                        placeholder="(000)0000-0000"
-                        onKeyDown={(e) => keyDown(e, 'inputCnpj')}
-                    />
+                <div className="boxRow">
+                    <div className="boxCol">
+                        <label>Telefone</label>
+                        <input
+                            id="inputTelefone"
+                            type="text"
+                            name="telefone"
+                            placeholder="(000)0000-0000"
+                            onKeyDown={(e) => keyDown(e, 'inputTaxaMinima')}
+                        />
+                    </div>
+                    <div className="boxCol">
+                        <label>Taxa Mínima</label>
+                        <input
+                            id="inputTaxaMinima"
+                            type="text"
+                            name="taxaMinima"
+                            placeholder="0.00"
+                            onKeyDown={(e) => keyDown(e, 'inputCnpj')}
+                        />
+                    </div>
                 </div>
                 <button type="submite" onClick={gravarFactoring}>
                     Salvar

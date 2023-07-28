@@ -14,6 +14,8 @@ instalar react-router-dom
 npm install react-router-dom
 npm install nodemailer
 
+npm install @react-pdf/renderer --save
+
 COMANDOS GITHUB
 git status
 git add .

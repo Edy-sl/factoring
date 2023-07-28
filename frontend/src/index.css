@@ -70,6 +70,24 @@ select {
     color: #585353;
 }
 
+.icone {
+    color: #ffffff;
+    font-size: 25px;
+    cursor: pointer;
+    padding: 0px 7px 0px 7px;
+}
+
+.icone2 {
+    color: #585353;
+    font-size: 25px;
+    cursor: pointer;
+    padding: 0px 7px 0px 7px;
+}
+
+.inputData {
+    max-width: 115px;
+}
+
 input {
     border: 0;
     border-radius: 2px;
@@ -109,4 +127,8 @@ input:focus {
         cursor: pointer;
         transition: border-color 0.25s;
     }
+}
+
+ul {
+    background-color: rgb(223, 224, 225);
 }

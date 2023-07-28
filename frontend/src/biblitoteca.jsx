@@ -1,3 +1,5 @@
+import extenso from 'extenso';
+
 export const cpfCnpjMask = (value) => {
     const vlimpo = value
         .replace('.', '')
@@ -40,6 +42,8 @@ export const converteMoedaFloat = (valor) => {
         // valor = parseFloat(valor);
 
         valor = valor.replace('.', '');
+        valor = valor.replace('.', '');
+
         valor = valor.replace(',', '.');
 
         valor = parseFloat(valor);
@@ -111,14 +115,17 @@ export const calculaParcelaEmprestimo = (
 
     juros = juros / 100;
     const parcela = parseInt(parcelas);
-    const capital = converteMoedaFloat(valorEmprestimo);
+    let capital = converteMoedaFloat(valorEmprestimo);
 
     const fator1 = Math.pow(1 + juros, parcela) * juros;
     const fator2 = Math.pow(1 + juros, parcela) - 1;
-    const prestacao = (fator1 / fator2) * capital;
+    let prestacao = (fator1 / fator2) * capital;
 
-    const valorTotalJuros = prestacao * parcela - capital;
-    const valorTotal = valorTotalJuros + capital;
+    prestacao = prestacao.toFixed(2);
+    let valorTotalJuros = prestacao * parcela - capital;
+    valorTotalJuros = valorTotalJuros.toFixed(2);
+    let valorTotal = prestacao * parcela * '1';
+    valorTotal = valorTotal.toFixed(2);
 
     const calculos = [
         {
@@ -128,4 +135,84 @@ export const calculaParcelaEmprestimo = (
         },
     ];
     return [calculos];
+};
+
+function zeroFill(n) {
+    return n < 10 ? `0${n}` : `${n}`;
+}
+
+export const formataDias = (date) => {
+    const d = zeroFill(date.getDate());
+    const mo = zeroFill(date.getMonth() + 1);
+    const y = zeroFill(date.getFullYear());
+    const h = zeroFill(date.getHours());
+    const mi = zeroFill(date.getMinutes());
+    const s = zeroFill(date.getSeconds());
+    return `${y}-${mo}-${d}`;
+};
+
+export const dataHoraAtual = () => {
+    const date = new Date();
+    const d = zeroFill(date.getDate());
+    const mo = zeroFill(date.getMonth() + 1);
+    const y = zeroFill(date.getFullYear());
+    const h = zeroFill(date.getHours());
+    const mi = zeroFill(date.getMinutes());
+    const s = zeroFill(date.getSeconds());
+    return `${d}-${mo}-${y} / ${h}:${mi}:${s}`;
+};
+
+//formata para dd/mm/aaaa
+export const formataData = (dataI) => {
+    const data = dataI;
+
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+    var dataFormatada = dia + '/' + mes + '/' + ano;
+    return dataFormatada;
+};
+
+//invert data no padrao xx-xx-xxxx ou xxxx-xx-xx
+export const inverteData = (data) => {
+    var dataInvertida = data.split('-').reverse().join('-');
+    return dataInvertida;
+};
+
+export const formatarDataExtenso = (data) => {
+    var dataExtenso;
+
+    var day = [
+        'Domingo',
+        'Segunda-feira',
+        'Terça-feira',
+        'Quarta-feira',
+        'Quinta-feira',
+        'Sexta-feira',
+        'Sábado',
+    ][data.getDay()];
+    var date = data.getDate();
+    date = extenso(date);
+
+    var month = [
+        'Janeiro',
+        'Fevereiro',
+        'Março',
+        'Abril',
+        'Maio',
+        'Junho',
+        'Julho',
+        'Agosto',
+        'Setembro',
+        'Outubro',
+        'Novembro',
+        'Dezembro',
+    ][data.getMonth()];
+    var year = data.getFullYear();
+    year = extenso(year);
+
+    // extenso = `${day}, ${date} de ${month} de ${year}`;
+    dataExtenso = `${date} de ${month} de ${year}`;
+
+    return dataExtenso;
 };

@@ -7,6 +7,60 @@
     margin-top: 20px;
 }
 
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 150px;
+}
+
+ul li {
+    position: relative;
+}
+
+li ul {
+    position: absolute;
+    left: 110px;
+    top: 0;
+    display: none;
+}
+ul li a {
+    display: block;
+    text-decoration: none;
+    color: #5c5d5fe7;
+
+    padding: 5px;
+}
+
+ul li a:hover {
+    display: block;
+    text-decoration: none;
+    color: #035ff3e7;
+
+    padding: 5px;
+}
+
+li:hover ul {
+    display: block;
+}
+
+#sair {
+    cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: #5c5d5fe7;
+
+    padding: 5px;
+}
+
+#sair:hover {
+    display: block;
+    text-decoration: none;
+    color: #035ff3e7;
+
+    padding: 5px;
+}
+
 @media only screen and (max-width: 700px) {
     .divMenu {
         display: none;

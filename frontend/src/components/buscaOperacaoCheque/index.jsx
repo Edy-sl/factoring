@@ -69,9 +69,9 @@ export const BuscaOperacao = ({ setIdOperacao, setFormBuscaOperacao }) => {
                         onKeyDown={(e) => keyDown(e, 'inputDataF')}
                     />
                     <input type="date" id="inputDataF" name="dataF" />
-                    <FiSearch id="iconeLupa" onClick={buscaBordero} />
+                    <FiSearch id="icone" onClick={buscaBordero} />
                     <ImExit
-                        id="iconeSair"
+                        id="icone"
                         onClick={() => setFormBuscaOperacao(false)}
                     />
                 </form>

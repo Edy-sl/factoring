@@ -25,6 +25,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+
+    text-transform: uppercase;
 }
 
 .divEmprestimo:hover {
@@ -47,17 +49,4 @@
     flex-direction: row;
     align-items: center;
     padding-bottom: 15px;
-}
-
-#iconeSair {
-    padding-left: 15px;
-    font-size: 25px;
-    color: #fff;
-    cursor: pointer;
-}
-
-#iconeLupa {
-    font-size: 25px;
-    color: #fff;
-    cursor: pointer;
 }

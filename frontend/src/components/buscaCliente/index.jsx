@@ -55,8 +55,8 @@ export const BuscaClienteNome = ({ setFormBusca, setIdCliente }) => {
                     placeholder="Digite o Nome"
                 />
 
-                <FiSearch id="iconeLupa" onClick={buscaClientePorNome} />
-                <ImExit id="iconeSair" onClick={() => setFormBusca(false)} />
+                <FiSearch className="icone" onClick={buscaClientePorNome} />
+                <ImExit className="icone" onClick={() => setFormBusca(false)} />
             </form>
 
             <div className="divResultadoBuscaCliente">
@@ -66,7 +66,7 @@ export const BuscaClienteNome = ({ setFormBusca, setIdCliente }) => {
                         key={cli.idcliente}
                         onClick={() => handleSel(cli.idcliente)}
                     >
-                        {cli.nome}
+                        <label id="labelNomeCli">{cli.nome}</label>
                     </div>
                 ))}
             </div>

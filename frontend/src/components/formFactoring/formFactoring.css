@@ -53,6 +53,10 @@
     margin-bottom: 20px;
 }
 
+#inputTaxaMinima {
+    width: 85px;
+}
+
 #divIconeBuscaCep {
     display: flex;
     flex-direction: column;

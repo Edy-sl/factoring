@@ -87,8 +87,90 @@ export const buscaEmprestimoId = (req, res) => {
 
 export const buscaParcelasIdEmprestimo = (req, res) => {
     const { idEmprestimo } = req.body;
-    const sql = 'select * from parcelas_emprestimo where idemprestimo = ?';
+    const sql =
+        'SELECT parcelas_emprestimo.idparcela,parcelas_emprestimo.parcela,parcelas_emprestimo.vencimento,parcelas_emprestimo.valor, round(ifnull(sum(pagamentos_parcelas.valor_pago),0),2)  as valor_pago FROM parcelas_emprestimo left join  pagamentos_parcelas on pagamentos_parcelas.idparcela=parcelas_emprestimo.idparcela where  parcelas_emprestimo.idemprestimo=? group by parcelas_emprestimo.idparcela';
     db.query(sql, [idEmprestimo], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};
+
+export const pagamentoParcelaEmprestimo = (req, res) => {
+    const { idParcela } = req.body;
+    const { valorPago } = req.body;
+    const { dataPagamento } = req.body;
+    const sql =
+        'insert into pagamentos_parcelas (idparcela,valor_pago,data_pagamento) values (?,?,?)';
+    db.query(sql, [idParcela, valorPago, dataPagamento], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json('Pagammento registrado!');
+    });
+};
+
+export const listaPagamentoParcela = (req, res) => {
+    const { idParcela } = req.body;
+    console.log(idParcela);
+    const sql = 'select * from pagamentos_parcelas where idparcela = ?';
+    db.query(sql, [idParcela], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};
+
+////relatorios
+export const relatorioEmprestimoData = (req, res) => {
+    var { dataI } = req.body;
+    var { dataF } = req.body;
+
+    const sql =
+        'select ' +
+        'tmp_emp.idemprestimo, ' +
+        'tmp_emp.valor_pago, ' +
+        'tmp_emp.vencimento, ' +
+        'tmp_emp.parcela, ' +
+        'tmp_emp.idparcela, ' +
+        'tmp_emp.idcliente, ' +
+        'tmp_emp.data_cadastro, ' +
+        'tmp_emp.quantidade_parcelas, ' +
+        'tmp_emp.valor, ' +
+        'tmp_emp.valor_total, ' +
+        'cli.nome ' +
+        'from ' +
+        '(select tmp_parcelas.idemprestimo, ' +
+        'tmp_parcelas.valor_pago, ' +
+        'tmp_parcelas.vencimento, ' +
+        'tmp_parcelas.parcela, ' +
+        'tmp_parcelas.idparcela, ' +
+        'tmp_parcelas.valor, ' +
+        'emp.idcliente, ' +
+        'emp.valor_total, ' +
+        'emp.quantidade_parcelas, ' +
+        'data_cadastro ' +
+        'from ' +
+        '(select ' +
+        'pe.idemprestimo, ' +
+        'pe.parcela, ' +
+        'pe.valor, ' +
+        'pe.vencimento, ' +
+        'ifnull(pp.data_pagamento,0) as data_pagamento, ' +
+        'ifnull(pp.idparcela,0) as idparcela , ' +
+        'ifnull(sum(pp.valor_pago),0) as valor_pago ' +
+        'from ' +
+        'parcelas_emprestimo as pe ' +
+        'left join pagamentos_parcelas as pp ' +
+        'on pp.idparcela = pe.idparcela ' +
+        'where pe.vencimento ' +
+        'between ? and ? ' +
+        'group by  pp.idparcela, pp.data_pagamento, ' +
+        'pe.idemprestimo, pe.vencimento, ' +
+        'pe.parcela, pe.valor) as tmp_parcelas ' +
+        'left join emprestimos as emp  ' +
+        'on emp.idemprestimo = tmp_parcelas.idemprestimo) as tmp_emp ' +
+        'left join clientes as cli ' +
+        'on cli.idcliente = tmp_emp.idcliente ' +
+        'order by idemprestimo, parcela ';
+
+    db.query(sql, [dataI, dataF], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });

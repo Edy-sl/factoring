@@ -1,0 +1,22 @@
+.divPagamentoEmprestimo {
+    position: fixed;
+    z-index: 999;
+    top: 100px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(142, 151, 161);
+    padding: 20px;
+    justify-content: center;
+
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+#divListaPagamentoParcela {
+    background-color: #fff;
+    margin-top: 10px;
+}
+
+#divParcela {
+    justify-content: space-between;
+}

@@ -24,7 +24,7 @@ export const BuscaEmprestimo = ({
 
     const buscaEmprestimo = async () => {
         const dadosBusca = ref.current;
-
+        console.log(dadosBusca.dataI.value);
         await apiFactoring
             .post(
                 '/busca-emprestimo',
@@ -77,9 +77,9 @@ export const BuscaEmprestimo = ({
                         name="dataF"
                         onKeyDown={(e) => keyDown(e, 'iconeLupa')}
                     />
-                    <FiSearch id="iconeLupa" onClick={buscaEmprestimo} />
+                    <FiSearch className="icone" onClick={buscaEmprestimo} />
                     <ImExit
-                        id="iconeSair"
+                        className="icone"
                         onClick={() => setFormBuscaEmprestimo(false)}
                     />
                 </form>

@@ -26,22 +26,16 @@
     color: #fff;
 }
 
+.divNomes {
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+    text-transform: uppercase;
+}
+
 .formBusca {
     display: flex;
     flex-direction: row;
     align-items: center;
     padding-bottom: 15px;
-}
-
-#iconeSair {
-    padding-left: 15px;
-    font-size: 25px;
-    color: #fff;
-    cursor: pointer;
-}
-
-#iconeLupa {
-    font-size: 25px;
-    color: #fff;
-    cursor: pointer;
 }

@@ -12,6 +12,9 @@ import {
     buscaEmprestimoId,
     gravarEmprestimo,
     buscaParcelasIdEmprestimo,
+    pagamentoParcelaEmprestimo,
+    listaPagamentoParcela,
+    relatorioEmprestimoData,
 } from '../controles/emprestimo.js';
 import {
     gravarBordero,
@@ -92,6 +95,25 @@ rotaFactoring.post('/listar-lancamento', verifyJWT, listarLancamento);
 rotaFactoring.post('/gravar-emprestimo', verifyJWT, gravarEmprestimo);
 rotaFactoring.post('/busca-emprestimo', verifyJWT, buscaEmprestimo);
 rotaFactoring.post('/busca-emprestimo-id', verifyJWT, buscaEmprestimoId);
+
+//relatorio
+rotaFactoring.post(
+    '/relatorio-emprestimo-data',
+    verifyJWT,
+    relatorioEmprestimoData
+);
+
+rotaFactoring.post(
+    '/gravar-pagamento-parcela',
+    verifyJWT,
+    pagamentoParcelaEmprestimo
+);
+
+rotaFactoring.post(
+    '/lista-pagamento-parcela',
+    verifyJWT,
+    listaPagamentoParcela
+);
 
 rotaFactoring.post(
     '/busca-parcelas-idemprestimo',

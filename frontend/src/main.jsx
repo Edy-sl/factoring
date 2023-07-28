@@ -20,6 +20,7 @@ import { FormRecuperaSenha } from './components/formRecuperaSenha/index.jsx';
 import { BemVindo } from './pages/bemVindo/index.jsx';
 import { FormFactoring } from './components/formFactoring/index.jsx';
 import { Permissoes } from './components/permissoes/permissoes.jsx';
+import { RelatorioEmprestimoPorData } from './components/relatorioEmprestimoData/index.jsx';
 
 const router = createBrowserRouter([
     {
@@ -82,6 +83,14 @@ const router = createBrowserRouter([
                 element: (
                     <PrivateRouter>
                         <FormOperacionalEmprestimo />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/relatorio-emprestimo-data',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioEmprestimoPorData />
                     </PrivateRouter>
                 ),
             },

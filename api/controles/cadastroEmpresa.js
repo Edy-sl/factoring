@@ -17,6 +17,7 @@ export const postFactoring = (req, res) => {
     const { cidade } = req.body;
     const { uf } = req.body;
     const { telefone } = req.body;
+    const { taxaMinima } = req.body;
     //const { id } = req.body;
 
     const token = req.headers['x-access-token'];
@@ -25,7 +26,7 @@ export const postFactoring = (req, res) => {
         req.userID = decoded.userID;
         const idUsuario = req.userID;
         const sql =
-            'INSERT INTO factoring (cnpj, ie, razao,cep,rua,numero,bairro,complemento,cidade,uf,telefone) VALUES (?,?,?,?,?,?,?,?,?,?,?);';
+            'INSERT INTO factoring (cnpj, ie, razao,cep,rua,numero,bairro,complemento,cidade,uf,telefone,taxa_minima) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);';
 
         db.query(
             sql,
@@ -41,6 +42,7 @@ export const postFactoring = (req, res) => {
                 cidade,
                 uf,
                 telefone,
+                taxaMinima,
             ],
             async (err, data) => {
                 if (err) return res.json(err);
@@ -103,6 +105,7 @@ export const putAtualizaFactoring = (req, res) => {
     const { cidade } = req.body;
     const { uf } = req.body;
     const { telefone } = req.body;
+    const { taxaMinima } = req.body;
     const { id } = req.body;
 
     console.log(req);
@@ -114,7 +117,7 @@ export const putAtualizaFactoring = (req, res) => {
         req.userID = decoded.userID;
         const idUsuario = req.userID;
         const sql =
-            'UPDATE factoring SET cnpj = ?, ie = ?, razao = ?,cep = ?,rua = ?,numero = ?,bairro = ?,complemento = ?,cidade = ?,uf = ?,telefone = ? WHERE idfactoring = ? ';
+            'UPDATE factoring SET cnpj = ?, ie = ?, razao = ?,cep = ?,rua = ?,numero = ?,bairro = ?,complemento = ?,cidade = ?,uf = ?,telefone = ?, taxa_minima = ? WHERE idfactoring = ? ';
         db.query(
             sql,
             [
@@ -129,6 +132,7 @@ export const putAtualizaFactoring = (req, res) => {
                 cidade,
                 uf,
                 telefone,
+                taxaMinima,
                 id,
             ],
             async (err, data) => {

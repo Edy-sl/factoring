@@ -10,13 +10,20 @@ import {
     retornaDataAtual,
     cpfCnpjMask,
     calculaParcelaEmprestimo,
+    formataDias,
+    inverteData,
+    formataData,
+    formatarDataExtenso,
+    dataHoraAtual,
 } from '../../biblitoteca';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FiSearch } from 'react-Icons/fi';
+import { FiSearch, FiEdit, FiDollarSign } from 'react-Icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
-import { ImDiamonds } from 'react-icons/im';
 import { BuscaEmprestimo } from '../buscaEmprestimo';
+import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
+import extenso from 'extenso';
+
 export const FormOperacionalEmprestimo = () => {
     const ref = useRef();
 
@@ -28,13 +35,27 @@ export const FormOperacionalEmprestimo = () => {
     const [formBuscaEmprestimo, setFormBuscaEmprestimo] = useState();
     const [idEmprestimo, setIdEmprestimo] = useState();
 
-    const [valorEmprestimo, setValorEmprestimo] = useState();
+    const [atualizaParcelas, setAtualizaParcelas] = useState(false);
 
     const [s_intervalo, setIntervalo] = useState(0);
 
     const [idCliente, setIdCliente] = useState();
 
     const [onEdit, setOnEdit] = useState(false);
+
+    const [idParcela, setIdParcela] = useState(0);
+    const [parcelaN, setParcelaN] = useState(0);
+
+    const [dadosCliente, setDadosCliente] = useState([]);
+
+    const [checkPrestacao, setCheckPrestacao] = useState(true);
+
+    var valorPrestacao = 0;
+    var valorTotalJuros = 0;
+    var valorTotal = 0;
+
+    var somaValorPago = 0;
+    var valorRestante = 0;
 
     const dadosEmprestimo = ref.current;
 
@@ -44,6 +65,8 @@ export const FormOperacionalEmprestimo = () => {
 
     const calculaEmprestimo = () => {
         const dadosEmprestimo = ref.current;
+
+        //guarda valor calculado pelo calculoEmprestimo...
 
         const parcela = parseInt(dadosEmprestimo.parcelas.value);
         const capital = converteMoedaFloat(
@@ -59,26 +82,57 @@ export const FormOperacionalEmprestimo = () => {
         );
 
         calculoPrestacao.map((calculos) => {
-            dadosEmprestimo.valorParcela.value =
-                calculos[0].prestacao.toLocaleString('pt-BR');
+            if (checkPrestacao) {
+                console.log(checkPrestacao);
+                valorPrestacao = calculos[0].prestacao;
+                valorTotalJuros = calculos[0].valorTotalJuros;
+                valorTotal = calculos[0].valorTotal;
 
-            dadosEmprestimo.valorInicial.value =
-                capital.toLocaleString('pt-br');
+                dadosEmprestimo.valorParcela.value =
+                    converteFloatMoeda(valorPrestacao).toLocaleString('pt-BR');
 
-            dadosEmprestimo.valorTotalJuros.value =
-                calculos[0].valorTotalJuros.toLocaleString('pt-br');
-            dadosEmprestimo.valorTotal.value =
-                calculos[0].valorTotal.toLocaleString('pt-br');
+                dadosEmprestimo.valorInicial.value =
+                    dadosEmprestimo.valorEmprestimo.value.toLocaleString(
+                        'pt-BR'
+                    );
+
+                dadosEmprestimo.valorTotalJuros.value =
+                    converteFloatMoeda(valorTotalJuros).toLocaleString('pt-BR');
+
+                dadosEmprestimo.valorTotal.value = valorTotal;
+            } else {
+                valorPrestacao = converteMoedaFloat(
+                    dadosEmprestimo.valorParcela.value
+                );
+                valorTotal = valorPrestacao * parcela;
+                var taxaJuros = valorTotal / valorPrestacao;
+
+                console.log(taxaJuros);
+
+                dadosEmprestimo.valorInicial.value =
+                    dadosEmprestimo.valorEmprestimo.value.toLocaleString(
+                        'pt-BR'
+                    );
+
+                valorTotalJuros = valorTotal - capital;
+                console.log(valorTotalJuros);
+
+                dadosEmprestimo.valorTotalJuros.value =
+                    valorTotalJuros.toLocaleString('pt-BR');
+
+                dadosEmprestimo.valorTotal.value =
+                    valorTotal.toLocaleString('pt-BR');
+            }
 
             let arrayP = [];
             let intervalo = parseInt(dadosEmprestimo.intervalo.value) + 1;
 
-            let vencimento = new Date(dadosEmprestimo.dataBase.value);
+            var vencimento = new Date(dadosEmprestimo.dataBase.value);
             vencimento.setDate(vencimento.getDate() + 1);
 
             let intervaloMes = 1;
 
-            for (let i = 0; i < parcela; i++) {
+            for (var i = 0; i < parcela; i++) {
                 if (i > 0) {
                     vencimento = new Date(dadosEmprestimo.dataBase.value);
                     vencimento.setDate(
@@ -93,19 +147,16 @@ export const FormOperacionalEmprestimo = () => {
                         vencimento.setMonth(
                             vencimento.getMonth() + parseInt(intervaloMes)
                         );
+
                         intervaloMes = intervaloMes + 1;
                     }
                 }
 
-                let dataIntervalo = formataDias(vencimento);
-                let valorPrestacao =
-                    calculos[0].prestacao.toLocaleString('pt-BR');
+                //  let dataIntervalo = vencimento;
 
                 /////////////////////////////////////////////////////////
 
-                var data_vencimento = new Date(
-                    dataIntervalo.split('-').reverse().join('- ')
-                );
+                var data_vencimento = new Date(vencimento);
 
                 //vefifica se é feriado e retorna +1 dia
                 var add_dia = feriadosFixos(data_vencimento);
@@ -121,6 +172,7 @@ export const FormOperacionalEmprestimo = () => {
                     data_vencimento.setDate(data_vencimento.getDate() + 1);
                     intervalo > 1 && intervalo++;
                 }
+
                 if (data_vencimento.getDay() == 6) {
                     data_vencimento.setDate(data_vencimento.getDate() + 2);
                     if (intervalo > 1) {
@@ -136,9 +188,8 @@ export const FormOperacionalEmprestimo = () => {
                     intervalo++;
                 }
 
-                //////////////////////////////////////////////////////////////////
-
                 data_vencimento = formataDias(data_vencimento);
+
                 arrayP = [
                     ...arrayP,
                     {
@@ -150,29 +201,6 @@ export const FormOperacionalEmprestimo = () => {
             }
             setArrayParcelas(arrayP);
         });
-    };
-
-    function zeroFill(n) {
-        return n < 10 ? `0${n}` : `${n}`;
-    }
-    const formataDias = (date) => {
-        const d = zeroFill(date.getDate());
-        const mo = zeroFill(date.getMonth() + 1);
-        const y = zeroFill(date.getFullYear());
-        const h = zeroFill(date.getHours());
-        const mi = zeroFill(date.getMinutes());
-        const s = zeroFill(date.getSeconds());
-        return `${d}-${mo}-${y}`;
-    };
-
-    const formataData = (dataI) => {
-        const data = dataI;
-
-        const dia = data.getDate().toString().padStart(2, '0');
-        const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-        const ano = data.getFullYear();
-
-        return (dataFormatada = dia + '/' + mes + '/' + ano);
     };
 
     const exibeFormBusca = () => {
@@ -212,6 +240,7 @@ export const FormOperacionalEmprestimo = () => {
 
     const formataValorEmprestimo = () => {
         const dadosEmprestimo = ref.current;
+
         let vl = dadosEmprestimo.valorEmprestimo.value;
 
         vl = converteMoedaFloat(vl);
@@ -250,9 +279,7 @@ export const FormOperacionalEmprestimo = () => {
                     valorJuros: converteMoedaFloat(
                         dadosEmprestimo.valorTotalJuros.value
                     ),
-                    valorTotal: converteMoedaFloat(
-                        dadosEmprestimo.valorTotal.value
-                    ),
+                    valorTotal: dadosEmprestimo.valorTotal.value,
                     idFactoring: localStorage.getItem('factoring'),
                     arrayParcelas: arrayParcelas,
                 },
@@ -300,8 +327,9 @@ export const FormOperacionalEmprestimo = () => {
                         dadosEmprestimo.nomeCredor.value = dados.nome_credor;
 
                         dadosEmprestimo.jurosMensal.value = dados.juros_mensal;
-                        dadosEmprestimo.valorEmprestimo.value =
-                            dados.valor_emprestimo;
+                        dadosEmprestimo.valorEmprestimo.value = parseFloat(
+                            dados.valor_emprestimo
+                        ).toLocaleString('pt-BR');
                         dadosEmprestimo.parcelas.value =
                             dados.quantidade_parcelas;
                         dadosEmprestimo.dataBase.value = dados.data_base;
@@ -309,14 +337,17 @@ export const FormOperacionalEmprestimo = () => {
                         dadosEmprestimo.valorParcela.value =
                             dados.valor_parcela.toLocaleString('pt-BR');
 
-                        dadosEmprestimo.valorInicial.value =
-                            dados.valor_emprestimo.toLocaleString('pt-BR');
+                        dadosEmprestimo.valorInicial.value = parseFloat(
+                            dados.valor_emprestimo
+                        ).toLocaleString('pt-BR');
 
-                        dadosEmprestimo.valorTotalJuros.value =
-                            dados.valor_juros.toLocaleString('pt-BR');
+                        dadosEmprestimo.valorTotalJuros.value = parseFloat(
+                            dados.valor_juros
+                        ).toLocaleString('pt-BR');
 
-                        dadosEmprestimo.valorTotal.value =
-                            dados.valor_total.toLocaleString('pt-BR');
+                        dadosEmprestimo.valorTotal.value = parseFloat(
+                            dados.valor_total
+                        ).toLocaleString('pt-BR');
 
                         calculaJurosDiario();
                         setOnEdit(true);
@@ -330,6 +361,9 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     const buscaParcelas = async () => {
+        somaValorPago = 0;
+        valorRestante = 0;
+        const dadosEmprestimo = ref.current;
         await apiFactoring
             .post(
                 'busca-parcelas-idemprestimo',
@@ -345,16 +379,18 @@ export const FormOperacionalEmprestimo = () => {
             .then(({ data }) => {
                 if (data.length > 0) {
                     let arrayP = [];
+
                     data.map((item) => {
-                        //carrega grid
-                        var vl = item.valor;
-                        vl = vl.toLocaleString('pt-BR');
+                        somaValorPago =
+                            somaValorPago + parseFloat(item.valor_pago);
                         arrayP = [
                             ...arrayP,
                             {
+                                idParcela: item.idparcela,
                                 p: item.parcela,
-                                valorPrestacao: vl,
+                                valorPrestacao: item.valor,
                                 data_vencimento: item.vencimento,
+                                valorPago: item.valor_pago,
                             },
                         ];
                     });
@@ -365,6 +401,13 @@ export const FormOperacionalEmprestimo = () => {
             .catch(({ data }) => {
                 toast.error(data);
             });
+
+        valorRestante = converteMoedaFloat(dadosEmprestimo.valorTotal.value);
+        valorRestante = valorRestante - somaValorPago;
+
+        dadosEmprestimo.valorPago.value = somaValorPago.toLocaleString('pt-BR');
+        dadosEmprestimo.valorRestante.value =
+            valorRestante.toLocaleString('pr-BR');
     };
 
     const buscaClienteCodigo = async () => {
@@ -388,6 +431,7 @@ export const FormOperacionalEmprestimo = () => {
                     data.map((dados) => {
                         dadosCliente.nomeClienteEmprestimo.value = dados.nome;
                         dadosCliente.jurosMensal.value = dados.taxa_juros;
+                        setDadosCliente(dados);
                         calculaJurosDiario();
                     });
                 }
@@ -440,6 +484,10 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     useEffect(() => {
+        buscaParcelas();
+    }, [atualizaParcelas]);
+
+    useEffect(() => {
         buscaEmprestimo();
         buscaParcelas();
     }, [idEmprestimo]);
@@ -449,16 +497,281 @@ export const FormOperacionalEmprestimo = () => {
     }, [idCliente]);
 
     useEffect(() => {
-        calculaEmprestimo();
-    }, [valorEmprestimo, s_intervalo]);
-
-    useEffect(() => {
         const dadosEmprestimo = ref.current;
         dadosEmprestimo.dataCadastro.value = retornaDataAtual();
         dadosEmprestimo.dataBase.value = retornaDataAtual();
         setIntervalo('0');
         setIdEmprestimo('0');
     }, []);
+
+    const imprimirPromissoria = () => {
+        const dadosEmprestimo = ref.current;
+        const cliente = dadosEmprestimo.nomeClienteEmprestimo.value;
+        const cnpjCredor = dadosEmprestimo.cnpjCpfCredor.value;
+        const credor = dadosEmprestimo.nomeCredor.value;
+        const valor = dadosEmprestimo.valorEmprestimo.value;
+        const qtdParcelas = dadosEmprestimo.parcelas.value;
+        const valorParcela = extenso(dadosEmprestimo.valorParcela.value, {
+            mode: 'currency',
+        });
+
+        const cnpj_cpf = dadosCliente.cnpj_cpf;
+        const rua = dadosCliente.rua;
+        const numero = dadosCliente.numero;
+        const bairro = dadosCliente.bairro;
+        const cidade = dadosCliente.cidade;
+        const uf = dadosCliente.uf;
+        const cep = dadosCliente.cep;
+        var CnpjOuCpf = '';
+        cnpj_cpf.length == 14 ? (CnpjOuCpf = 'CPF:') : (CnpjOuCpf = 'CNPJ:');
+        var dia_vencimento = '';
+        var mes_vencimento = '';
+        var ano_vencimento = '';
+
+        var CnpjOuCpfCredor = '';
+        cnpjCredor.length == 14
+            ? (CnpjOuCpfCredor = 'CPF:')
+            : (CnpjOuCpfCredor = 'CNPJ:');
+        var dia_vencimento = '';
+        var mes_vencimento = '';
+        var ano_vencimento = '';
+
+        const win = window.open('', '', 'heigth=700, width=700');
+        win.document.write('<html>');
+        win.document.write('<head >');
+        win.document.write('<title></title>');
+        win.document.write('</head>');
+        win.document.write('<body>');
+
+        arrayParcelas.map((item) => {
+            win.document.write(
+                '<table style="border: solid; padding: 10px; font: 15px Calibri; min-height:340px; max-height:340px;">'
+            );
+            win.document.write('<tr>');
+            win.document.write('<td>');
+            win.document.write(
+                '<label style="text-transform: uppercase; font-weight: bold;">' +
+                    'NOTA PROMISSÓRIA Nº' +
+                    '#' +
+                    item.p +
+                    '/' +
+                    qtdParcelas +
+                    '#' +
+                    '</label>'
+            );
+            win.document.write('</td>');
+            win.document.write('<td style="text-align:right;">');
+            win.document.write(
+                'Vencimento: ' + inverteData(item.data_vencimento)
+            );
+            console.log(item.data_vencimento);
+            win.document.write('</td>');
+            win.document.write('</tr>');
+            ///
+
+            //segunda linha
+
+            win.document.write(
+                '<tr><td colspan="2" style="text-align:right;">' +
+                    '<label style="text-transform: uppercase; font-weight: bold;">' +
+                    parseFloat(item.valorPrestacao).toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                    }) +
+                    '</label></td></tr>'
+            );
+            //terceiro bloco
+            win.document.write(
+                '<tr><td colspan="2">No dia ' +
+                    '<label style="text-transform: uppercase; font-weight: bold;">' +
+                    formatarDataExtenso(new Date(item.data_vencimento)) +
+                    '</label>' +
+                    ' pagamos por esta única via de NOTA PROMISSÓRIA a ' +
+                    '<label style="text-transform: uppercase;font-weight: bold;">' +
+                    credor +
+                    ' ' +
+                    CnpjOuCpfCredor +
+                    cnpjCredor +
+                    '</label>' +
+                    ', ou à sua ordem, a quantia de ' +
+                    '<label style="text-transform: uppercase;font-weight: bold;">' +
+                    valorParcela +
+                    '</label>' +
+                    ', em moeda corrente desse país<br><br></td></tr>'
+            );
+            //
+            win.document.write('<tr>');
+            win.document.write(
+                '<td> Local de pagamento: GUARULHOS SP <br><br></td>'
+            );
+            win.document.write(
+                '<td colspan="2">Data da Emissão: ' +
+                    inverteData(item.data_vencimento) +
+                    '<br><br></td>'
+            );
+            win.document.write('</tr>');
+
+            ///
+            win.document.write('<tr>');
+            win.document.write(
+                '<td colspan="2">Nome do Emitente: ' +
+                    '<label style="text-transform: uppercase;font-weight: bold;">' +
+                    cliente +
+                    '</label><br><br></td>'
+            );
+            win.document.write('</tr>');
+
+            win.document.write('<tr>');
+            win.document.write('<td colspan="2">');
+            win.document.write(
+                '<label style="text-transform: uppercase;font-weight: bold;">' +
+                    CnpjOuCpf +
+                    ' ' +
+                    cnpj_cpf +
+                    ' Endereço: ' +
+                    rua +
+                    ', ' +
+                    numero +
+                    ', ' +
+                    bairro +
+                    '- ' +
+                    cidade +
+                    ' ' +
+                    uf +
+                    ' - CEP: ' +
+                    cep +
+                    '</label><br><br>'
+            );
+            win.document.write('</td>');
+            win.document.write('</tr>');
+            win.document.write('<tr>');
+            win.document.write('<td colspan="2" style="text-align:center">');
+            win.document.write(
+                '-------------------------------------------------'
+            );
+            win.document.write('</td>');
+            win.document.write('</tr>');
+
+            win.document.write('<tr>');
+            win.document.write('<td colspan="2" style="text-align:center">');
+            win.document.write('Assinatura do Emitente');
+            win.document.write('</td>');
+            win.document.write('</tr>');
+            win.document.write('</table>');
+            win.document.write(
+                '<label>----------------------------------------------</label>'
+            );
+        });
+
+        win.document.write('</body>');
+        win.document.write('</html>');
+        win.print();
+        // win.close();
+    };
+
+    const imprimir = () => {
+        const dadosEmpretimo = ref.current;
+
+        var somaValorPago = 0;
+        var valorRestante = 0;
+
+        const win = window.open('', '', 'heigth=700, width=700');
+        win.document.write('<html>');
+        win.document.write('<head >');
+        win.document.write('<title></title>');
+        win.document.write('</head>');
+        win.document.write('<body>');
+        win.document.write('<table border="0" style="width: 400px">');
+        win.document.write('<tr><td colspan="4" style="text-align : right">');
+        win.document.write(dataHoraAtual());
+        win.document.write('</tr></td>');
+        win.document.write('<tr ><td colspan="4" style="text-align : center">');
+        win.document.write(
+            '--------------------------------------------------------------------------'
+        );
+        win.document.write('</tr ><td>');
+        win.document.write('<tr>');
+        win.document.write(
+            '<td colspan="2" style="text-transform: uppercase">'
+        );
+        win.document.write(dadosEmprestimo.nomeClienteEmprestimo.value);
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right">');
+        win.document.write(inverteData(dadosEmprestimo.dataCadastro.value));
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right">');
+        win.document.write(dadosEmprestimo.emprestimo.value);
+        win.document.write('</td>');
+        win.document.write('</tr>');
+        win.document.write('<tr ><td colspan="4" style="text-align : center">');
+        win.document.write(
+            '--------------------------------------------------------------------------'
+        );
+        win.document.write('</tr ><td>');
+        win.document.write('<tr>');
+        win.document.write('<td>Parcela');
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right;">Vencimento');
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right;">Valor');
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right;">Pago');
+        win.document.write('</td>');
+        win.document.write('</tr>');
+        arrayParcelas.map((item) => {
+            win.document.write('<tr>');
+            win.document.write('<td>');
+            win.document.write(item.p + '/' + dadosEmprestimo.parcelas.value);
+            win.document.write('</td>');
+            win.document.write('<td style="text-align: right;">');
+            win.document.write(formataData(new Date(item.data_vencimento)));
+            win.document.write('<td style="text-align: right;">');
+            win.document.write(converteFloatMoeda(item.valorPrestacao));
+            win.document.write('</td>');
+            win.document.write('<td style="text-align: right;">');
+            win.document.write(converteFloatMoeda(item.valorPago));
+            win.document.write('</td>');
+            somaValorPago = somaValorPago + parseFloat(item.valorPago);
+        });
+        valorRestante = converteMoedaFloat(dadosEmprestimo.valorTotal.value);
+        valorRestante = valorRestante - somaValorPago;
+        win.document.write('<tr><td colspan="4" style="text-align : center">');
+        win.document.write(
+            '--------------------------------------------------------------------------'
+        );
+        win.document.write('</td ></tr >');
+        win.document.write('<tr><td colspan="2" style="text-align: right;">');
+        win.document.write('Emprestimo</td >');
+        win.document.write('<td style = "text-align: right;">');
+        win.document.write(' Juros</td >');
+        win.document.write('<td style = "text-align: right;" >');
+        win.document.write('Total a Pagar</td ></tr >');
+        win.document.write('<tr><td colspan="2" style="text-align: right;">');
+        win.document.write(dadosEmprestimo.valorInicial.value);
+        win.document.write('</td ><td style="text-align: right;">');
+        win.document.write(dadosEmprestimo.valorTotalJuros.value);
+        win.document.write('</td > <td style="text-align: right;">');
+        win.document.write(dadosEmprestimo.valorTotal.value);
+        win.document.write('</td ></tr >');
+        win.document.write('<tr>');
+        win.document.write('<td colspan="4" style="text-align: right;" > -');
+        win.document.write(somaValorPago.toLocaleString('pt-BR'));
+        win.document.write('</td ></tr >');
+        win.document.write('<tr>');
+        win.document.write('<td colspan="4" style="text-align: right;" >');
+        win.document.write(valorRestante.toLocaleString('pt-BR'));
+        win.document.write('</td ></tr >');
+        win.document.write('</body>');
+        win.document.write('</html>');
+        win.print();
+        //  win.close();
+    };
+
+    const toogle = () => {
+        setCheckPrestacao(!checkPrestacao);
+
+        console.log(checkPrestacao);
+    };
 
     return (
         <>
@@ -475,6 +788,17 @@ export const FormOperacionalEmprestimo = () => {
                     setIdCliente={setIdCliente}
                 />
             )}
+
+            {idParcela != 0 && (
+                <FormPagamentoEmprestimo
+                    parcelaN={parcelaN}
+                    idParcela={idParcela}
+                    setIdParcela={setIdParcela}
+                    setAtualizaParcelas={setAtualizaParcelas}
+                    atualizaParcelas={atualizaParcelas}
+                />
+            )}
+
             <form
                 className="formOperacionalEmprestimo"
                 onSubmit={handleSubmit}
@@ -504,8 +828,22 @@ export const FormOperacionalEmprestimo = () => {
                                 >
                                     Novo
                                 </button>
+                            )}{' '}
+                            {onEdit && (
+                                <button
+                                    id="btnImprimir"
+                                    onClick={imprimirPromissoria}
+                                >
+                                    Promissória
+                                </button>
+                            )}
+                            {onEdit && (
+                                <button id="btnImprimir" onClick={imprimir}>
+                                    Imprimir
+                                </button>
                             )}
                         </div>
+
                         <div className="boxRow">
                             <input
                                 type="text"
@@ -610,10 +948,6 @@ export const FormOperacionalEmprestimo = () => {
                                     id="inputValorEmprestimo"
                                     name="valorEmprestimo"
                                     placeholder=""
-                                    value={valorEmprestimo}
-                                    onChange={(e) =>
-                                        setValorEmprestimo(e.target.value)
-                                    }
                                     onBlur={formataValorEmprestimo}
                                     onKeyDown={(e) =>
                                         keyDown(e, 'inputQtdParcelas')
@@ -630,7 +964,6 @@ export const FormOperacionalEmprestimo = () => {
                                     onKeyDown={(e) =>
                                         keyDown(e, 'inputDataBase')
                                     }
-                                    onChange={calculaEmprestimo}
                                 />
                             </div>
                         </div>
@@ -643,7 +976,6 @@ export const FormOperacionalEmprestimo = () => {
                                     id="inputDataBase"
                                     name="dataBase"
                                     placeholder=""
-                                    onChange={calculaEmprestimo}
                                     onKeyDown={(e) =>
                                         keyDown(e, 'inputIntervalo')
                                     }
@@ -666,14 +998,32 @@ export const FormOperacionalEmprestimo = () => {
                             </div>
                             <div className="boxCol">
                                 <label>Valor Parcela</label>
-                                <input
-                                    type="text"
-                                    id="inputValorParcela"
-                                    name="valorParcela"
-                                    placeholder=""
-                                    readOnly
-                                />
-                            </div>{' '}
+                                <div className="boxRow">
+                                    {checkPrestacao && (
+                                        <input
+                                            type="text"
+                                            id="inputValorParcela"
+                                            name="valorParcela"
+                                            placeholder=""
+                                            readOnly
+                                        />
+                                    )}
+                                    {!checkPrestacao && (
+                                        <input
+                                            type="text"
+                                            id="inputValorParcela"
+                                            name="valorParcela"
+                                            placeholder=""
+                                        />
+                                    )}
+                                    <input
+                                        type="checkbox"
+                                        id="checkP"
+                                        name="checkP"
+                                        onClick={toogle}
+                                    />
+                                </div>
+                            </div>
                             {!onEdit && (
                                 <button
                                     id="btnCalcular"
@@ -692,15 +1042,35 @@ export const FormOperacionalEmprestimo = () => {
                             </div>
                             <div className="boxCol">
                                 <label>Emprestimo</label>{' '}
-                                <input type="text" name="valorInicial" />
+                                <input
+                                    type="text"
+                                    name="valorInicial"
+                                    readOnly
+                                />
                             </div>
                             <div className="boxCol">
                                 <label>Juros</label>{' '}
-                                <input type="text" name="valorTotalJuros" />
+                                <input
+                                    type="text"
+                                    name="valorTotalJuros"
+                                    readOnly
+                                />
                             </div>
                             <div className="boxCol">
                                 <label>A pagar</label>{' '}
-                                <input type="text" name="valorTotal" />
+                                <input type="text" name="valorTotal" readOnly />
+                            </div>
+                            <div className="boxCol">
+                                <label>Valor Pago</label>{' '}
+                                <input type="text" name="valorPago" readOnly />
+                            </div>
+                            <div className="boxCol">
+                                <label>Restante</label>{' '}
+                                <input
+                                    type="text"
+                                    name="valorRestante"
+                                    readOnly
+                                />
                             </div>
                         </div>
                     </div>
@@ -710,13 +1080,41 @@ export const FormOperacionalEmprestimo = () => {
                         <div>Parcela</div>
                         <div>Vencimento</div>
                         <div>Prestação</div>
+                        <div>Valor Pago</div>
+                        <div></div>
                     </div>
                     <div id="divResultadoEmprestimo">
                         {arrayParcelas.map((item) => (
-                            <div className="gridLinha" key={item.p}>
+                            <div
+                                key={item.p}
+                                className={
+                                    item.valorPrestacao == item.valorPago ||
+                                    item.valorPrestacao < item.valorPago
+                                        ? 'gridLinhaPago'
+                                        : 'gridLinha'
+                                }
+                                name="linhaParcela"
+                                value={item.idParcela}
+                            >
                                 <div>{item.p}</div>
-                                <div>{item.data_vencimento}</div>
+                                <div>
+                                    {formataData(
+                                        new Date(item.data_vencimento)
+                                    )}
+                                </div>
                                 <div>{item.valorPrestacao}</div>
+                                <div>{item.valorPago}</div>
+                                <div>
+                                    {onEdit && (
+                                        <FiDollarSign
+                                            id="iconeDollarPagar"
+                                            onClick={(e) => {
+                                                setIdParcela(item.idParcela);
+                                                setParcelaN(item.p);
+                                            }}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>
