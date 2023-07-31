@@ -1,0 +1,19 @@
+.formCadastroUsuario {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(223, 224, 225);
+    padding: 20px;
+    width: 350px;
+}
+
+.formCadastroUsuario input {
+    border: 0;
+    border-radius: 2px;
+    padding: 0.6em 1.2em;
+    margin-bottom: 10px;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.25s;
+}

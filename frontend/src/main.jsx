@@ -11,7 +11,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { FormLogin } from './components/formLogin/index.jsx';
 import { FormOperacaoCheque } from './components/operacaoCheque/index.jsx';
 import { FormCadastroUsuario } from './components/formCadastroUsuario/index.jsx';
+import { FormCadastroUsuarioSecundario } from './components/formCadastroUsuarioSecundario/index.jsx';
 import { FormCliente } from './components/formCliente/index.jsx';
+import { TaxaCliente } from './components/taxaCliente/taxaCliente.jsx';
 import { GridCheque } from './components/gridCheque/index.jsx';
 import { FormOperacionalEmprestimo } from './components/operacaoEmprestimo/index.jsx';
 import { PrivateRouter } from './pages/rotaPrivada/rotaPrivada.jsx';
@@ -50,6 +52,14 @@ const router = createBrowserRouter([
                 ),
             },
             {
+                path: '/cadastro-usuario-secundario',
+                element: (
+                    <PrivateRouter>
+                        <FormCadastroUsuarioSecundario />
+                    </PrivateRouter>
+                ),
+            },
+            {
                 path: '/permissoes',
                 element: (
                     <PrivateRouter>
@@ -75,6 +85,14 @@ const router = createBrowserRouter([
                 element: (
                     <PrivateRouter>
                         <FormCliente />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/taxa-cliente',
+                element: (
+                    <PrivateRouter>
+                        <TaxaCliente />
                     </PrivateRouter>
                 ),
             },

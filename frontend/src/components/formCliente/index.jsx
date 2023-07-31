@@ -9,6 +9,7 @@ import {
     keyDown,
     converteMoedaFloat,
     retornaDataAtual,
+    converteFloatMoeda,
 } from '../../biblitoteca';
 import { BuscaClienteNome } from '../buscaCliente';
 import { FiSearch } from 'react-Icons/fi';
@@ -16,17 +17,17 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
 import { CheckboxPersonalizado } from '../checkbox/checkboxPersonalizado';
 
 export const FormCliente = () => {
-    const [formBusca, setFormBusca] = useState(false);
-    const [vlBusca, setVlBusca] = useState('');
-    const [inputCep, setInputCep] = useState('');
+    const [formBusca, setFormBusca] = useState();
 
-    const [cpfCnpj, setCpfCnpj] = useState('');
-    const [vlimpo, setVlimpo] = useState('');
-    const [onEdit, setOnEdit] = useState(false);
+    const [inputCep, setInputCep] = useState();
+
+    const [cpfCnpj, setCpfCnpj] = useState();
+    const [vlimpo, setVlimpo] = useState();
+    const [onEdit, setOnEdit] = useState();
 
     const [idCliente, setIdCliente] = useState();
 
-    const [checkEspecial, setCheckEspecial] = useState();
+    const [checkEspecial, setCheckEspecial] = useState('NAO');
 
     const ref = useRef();
 
@@ -83,8 +84,7 @@ export const FormCliente = () => {
         const telefone = dadosCliente.telefone.value;
         const dataNascimento = dadosCliente.dataNascimento.value;
         const observacao = dadosCliente.observacao.value;
-        const taxaJuros = dadosCliente.taxaJuros.value;
-
+        const taxaJuros = converteMoedaFloat(dadosCliente.taxaJuros.value);
         const especial = dadosCliente.especial.value;
 
         const idFactoring = localStorage.getItem('factoring');
@@ -181,7 +181,7 @@ export const FormCliente = () => {
         const telefone = dadosCliente.telefone.value;
         const dataNascimento = dadosCliente.dataNascimento.value;
         const observacao = dadosCliente.observacao.value;
-        const taxaJuros = dadosCliente.taxaJuros.value;
+        const taxaJuros = converteMoedaFloat(dadosCliente.taxaJuros.value);
         const especial = dadosCliente.especial.value;
         const idFactoring = localStorage.getItem('factoring');
 
@@ -266,7 +266,9 @@ export const FormCliente = () => {
                         dadosCliente.dataNascimento.value =
                             dados.data_nascimento;
                         dadosCliente.observacao.value = dados.observacao;
-                        dadosCliente.taxaJuros.value = dados.taxa_juros;
+                        dadosCliente.taxaJuros.value = (
+                            dados.taxa_juros * 1
+                        ).toLocaleString('pt-BR');
                         setIdCliente(dados.idcliente);
                         setCheckEspecial(dados.especial);
 
@@ -336,17 +338,19 @@ export const FormCliente = () => {
 
     const formataTaxa = () => {
         const dadosTaxa = ref.current;
-        dadosTaxa.taxaJuros.value = converteMoedaFloat(
+        dadosTaxa.taxaJuros.value = converteFloatMoeda(
             dadosTaxa.taxaJuros.value
         );
     };
 
     const toogle = () => {
-        if (checkEspecial == 'NAO') {
-            setCheckEspecial('SIM');
-        }
-        if (checkEspecial == 'SIM') {
-            setCheckEspecial('NAO');
+        if (!onEdit) {
+            if (checkEspecial == 'NAO') {
+                setCheckEspecial('SIM');
+            }
+            if (checkEspecial == 'SIM') {
+                setCheckEspecial('NAO');
+            }
         }
     };
 
@@ -547,14 +551,25 @@ export const FormCliente = () => {
                     </div>
                     <div className="boxCol">
                         <label>Taxa Mensal</label>
-                        <input
-                            id="inputTaxaCliente"
-                            type="text"
-                            name="taxaJuros"
-                            placeholder=""
-                            onKeyDown={(e) => keyDown(e, 'textObservacao')}
-                            onBlur={formataTaxa}
-                        />
+                        {onEdit && (
+                            <input
+                                id="inputTaxaCliente"
+                                type="text"
+                                name="taxaJuros"
+                                placeholder=""
+                                readOnly
+                            />
+                        )}
+                        {!onEdit && (
+                            <input
+                                id="inputTaxaCliente"
+                                type="text"
+                                name="taxaJuros"
+                                placeholder=""
+                                onKeyDown={(e) => keyDown(e, 'textObservacao')}
+                                onBlur={formataTaxa}
+                            />
+                        )}
                     </div>
                     <div className="boxCol">
                         <label>Especial</label>
@@ -566,7 +581,7 @@ export const FormCliente = () => {
                                     size={25}
                                     onClick={toogle}
                                 />
-                            )}{' '}
+                            )}
                             <input
                                 type="text"
                                 id="inputEspecial"

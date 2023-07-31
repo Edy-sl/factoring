@@ -132,3 +132,10 @@ input:focus {
 ul {
     background-color: rgb(223, 224, 225);
 }
+
+.form {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(223, 224, 225);
+    padding: 20px;
+}

@@ -1,13 +1,13 @@
 import { useRef } from 'react';
 import React from 'react';
-import './formCadastroUsuario.css';
+import './formCadastroUsuarioSecundario.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { apiFactoring } from '../../services/api';
 
-export const FormCadastroUsuario = () => {
+export const FormCadastroUsuarioSecundario = () => {
     const navigate = useNavigate();
     const ref = useRef();
 
@@ -17,43 +17,42 @@ export const FormCadastroUsuario = () => {
 
         let nome = DadosCadUsuario.nome.value;
         let password = DadosCadUsuario.password.value;
+        let idFactoring = localStorage.getItem('factoring');
+
         let passwordConfirma = DadosCadUsuario.passwordConfirma.value;
 
         if (password === passwordConfirma && password.length > 0) {
-            cadastrarUsuario(nome, password);
+            cadastrarUsuario();
         } else {
             toast.error('As senha não conferem!');
         }
-
-        /* function isValidEmail(email) {
-            return /\S+@\S+\.\S+/.test(email);
-        }
-        if (isValidEmail(email)) {
-            if (password === passwordConfirma && password.length > 0) {
-                cadastrarUsuario(email, password);
-            } else {
-                toast.error('As senha não conferem!');
-            }
-        } else {
-            toast.error('Digite um e-mail válido!');
-        }*/
     };
 
-    const cadastrarUsuario = async (nome, password) => {
+    const cadastrarUsuario = async () => {
+        const DadosCadUsuario = ref.current;
+
+        const nome = DadosCadUsuario.nome.value;
+        const password = DadosCadUsuario.password.value;
+        const idFactoring = localStorage.getItem('factoring');
+
         await apiFactoring
-            .post('/cad-usuario', {
-                nome: nome,
-                senha: password,
-            })
-            .then(({ data }) => {
-                if (data.status == 'erro') {
-                    toast.error(data.msg);
-                } else {
-                    toast.error(data.msg);
-                    navigate('/login');
+            .post(
+                '/cad-usuario-secundario',
+                {
+                    nome: nome,
+                    senha: password,
+                    idFactoring: idFactoring,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
                 }
+            )
+            .then(({ data }) => {
+                toast.success(data);
             })
-            .catch(({ data }) => toast.error(data));
+            .catch(({ data }) => toast.error('Não foi possível gravar!'));
     };
 
     return (
@@ -80,9 +79,6 @@ export const FormCadastroUsuario = () => {
                     placeholder="Confirme a senha"
                 />
                 <button type="submit">Salvar</button>
-                <Link id="linkCadastro" to="/login">
-                    Já tenho cadastro - Ir para o Login
-                </Link>
             </form>
         </>
     );

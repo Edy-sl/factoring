@@ -18,6 +18,14 @@ export const gravarEmprestimo = (req, res) => {
     const { idFactoring } = req.body;
     const { arrayParcelas } = req.body;
 
+    console.log(jurosMensal);
+    console.log(valorEmprestimo);
+    console.log(quatidadeParcelas);
+    console.log(intervalo);
+    console.log(valorParcela);
+    console.log(valorJuros);
+    console.log(valorTotal);
+
     const sql =
         'insert into emprestimos (data_cadastro,juros_mensal,idcliente,cnpj_cpf_credor,nome_credor,valor_emprestimo,quantidade_parcelas,data_base,intervalo,valor_parcela,valor_juros,valor_total,idfactoring) values (?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
@@ -121,55 +129,164 @@ export const listaPagamentoParcela = (req, res) => {
 export const relatorioEmprestimoData = (req, res) => {
     var { dataI } = req.body;
     var { dataF } = req.body;
+    var { tipoRel } = req.body;
 
-    const sql =
-        'select ' +
-        'tmp_emp.idemprestimo, ' +
-        'tmp_emp.valor_pago, ' +
-        'tmp_emp.vencimento, ' +
-        'tmp_emp.parcela, ' +
-        'tmp_emp.idparcela, ' +
-        'tmp_emp.idcliente, ' +
-        'tmp_emp.data_cadastro, ' +
-        'tmp_emp.quantidade_parcelas, ' +
-        'tmp_emp.valor, ' +
-        'tmp_emp.valor_total, ' +
-        'cli.nome ' +
-        'from ' +
-        '(select tmp_parcelas.idemprestimo, ' +
-        'tmp_parcelas.valor_pago, ' +
-        'tmp_parcelas.vencimento, ' +
-        'tmp_parcelas.parcela, ' +
-        'tmp_parcelas.idparcela, ' +
-        'tmp_parcelas.valor, ' +
-        'emp.idcliente, ' +
-        'emp.valor_total, ' +
-        'emp.quantidade_parcelas, ' +
-        'data_cadastro ' +
-        'from ' +
-        '(select ' +
-        'pe.idemprestimo, ' +
-        'pe.parcela, ' +
-        'pe.valor, ' +
-        'pe.vencimento, ' +
-        'ifnull(pp.data_pagamento,0) as data_pagamento, ' +
-        'ifnull(pp.idparcela,0) as idparcela , ' +
-        'ifnull(sum(pp.valor_pago),0) as valor_pago ' +
-        'from ' +
-        'parcelas_emprestimo as pe ' +
-        'left join pagamentos_parcelas as pp ' +
-        'on pp.idparcela = pe.idparcela ' +
-        'where pe.vencimento ' +
-        'between ? and ? ' +
-        'group by  pp.idparcela, pp.data_pagamento, ' +
-        'pe.idemprestimo, pe.vencimento, ' +
-        'pe.parcela, pe.valor) as tmp_parcelas ' +
-        'left join emprestimos as emp  ' +
-        'on emp.idemprestimo = tmp_parcelas.idemprestimo) as tmp_emp ' +
-        'left join clientes as cli ' +
-        'on cli.idcliente = tmp_emp.idcliente ' +
-        'order by idemprestimo, parcela ';
+    /*por data de vencimento - nao pagar*/
+    if (tipoRel == 'PAGAR') {
+        var sql =
+            'select ' +
+            'tmp_emp.idemprestimo, ' +
+            'tmp_emp.valor_pago, ' +
+            'tmp_emp.vencimento, ' +
+            'tmp_emp.parcela, ' +
+            'tmp_emp.idparcela, ' +
+            'tmp_emp.idcliente, ' +
+            'tmp_emp.data_cadastro, ' +
+            'tmp_emp.quantidade_parcelas, ' +
+            'tmp_emp.valor, ' +
+            'tmp_emp.valor_total, ' +
+            'cli.nome ' +
+            'from ' +
+            '(select tmp_parcelas.idemprestimo, ' +
+            'tmp_parcelas.valor_pago, ' +
+            'tmp_parcelas.vencimento, ' +
+            'tmp_parcelas.parcela, ' +
+            'tmp_parcelas.idparcela, ' +
+            'tmp_parcelas.valor, ' +
+            'emp.idcliente, ' +
+            'emp.valor_total, ' +
+            'emp.quantidade_parcelas, ' +
+            'data_cadastro ' +
+            'from  ' +
+            '(select ' +
+            'pe.idemprestimo, ' +
+            'pe.idparcela, ' +
+            'pe.parcela, ' +
+            'pe.valor, ' +
+            'pe.vencimento, ' +
+            'ifnull(pp.data_pagamento,0) as data_pagamento, ' +
+            'ifnull(sum(pp.valor_pago),0) as valor_pago ' +
+            'from ' +
+            'parcelas_emprestimo as pe ' +
+            'left join pagamentos_parcelas as pp ' +
+            'on pp.idparcela = pe.idparcela ' +
+            'where pe.vencimento ' +
+            'between ? and ? ' +
+            'group by  pp.idparcela, pp.data_pagamento,  ' +
+            'pe.idemprestimo, pe.vencimento, ' +
+            'pe.parcela, pe.valor, pe.idparcela) as tmp_parcelas ' +
+            'left join emprestimos as emp  ' +
+            'on emp.idemprestimo = tmp_parcelas.idemprestimo ' +
+            'where tmp_parcelas.valor > tmp_parcelas.valor_pago) as tmp_emp ' +
+            'left join clientes as cli ' +
+            'on cli.idcliente = tmp_emp.idcliente ' +
+            'order by idemprestimo, parcela ';
+    }
 
+    /*por data de vencimento - pagas */
+    if (tipoRel == 'PAGAS') {
+        var sql =
+            'select ' +
+            'tmp_emp.idemprestimo, ' +
+            'tmp_emp.valor_pago, ' +
+            'tmp_emp.vencimento, ' +
+            'tmp_emp.parcela, ' +
+            'tmp_emp.idparcela, ' +
+            'tmp_emp.idcliente, ' +
+            'tmp_emp.data_cadastro, ' +
+            'tmp_emp.quantidade_parcelas, ' +
+            'tmp_emp.valor, ' +
+            'tmp_emp.valor_total, ' +
+            'cli.nome ' +
+            'from ' +
+            '(select tmp_parcelas.idemprestimo, ' +
+            'tmp_parcelas.valor_pago, ' +
+            'tmp_parcelas.vencimento, ' +
+            'tmp_parcelas.parcela, ' +
+            'tmp_parcelas.idparcela, ' +
+            'tmp_parcelas.valor, ' +
+            'emp.idcliente, ' +
+            'emp.valor_total, ' +
+            'emp.quantidade_parcelas, ' +
+            'data_cadastro ' +
+            'from  ' +
+            '(select ' +
+            'pe.idemprestimo, ' +
+            'pe.idparcela, ' +
+            'pe.parcela, ' +
+            'pe.valor, ' +
+            'pe.vencimento, ' +
+            'ifnull(pp.data_pagamento,0) as data_pagamento, ' +
+            'ifnull(sum(pp.valor_pago),0) as valor_pago ' +
+            'from ' +
+            'parcelas_emprestimo as pe ' +
+            'left join pagamentos_parcelas as pp ' +
+            'on pp.idparcela = pe.idparcela ' +
+            'where pe.vencimento ' +
+            'between ? and ? ' +
+            'group by  pp.idparcela, pp.data_pagamento,  ' +
+            'pe.idemprestimo, pe.vencimento, ' +
+            'pe.parcela, pe.valor, pe.idparcela) as tmp_parcelas ' +
+            'left join emprestimos as emp  ' +
+            'on emp.idemprestimo = tmp_parcelas.idemprestimo ' +
+            'where tmp_parcelas.valor_pago > 0) as tmp_emp ' +
+            'left join clientes as cli ' +
+            'on cli.idcliente = tmp_emp.idcliente ' +
+            'order by idemprestimo, parcela ';
+    }
+
+    /*por data de vencimento - Geral*/
+    if (tipoRel == 'GERAL') {
+        var sql =
+            'select ' +
+            'tmp_emp.idemprestimo, ' +
+            'tmp_emp.valor_pago, ' +
+            'tmp_emp.vencimento, ' +
+            'tmp_emp.parcela, ' +
+            'tmp_emp.idparcela, ' +
+            'tmp_emp.idcliente, ' +
+            'tmp_emp.data_cadastro, ' +
+            'tmp_emp.quantidade_parcelas, ' +
+            'tmp_emp.valor, ' +
+            'tmp_emp.valor_total, ' +
+            'cli.nome ' +
+            'from ' +
+            '(select tmp_parcelas.idemprestimo, ' +
+            'tmp_parcelas.valor_pago, ' +
+            'tmp_parcelas.vencimento, ' +
+            'tmp_parcelas.parcela, ' +
+            'tmp_parcelas.idparcela, ' +
+            'tmp_parcelas.valor, ' +
+            'emp.idcliente, ' +
+            'emp.valor_total, ' +
+            'emp.quantidade_parcelas, ' +
+            'data_cadastro ' +
+            'from ' +
+            '(select ' +
+            'pe.idemprestimo, ' +
+            'pe.idparcela, ' +
+            'pe.parcela, ' +
+            'pe.valor, ' +
+            'pe.vencimento, ' +
+            'ifnull(pp.data_pagamento,0) as data_pagamento, ' +
+            'ifnull(sum(pp.valor_pago),0) as valor_pago ' +
+            'from ' +
+            'parcelas_emprestimo as pe ' +
+            'left join pagamentos_parcelas as pp ' +
+            'on pp.idparcela = pe.idparcela ' +
+            'where pe.vencimento ' +
+            'between ? and ? ' +
+            'group by  pp.idparcela, pp.data_pagamento, ' +
+            'pe.idemprestimo, pe.vencimento, ' +
+            'pe.parcela, pe.valor, pe.idparcela) as tmp_parcelas ' +
+            'left join emprestimos as emp  ' +
+            'on emp.idemprestimo = tmp_parcelas.idemprestimo) as tmp_emp ' +
+            'left join clientes as cli ' +
+            'on cli.idcliente = tmp_emp.idcliente ' +
+            'order by idemprestimo, parcela ';
+    }
+
+    console.log(tipoRel);
     db.query(sql, [dataI, dataF], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);

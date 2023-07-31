@@ -7,12 +7,12 @@ const SECRET = process.env.SECRET;
 function compara() {}
 
 export const loginFactoring = async (req, res) => {
-    const { email } = req.body;
+    const { nome } = req.body;
     const { senha } = req.body;
     const sql =
-        'Select * from usuarios, permissoes_usuarios, grupos_permissoes where usuarios.email= ? and permissoes_usuarios.idusuario = usuarios.idusuario AND grupos_permissoes.idgrupo = permissoes_usuarios.idgrupo';
+        'Select * from usuarios, permissoes_usuarios, grupos_permissoes where usuarios.nome= ? and permissoes_usuarios.idusuario = usuarios.idusuario AND grupos_permissoes.idgrupo = permissoes_usuarios.idgrupo';
 
-    db.query(sql, [email], (err, data) => {
+    db.query(sql, [nome], (err, data) => {
         if (err) return res.json(err);
 
         if (data.length > 0) {
@@ -35,11 +35,11 @@ export const loginFactoring = async (req, res) => {
                         factoring: user.idfactoring,
                     });
                 } else {
-                    return res.status(200).json('Email ou senha invalido');
+                    return res.status(200).json('Usuário ou senha invalido');
                 }
             });
         } else {
-            return res.status(200).json('Email ou senha invalido');
+            return res.status(200).json('Usuário ou senha invalido');
         }
     });
 };

@@ -11,7 +11,7 @@ ul {
     margin: 0;
     padding: 0;
     list-style: none;
-    width: 150px;
+    width: 110px;
 }
 
 ul li {
@@ -21,6 +21,7 @@ ul li {
 li ul {
     position: absolute;
     left: 110px;
+    width: 170px;
     top: 0;
     display: none;
 }

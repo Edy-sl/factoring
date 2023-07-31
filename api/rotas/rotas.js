@@ -1,7 +1,10 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import { loginFactoring } from '../controles/login.js';
-import { postCadUsuario } from '../controles/cadastroUsuario.js';
+import {
+    postCadUsuario,
+    postCadUsuarioSecundario,
+} from '../controles/cadastroUsuario.js';
 import { recuperaSenha } from '../controles/recuperaSenha.js';
 import { postFactoring } from '../controles/cadastroEmpresa.js';
 import { postSelecionaFactoring } from '../controles/cadastroEmpresa.js';
@@ -33,6 +36,7 @@ import {
     buscaClienteId,
     buscaClienteNome,
     postCliente,
+    atualizaTaxaCliente,
 } from '../controles/cadastroCliente.js';
 
 const SECRET = process.env.SECRET;
@@ -53,12 +57,18 @@ function verificaPermissao(req, res, next) {
     jwt.verify(token, SECRET, (err, decoded) => {
         if (err) return res.status(401).end();
         if (decoded.grupo !== 'admin')
-            return res.status(200).json('bloqueado').end();
+            return res.status(200).json('Usuário sem permissão').end();
         next();
     });
 }
 
 rotaFactoring.post('/cad-usuario', postCadUsuario);
+rotaFactoring.post(
+    '/cad-usuario-secundario',
+    verifyJWT,
+    verificaPermissao,
+    postCadUsuarioSecundario
+);
 
 rotaFactoring.post('/login', loginFactoring);
 
@@ -84,6 +94,12 @@ rotaFactoring.post('/alterar-cliente', verifyJWT, alterarCliente);
 rotaFactoring.post('/busca-cliente', verifyJWT, buscaClienteCnpjCpf);
 rotaFactoring.post('/busca-cliente-nome', verifyJWT, buscaClienteNome);
 rotaFactoring.post('/busca-cliente-id', verifyJWT, buscaClienteId);
+rotaFactoring.post(
+    '/atualiza-taxa-cliente',
+    verifyJWT,
+    verificaPermissao,
+    atualizaTaxaCliente
+);
 
 rotaFactoring.post('/gravar-bordero', verifyJWT, gravarBordero);
 rotaFactoring.post('/alterar-bordero', verifyJWT, alterarBordero);
@@ -106,6 +122,7 @@ rotaFactoring.post(
 rotaFactoring.post(
     '/gravar-pagamento-parcela',
     verifyJWT,
+    verificaPermissao,
     pagamentoParcelaEmprestimo
 );
 

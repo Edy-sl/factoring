@@ -84,7 +84,7 @@ export const FormFactoring = () => {
                     setFactoring(data.idRetorno);
                     toast.success(data.mensagem);
                 })
-                .catch(({ data }) => toast.error(data));
+                .catch(({ data }) => toast.error('Não foi possível gravar!'));
         }
     };
 

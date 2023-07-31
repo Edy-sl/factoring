@@ -88,18 +88,34 @@ export const FormOperacionalEmprestimo = () => {
                 valorTotalJuros = calculos[0].valorTotalJuros;
                 valorTotal = calculos[0].valorTotal;
 
-                dadosEmprestimo.valorParcela.value =
-                    converteFloatMoeda(valorPrestacao).toLocaleString('pt-BR');
+                dadosEmprestimo.valorParcela.value = (
+                    valorPrestacao * 1
+                ).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                });
 
                 dadosEmprestimo.valorInicial.value =
                     dadosEmprestimo.valorEmprestimo.value.toLocaleString(
-                        'pt-BR'
+                        'pt-BR',
+                        {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        }
                     );
+                dadosEmprestimo.valorTotalJuros.value = (
+                    valorTotalJuros * 1
+                ).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                });
 
-                dadosEmprestimo.valorTotalJuros.value =
-                    converteFloatMoeda(valorTotalJuros).toLocaleString('pt-BR');
-
-                dadosEmprestimo.valorTotal.value = valorTotal;
+                dadosEmprestimo.valorTotal.value = (
+                    valorTotal * 1
+                ).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                });
             } else {
                 valorPrestacao = converteMoedaFloat(
                     dadosEmprestimo.valorParcela.value
@@ -111,17 +127,29 @@ export const FormOperacionalEmprestimo = () => {
 
                 dadosEmprestimo.valorInicial.value =
                     dadosEmprestimo.valorEmprestimo.value.toLocaleString(
-                        'pt-BR'
+                        'pt-BR',
+                        {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        }
                     );
 
                 valorTotalJuros = valorTotal - capital;
                 console.log(valorTotalJuros);
 
                 dadosEmprestimo.valorTotalJuros.value =
-                    valorTotalJuros.toLocaleString('pt-BR');
+                    valorTotalJuros.toLocaleString('pt-BR', {
+                        style: 'decimal',
+                        minimumFractionDigits: 2,
+                    });
 
-                dadosEmprestimo.valorTotal.value =
-                    valorTotal.toLocaleString('pt-BR');
+                dadosEmprestimo.valorTotal.value = valorTotal.toLocaleString(
+                    'pt-BR',
+                    {
+                        style: 'decimal',
+                        minimumFractionDigits: 2,
+                    }
+                );
             }
 
             let arrayP = [];
@@ -245,7 +273,10 @@ export const FormOperacionalEmprestimo = () => {
 
         vl = converteMoedaFloat(vl);
 
-        dadosEmprestimo.valorEmprestimo.value = vl.toLocaleString('pt-BR');
+        dadosEmprestimo.valorEmprestimo.value = vl.toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        });
     };
 
     const gravarEmprestimo = async () => {
@@ -266,7 +297,7 @@ export const FormOperacionalEmprestimo = () => {
                     idCliente: dadosEmprestimo.idClienteEmprestimo.value,
                     cnpjCpfCredor: dadosEmprestimo.cnpjCpfCredor.value,
                     nomeCredor: dadosEmprestimo.nomeCredor.value,
-                    jurosMensal: parseFloat(dadosEmprestimo.jurosMensal.value),
+                    jurosMensal: dadosEmprestimo.jurosMensal.value * 1,
                     valorEmprestimo: converteMoedaFloat(
                         dadosEmprestimo.valorEmprestimo.value
                     ),
@@ -279,7 +310,9 @@ export const FormOperacionalEmprestimo = () => {
                     valorJuros: converteMoedaFloat(
                         dadosEmprestimo.valorTotalJuros.value
                     ),
-                    valorTotal: dadosEmprestimo.valorTotal.value,
+                    valorTotal: converteMoedaFloat(
+                        dadosEmprestimo.valorTotal.value
+                    ),
                     idFactoring: localStorage.getItem('factoring'),
                     arrayParcelas: arrayParcelas,
                 },
@@ -327,27 +360,43 @@ export const FormOperacionalEmprestimo = () => {
                         dadosEmprestimo.nomeCredor.value = dados.nome_credor;
 
                         dadosEmprestimo.jurosMensal.value = dados.juros_mensal;
-                        dadosEmprestimo.valorEmprestimo.value = parseFloat(
-                            dados.valor_emprestimo
-                        ).toLocaleString('pt-BR');
+                        dadosEmprestimo.valorEmprestimo.value = (
+                            dados.valor_emprestimo * 1
+                        ).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
                         dadosEmprestimo.parcelas.value =
                             dados.quantidade_parcelas;
                         dadosEmprestimo.dataBase.value = dados.data_base;
                         dadosEmprestimo.intervalo.value = dados.intervalo;
-                        dadosEmprestimo.valorParcela.value =
-                            dados.valor_parcela.toLocaleString('pt-BR');
+                        dadosEmprestimo.valorParcela.value = (
+                            dados.valor_parcela * 1
+                        ).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
 
-                        dadosEmprestimo.valorInicial.value = parseFloat(
-                            dados.valor_emprestimo
-                        ).toLocaleString('pt-BR');
+                        dadosEmprestimo.valorInicial.value = (
+                            dados.valor_emprestimo * 1
+                        ).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
 
-                        dadosEmprestimo.valorTotalJuros.value = parseFloat(
-                            dados.valor_juros
-                        ).toLocaleString('pt-BR');
+                        dadosEmprestimo.valorTotalJuros.value = (
+                            dados.valor_juros * 1
+                        ).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
 
-                        dadosEmprestimo.valorTotal.value = parseFloat(
-                            dados.valor_total
-                        ).toLocaleString('pt-BR');
+                        dadosEmprestimo.valorTotal.value = (
+                            dados.valor_total * 1
+                        ).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
 
                         calculaJurosDiario();
                         setOnEdit(true);
@@ -357,7 +406,6 @@ export const FormOperacionalEmprestimo = () => {
             .catch(({ data }) => {
                 toast.error(data);
             });
-        // calculaEmprestimo();
     };
 
     const buscaParcelas = async () => {
@@ -378,11 +426,12 @@ export const FormOperacionalEmprestimo = () => {
             )
             .then(({ data }) => {
                 if (data.length > 0) {
+                    console.log(data);
                     let arrayP = [];
 
                     data.map((item) => {
-                        somaValorPago =
-                            somaValorPago + parseFloat(item.valor_pago);
+                        console.log(item.vencimento);
+                        somaValorPago = somaValorPago + item.valor_pago * 1;
                         arrayP = [
                             ...arrayP,
                             {
@@ -405,9 +454,19 @@ export const FormOperacionalEmprestimo = () => {
         valorRestante = converteMoedaFloat(dadosEmprestimo.valorTotal.value);
         valorRestante = valorRestante - somaValorPago;
 
-        dadosEmprestimo.valorPago.value = somaValorPago.toLocaleString('pt-BR');
-        dadosEmprestimo.valorRestante.value =
-            valorRestante.toLocaleString('pr-BR');
+        dadosEmprestimo.valorPago.value = (somaValorPago * 1).toLocaleString(
+            'pt-BR',
+            {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            }
+        );
+        dadosEmprestimo.valorRestante.value = (
+            valorRestante * 1
+        ).toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        });
     };
 
     const buscaClienteCodigo = async () => {
@@ -511,9 +570,11 @@ export const FormOperacionalEmprestimo = () => {
         const credor = dadosEmprestimo.nomeCredor.value;
         const valor = dadosEmprestimo.valorEmprestimo.value;
         const qtdParcelas = dadosEmprestimo.parcelas.value;
+
         const valorParcela = extenso(dadosEmprestimo.valorParcela.value, {
             mode: 'currency',
         });
+        console.log(dadosEmprestimo.valorParcela.value);
 
         const cnpj_cpf = dadosCliente.cnpj_cpf;
         const rua = dadosCliente.rua;
@@ -574,7 +635,7 @@ export const FormOperacionalEmprestimo = () => {
             win.document.write(
                 '<tr><td colspan="2" style="text-align:right;">' +
                     '<label style="text-transform: uppercase; font-weight: bold;">' +
-                    parseFloat(item.valorPrestacao).toLocaleString('pt-BR', {
+                    (item.valorPrestacao * 1).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
                     }) +
@@ -724,14 +785,28 @@ export const FormOperacionalEmprestimo = () => {
             win.document.write(item.p + '/' + dadosEmprestimo.parcelas.value);
             win.document.write('</td>');
             win.document.write('<td style="text-align: right;">');
-            win.document.write(formataData(new Date(item.data_vencimento)));
+            win.document.write(inverteData(item.data_vencimento));
             win.document.write('<td style="text-align: right;">');
-            win.document.write(converteFloatMoeda(item.valorPrestacao));
+            win.document.write(
+                (item.valorPrestacao * 1).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
             win.document.write('</td>');
             win.document.write('<td style="text-align: right;">');
-            win.document.write(converteFloatMoeda(item.valorPago));
+            win.document.write(
+                (item.valorPago * 1).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+            somaValorPago = somaValorPago + item.valorPago * 1;
             win.document.write('</td>');
-            somaValorPago = somaValorPago + parseFloat(item.valorPago);
+            somaValorPago.toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            });
         });
         valorRestante = converteMoedaFloat(dadosEmprestimo.valorTotal.value);
         valorRestante = valorRestante - somaValorPago;
@@ -755,11 +830,21 @@ export const FormOperacionalEmprestimo = () => {
         win.document.write('</td ></tr >');
         win.document.write('<tr>');
         win.document.write('<td colspan="4" style="text-align: right;" > -');
-        win.document.write(somaValorPago.toLocaleString('pt-BR'));
+        win.document.write(
+            somaValorPago.toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            })
+        );
         win.document.write('</td ></tr >');
         win.document.write('<tr>');
         win.document.write('<td colspan="4" style="text-align: right;" >');
-        win.document.write(valorRestante.toLocaleString('pt-BR'));
+        win.document.write(
+            valorRestante.toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            })
+        );
         win.document.write('</td ></tr >');
         win.document.write('</body>');
         win.document.write('</html>');
@@ -1097,11 +1182,7 @@ export const FormOperacionalEmprestimo = () => {
                                 value={item.idParcela}
                             >
                                 <div>{item.p}</div>
-                                <div>
-                                    {formataData(
-                                        new Date(item.data_vencimento)
-                                    )}
-                                </div>
+                                <div>{inverteData(item.data_vencimento)}</div>
                                 <div>{item.valorPrestacao}</div>
                                 <div>{item.valorPago}</div>
                                 <div>

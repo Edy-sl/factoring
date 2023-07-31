@@ -37,7 +37,7 @@ export const Permissoes = () => {
         <div>
             {vpermissoes.map((item) => (
                 <div key={item.idusuario}>
-                    {item.email} - ADMIN
+                    {item.nome} - ADMIN
                     {item.grupo == 'admin' && (
                         <CheckboxPersonalizado chek={true} />
                     )}

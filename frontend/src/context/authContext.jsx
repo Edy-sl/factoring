@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     const signIn = async (DadosLogin) => {
         const res = await axios
             .post('http://localhost:8000/login', {
-                email: DadosLogin.email.value,
+                nome: DadosLogin.nome.value,
                 senha: DadosLogin.password.value,
             })
             .then(({ data }) => {

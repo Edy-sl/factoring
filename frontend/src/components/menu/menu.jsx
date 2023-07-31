@@ -20,6 +20,7 @@ export const Menu = () => {
                     <a href="#">Clientes</a>
                     <ul>
                         <Link to="/cadastro-cliente">Cadastro</Link>
+                        <Link to="/taxa-cliente">Taxas</Link>
                     </ul>
                 </li>
 
@@ -48,6 +49,9 @@ export const Menu = () => {
                             <label>Empresa</label>
                         </Link>
                         <Link to="/permissoes">Permissões</Link>
+                        <Link to="/cadastro-usuario-secundario">
+                            Cadastro de Usuários
+                        </Link>
                     </ul>
                 </li>
 

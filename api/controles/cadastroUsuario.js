@@ -4,9 +4,9 @@ import jwt from 'jsonwebtoken';
 import { hash, compare } from 'bcrypt';
 const SECRET = process.env.SECRET;
 
-//gravando dados do Login do Delivery
+//gravar o primeiro usuario Admin
 export const postCadUsuario = async (req, res) => {
-    const { email } = req.body;
+    const { nome } = req.body;
     const { senha } = req.body;
 
     const senhaHash = await hash(senha, 8);
@@ -14,37 +14,29 @@ export const postCadUsuario = async (req, res) => {
     const sqlSelect = 'SELECT * FROM usuarios';
     db.query(sqlSelect, [], (err, data) => {
         if (data.length > 0) {
-            const sql = 'INSERT INTO usuarios (email,senha) VALUES (?,?)';
-            db.query(sql, [email, senhaHash], (err, data) => {
+            /*  const sql = 'INSERT INTO usuarios (nome,senha) VALUES (?,?)';
+            db.query(sql, [nome, senhaHash], (err, data) => {
                 permissaoOperacionalInicial(data.insertId);
                 if (err) return res.json(err);
                 return res.status(200).json('Usuario cadastrado com sucesso!');
+            });*/
+            return res.status(200).json({
+                status: 'erro',
+                msg: 'Já existe um usário Admin cadastrado!',
             });
         } else {
-            const sql = 'INSERT INTO usuarios (email,senha) VALUES (?,?)';
-            db.query(sql, [email, senhaHash], (err, data) => {
-                permissaoAdminInicial(data.insertId);
+            const sql = 'INSERT INTO usuarios (nome,senha) VALUES (?,?)';
+            db.query(sql, [nome, senhaHash], (err, data) => {
                 if (err) return res.json(err);
+                permissaoAdminInicial(data.insertId);
                 return res.status(200).json('Usuario cadastrado com sucesso!');
+                return res.status(200).json({
+                    status: 'erro',
+                    msg: 'Usário Admin cadastrado com sucesso!',
+                });
             });
         }
     });
-
-    /* const sql = 'INSERT INTO usuarios (email,senha) VALUES (?,?)';
-    db.query(sql, [email, senhaHash], (err, data) => {
-        if (err) return res.json(err);
-        const sql2 = 'SELECT * FROM usuario';
-        db.query(sql2, (err, data) => {
-            if (data.length > 0) {
-                return res.status(200).json('Cadastrado com sucesso!');
-            } else {
-                permissaoAdminInicial(data.insertId);
-                return res
-                    .status(200)
-                    .json('Usuario e permissões cadastrados!');
-            }
-        });
-    });*/
 };
 
 //cadastrando a permissao de ADMIN do primeiro usuario do sistema
@@ -95,4 +87,22 @@ const permissaoUsuarioOperacional = (idGrupoPermissao, idUsuario) => {
     const sql2 =
         'INSERT INTO permissoes_usuarios (idgrupo,idusuario) VALUES (?,?)';
     db.query(sql2, [idGrupoPermissao, idUsuario], async (err, data) => {});
+};
+
+//gravar usuario secundario
+export const postCadUsuarioSecundario = async (req, res) => {
+    const { nome } = req.body;
+    const { senha } = req.body;
+    const { idFactoring } = req.body;
+
+    console.log(idFactoring);
+
+    const senhaHash = await hash(senha, 8);
+
+    const sql = 'INSERT INTO usuarios (nome,senha,idFactoring) VALUES (?,?,?)';
+    db.query(sql, [nome, senhaHash, idFactoring], (err, data) => {
+        if (err) return res.json(err);
+        permissaoOperacionalInicial(data.insertId);
+        return res.status(200).json('Usuario cadastrado com sucesso!');
+    });
 };

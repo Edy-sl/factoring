@@ -14,9 +14,11 @@ export const FormLogin = () => {
         e.preventDefault();
         const DadosLogin = ref.current;
 
-        let email = DadosLogin.email.value;
+        let nome = DadosLogin.nome.value;
 
-        function isValidEmail(email) {
+        signIn(DadosLogin);
+
+        /*  function isValidEmail(email) {
             return /\S+@\S+\.\S+/.test(email);
         }
         if (isValidEmail(email)) {
@@ -25,7 +27,7 @@ export const FormLogin = () => {
             console.log('tudo ok');
         } else {
             toast.error('Digite um e-mail válido!');
-        }
+        }*/
     };
 
     return (
@@ -35,7 +37,7 @@ export const FormLogin = () => {
                 position={toast.POSITION.BOTTOM_LEFT}
             />
             <form className="formLogin" onSubmit={handleSubmit} ref={ref}>
-                <input type="text" name="email" placeholder="Digite o e-mail" />
+                <input type="text" name="nome" placeholder="Digite o Usuário" />
                 <input
                     type="password"
                     name="password"
@@ -44,12 +46,8 @@ export const FormLogin = () => {
 
                 <button type="submit">Entrar</button>
 
-                <Link id="linkCadastro" to="/recupera-senha">
-                    Esqueci a senha!
-                </Link>
-
                 <Link id="linkCadastro" to="/cadastro-usuario">
-                    Cadastrar uma conta de usuário!
+                    Cadastrar usuário Admin
                 </Link>
             </form>
         </>

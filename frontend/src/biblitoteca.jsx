@@ -163,7 +163,7 @@ export const dataHoraAtual = () => {
 };
 
 //formata para dd/mm/aaaa
-export const formataData = (dataI) => {
+/*export const formataData = (dataI) => {
     const data = dataI;
 
     const dia = data.getDate().toString().padStart(2, '0');
@@ -171,7 +171,7 @@ export const formataData = (dataI) => {
     const ano = data.getFullYear();
     var dataFormatada = dia + '/' + mes + '/' + ano;
     return dataFormatada;
-};
+};*/
 
 //invert data no padrao xx-xx-xxxx ou xxxx-xx-xx
 export const inverteData = (data) => {
