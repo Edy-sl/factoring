@@ -12,4 +12,6 @@ app.use(cors());
 
 app.use('/', rotaFactory);
 
-app.listen(8000, () => console.log('servdor rodando!'));
+const PORT = process.env.SERVIDOR_PORT;
+
+app.listen(PORT, () => console.log(`servdor rodando na porta ${PORT} - `));

@@ -1,7 +1,8 @@
 import { db } from '../db.js';
 import {} from 'dotenv/config';
 import jwt from 'jsonwebtoken';
-import { hash, compare } from 'bcrypt';
+import bcrypt from 'bcryptjs';
+
 const SECRET = process.env.SECRET;
 
 //gravar o primeiro usuario Admin
@@ -9,7 +10,7 @@ export const postCadUsuario = async (req, res) => {
     const { nome } = req.body;
     const { senha } = req.body;
 
-    const senhaHash = await hash(senha, 8);
+    const senhaHash = await bcrypt.hash(senha, 8);
 
     const sqlSelect = 'SELECT * FROM usuarios';
     db.query(sqlSelect, [], (err, data) => {

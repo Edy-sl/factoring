@@ -16,8 +16,12 @@ import {
     gravarEmprestimo,
     buscaParcelasIdEmprestimo,
     pagamentoParcelaEmprestimo,
+    excluirPagamentoParcelaEmprestimo,
     listaPagamentoParcela,
-    relatorioEmprestimoData,
+    relatorioEmprestimoVencimento,
+    relatorioEmprestimoEmissao,
+    relatorioEmprestimoClienteVencimento,
+    relatorioEmprestimoClienteEmissao,
 } from '../controles/emprestimo.js';
 import {
     gravarBordero,
@@ -114,9 +118,30 @@ rotaFactoring.post('/busca-emprestimo-id', verifyJWT, buscaEmprestimoId);
 
 //relatorio
 rotaFactoring.post(
-    '/relatorio-emprestimo-data',
+    '/relatorio-emprestimo-vencimento',
     verifyJWT,
-    relatorioEmprestimoData
+    relatorioEmprestimoVencimento
+);
+
+//relatorio
+rotaFactoring.post(
+    '/relatorio-emprestimo-emissao',
+    verifyJWT,
+    relatorioEmprestimoEmissao
+);
+
+//relatorio
+rotaFactoring.post(
+    '/relatorio-emprestimo-cliente-vencimento',
+    verifyJWT,
+    relatorioEmprestimoClienteVencimento
+);
+
+//relatorio
+rotaFactoring.post(
+    '/relatorio-emprestimo-cliente-emissao',
+    verifyJWT,
+    relatorioEmprestimoClienteEmissao
 );
 
 rotaFactoring.post(
@@ -124,6 +149,13 @@ rotaFactoring.post(
     verifyJWT,
     verificaPermissao,
     pagamentoParcelaEmprestimo
+);
+
+rotaFactoring.post(
+    '/excluir-pagamento-emprestimo',
+    verifyJWT,
+    verificaPermissao,
+    excluirPagamentoParcelaEmprestimo
 );
 
 rotaFactoring.post(

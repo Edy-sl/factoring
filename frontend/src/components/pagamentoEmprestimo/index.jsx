@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import './pagamentoEmprestimo.css';
 import { toFormData } from 'axios';
-import { converteMoedaFloat, retornaDataAtual } from '../../biblitoteca';
+import {
+    converteMoedaFloat,
+    inverteData,
+    retornaDataAtual,
+} from '../../biblitoteca';
 import { FiSearch, FiDollarSign } from 'react-Icons/fi';
-import { ImExit } from 'react-icons/im';
+import { ImExit, ImBin } from 'react-icons/im';
 import axios from 'axios';
 import { apiFactoring } from '../../services/api';
 import { toast } from 'react-toastify';
@@ -14,6 +18,8 @@ export const FormPagamentoEmprestimo = ({
     setAtualizaParcelas,
     atualizaParcelas,
 }) => {
+    const [idPagamento, setIdPagamento] = useState(0);
+
     const ref = useRef();
 
     const [listaPagamento, setlistaPagamento] = useState([]);
@@ -65,8 +71,23 @@ export const FormPagamentoEmprestimo = ({
                 var arrayPagamento = [];
 
                 setlistaPagamento(data);
+                console.log(data);
             })
             .catch();
+    };
+
+    const excluirPagamento = async () => {
+        await apiFactoring
+            .post(
+                '/excluir-pagamento-emprestimo',
+                { idPagamento: idPagamento },
+                { headers: { 'x-access-token': localStorage.getItem('user') } }
+            )
+            .then(({ data }) => toast.success(data))
+            .catch((data) => {
+                toast.error(data);
+            });
+        setIdPagamento(0);
     };
 
     useEffect(() => {
@@ -77,10 +98,15 @@ export const FormPagamentoEmprestimo = ({
 
     return (
         <div className="divPagamentoEmprestimo">
-            <div className="boxRow" id="divParcela">
+            {idPagamento != 0 && (
                 <div>
-                    <label>Parcela Nº: {parcelaN}</label>
+                    <button onClick={excluirPagamento}>
+                        Confirmar exclusão do Pagamento?
+                    </button>
                 </div>
+            )}
+            <div className="boxRow" id="divParcela">
+                <div>Parcela Nº: {parcelaN}</div>
                 <div>
                     <ImExit
                         className="icone"
@@ -91,7 +117,7 @@ export const FormPagamentoEmprestimo = ({
             <form name="formPagamentos" onSubmit={handleSubmit} ref={ref}>
                 <div className="boxRow">
                     <div className="boxCol">
-                        <label>Data</label>
+                        &nbsp;Data
                         <input
                             type="date"
                             className="inputData"
@@ -100,7 +126,7 @@ export const FormPagamentoEmprestimo = ({
                         />
                     </div>{' '}
                     <div className="boxCol">
-                        <label>Valor</label>
+                        &nbsp;Valor
                         <div className="boxRow">
                             <input
                                 type="text"
@@ -117,9 +143,32 @@ export const FormPagamentoEmprestimo = ({
                 </div>
                 <div className="boxCol" id="divListaPagamentoParcela">
                     {listaPagamento.map((pagamento) => (
-                        <div key={pagamento.idpagamento}>
-                            <label>{pagamento.data_pagamento}</label>
-                            <label>{pagamento.valor_pago}</label>
+                        <div
+                            key={pagamento.idpagamento}
+                            id="divItemPgtoEmprestimo"
+                            className="boxRow"
+                        >
+                            <div className="alignLeft">
+                                {inverteData(pagamento.data_pagamento)}
+                            </div>
+
+                            <div className="alignRight">
+                                {(pagamento.valor_pago * 1).toLocaleString(
+                                    'pt-BR',
+                                    {
+                                        style: 'decimal',
+                                        minimumFractionDigits: 2,
+                                    }
+                                )}
+                            </div>
+                            <div className="alignRight">
+                                <ImBin
+                                    id="iconeDollarPagar"
+                                    onClick={(e) => {
+                                        setIdPagamento(pagamento.idpagamento);
+                                    }}
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>

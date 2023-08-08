@@ -12,7 +12,6 @@ import {
     calculaParcelaEmprestimo,
     formataDias,
     inverteData,
-    formataData,
     formatarDataExtenso,
     dataHoraAtual,
 } from '../../biblitoteca';
@@ -187,7 +186,7 @@ export const FormOperacionalEmprestimo = () => {
                 var data_vencimento = new Date(vencimento);
 
                 //vefifica se é feriado e retorna +1 dia
-                var add_dia = feriadosFixos(data_vencimento);
+                /* var add_dia = feriadosFixos(data_vencimento);
                 add_dia == true &&
                     data_vencimento.setDate(data_vencimento.getDate() + 1);
                 if ((add_dia == true) & (intervalo > 1)) {
@@ -214,7 +213,7 @@ export const FormOperacionalEmprestimo = () => {
                     data_vencimento.setDate(data_vencimento.getDate() + 1);
                 if ((add_dia == true) & (intervalo > 1)) {
                     intervalo++;
-                }
+                }*/
 
                 data_vencimento = formataDias(data_vencimento);
 
@@ -1163,9 +1162,9 @@ export const FormOperacionalEmprestimo = () => {
                 <div>
                     <div className="gridEmprestimo">
                         <div>Parcela</div>
-                        <div>Vencimento</div>
-                        <div>Prestação</div>
-                        <div>Valor Pago</div>
+                        <div className="alignRight">Vencimento</div>
+                        <div className="alignRight">Prestação</div>
+                        <div className="alignRight">Valor Pago</div>
                         <div></div>
                     </div>
                     <div id="divResultadoEmprestimo">
@@ -1182,10 +1181,28 @@ export const FormOperacionalEmprestimo = () => {
                                 value={item.idParcela}
                             >
                                 <div>{item.p}</div>
-                                <div>{inverteData(item.data_vencimento)}</div>
-                                <div>{item.valorPrestacao}</div>
-                                <div>{item.valorPago}</div>
-                                <div>
+                                <div className="alignRight">
+                                    {inverteData(item.data_vencimento)}
+                                </div>
+                                <div className="alignRight">
+                                    {(item.valorPrestacao * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {(item.valorPago * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
                                     {onEdit && (
                                         <FiDollarSign
                                             id="iconeDollarPagar"

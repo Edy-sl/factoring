@@ -1,4 +1,4 @@
-import './relatorioEmprestimoData.css';
+import './relatorioEmprestimoEmissao.css';
 import { FiSearch, FiDollarSign } from 'react-Icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
@@ -11,7 +11,7 @@ import {
     retornaDataAtual,
 } from '../../biblitoteca.jsx';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
-export const RelatorioEmprestimoPorData = () => {
+export const RelatorioEmprestimoPorEmissao = () => {
     const ref = useRef();
 
     const [listagem, setListagem] = useState([]);
@@ -47,7 +47,7 @@ export const RelatorioEmprestimoPorData = () => {
 
         await apiFactoring
             .post(
-                '/relatorio-emprestimo-data',
+                '/relatorio-emprestimo-emissao',
                 {
                     dataI: dataI,
                     dataF: dataF,
@@ -96,6 +96,9 @@ export const RelatorioEmprestimoPorData = () => {
                 />
             )}
             <div className="divRelatorioEmprestimoData">
+                <div id="divTituloRelatorio">
+                    <label>Realtório por Data de Emissão</label>
+                </div>
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow">
                         <div className="boxCol">
@@ -131,7 +134,7 @@ export const RelatorioEmprestimoPorData = () => {
                             ) : (
                                 <input
                                     type="checkbox"
-                                    name="chekedGeral"
+                                    name="chekedPagas"
                                     id="checkRel"
                                     onChange={(e) => setCheckRel('PAGAS')}
                                 />
@@ -140,14 +143,14 @@ export const RelatorioEmprestimoPorData = () => {
                             {checkRel == 'GERAL' ? (
                                 <input
                                     type="checkbox"
-                                    name="chekedPagar"
+                                    name="chekedGeral"
                                     id="checkRel"
                                     checked
                                 />
                             ) : (
                                 <input
                                     type="checkbox"
-                                    name="chekedPagar"
+                                    name="chekedGeral"
                                     id="checkRel"
                                     onChange={(e) => setCheckRel('GERAL')}
                                 />
@@ -197,7 +200,7 @@ export const RelatorioEmprestimoPorData = () => {
                 <div className="divListaRContainer">
                     {' '}
                     {listagem.map((lista, i) => (
-                        <div kei={i} className="divListaR">
+                        <div key={i} className="divListaR">
                             <div className="alignLet">{lista.idemprestimo}</div>
                             <div className="alignLeft">{lista.nome}</div>
                             <div className="alignRight">

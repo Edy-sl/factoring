@@ -22,8 +22,10 @@ import { FormRecuperaSenha } from './components/formRecuperaSenha/index.jsx';
 import { BemVindo } from './pages/bemVindo/index.jsx';
 import { FormFactoring } from './components/formFactoring/index.jsx';
 import { Permissoes } from './components/permissoes/permissoes.jsx';
-import { RelatorioEmprestimoPorData } from './components/relatorioEmprestimoData/index.jsx';
-
+import { RelatorioEmprestimoPorVencimento } from './components/relatorioEmprestimoVencimento/index.jsx';
+import { RelatorioEmprestimoPorEmissao } from './components/relatorioEmprestimoEmissao/index.jsx';
+import { RelatorioEmprestimoPorClienteVencimento } from './components/relatorioEmprestimoClienteVencimento/index.jsx';
+import { RelatorioEmprestimoPorClienteEmissao } from './components/relatorioEmprestimoClienteEmissao/index.jsx';
 const router = createBrowserRouter([
     {
         path: '/',
@@ -105,14 +107,38 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: '/relatorio-emprestimo-data',
+                path: '/relatorio-emprestimo-vencimento',
                 element: (
                     <PrivateRouter>
-                        <RelatorioEmprestimoPorData />
+                        <RelatorioEmprestimoPorVencimento />
                     </PrivateRouter>
                 ),
             },
 
+            {
+                path: '/relatorio-emprestimo-emissao',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioEmprestimoPorEmissao />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/relatorio-emprestimo-cliente-vencimento',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioEmprestimoPorClienteVencimento />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/relatorio-emprestimo-cliente-emissao',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioEmprestimoPorClienteEmissao />
+                    </PrivateRouter>
+                ),
+            },
             {
                 path: '/recupera-senha',
                 element: <FormRecuperaSenha />,

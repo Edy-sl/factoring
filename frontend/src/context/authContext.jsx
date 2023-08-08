@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { apiFactoring } from '../services/api';
 
 export const AuthContext = createContext({});
 
@@ -14,8 +14,9 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     const signIn = async (DadosLogin) => {
-        const res = await axios
-            .post('http://localhost:8000/login', {
+        console.log(import.meta.env.URL_API);
+        const res = await apiFactoring
+            .post('/login', {
                 nome: DadosLogin.nome.value,
                 senha: DadosLogin.password.value,
             })

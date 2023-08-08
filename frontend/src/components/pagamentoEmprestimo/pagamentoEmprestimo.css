@@ -20,3 +20,17 @@
 #divParcela {
     justify-content: space-between;
 }
+
+#divItemPgtoEmprestimo:hover {
+    background-color: #035ff3e7;
+    color: #fff;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#divItemPgtoEmprestimo {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 2px 5px 2px 5px;
+}

@@ -1,7 +1,6 @@
 import { db } from '../db.js';
 import {} from 'dotenv/config';
 import jwt from 'jsonwebtoken';
-import { hash, compare } from 'bcrypt';
 const SECRET = process.env.SECRET;
 
 //gravando dados da empresa

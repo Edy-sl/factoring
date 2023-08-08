@@ -109,8 +109,10 @@ input:focus {
 
 @media (prefers-color-scheme: light) {
     :root {
-        color: #000102;
+        color: #010b14d5;
         background-color: #ffffff;
+        font-size: 1em;
+        font-weight: 500;
     }
     a:hover {
         color: #4e9fe6;

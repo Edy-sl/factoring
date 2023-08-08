@@ -28,8 +28,17 @@ export const Menu = () => {
                     <a href="#">Empréstimos</a>
                     <ul>
                         <Link to="/emprestimo">Lançamento</Link>
-                        <Link to="/relatorio-emprestimo-data">
-                            Relatório por Data
+                        <Link to="/relatorio-emprestimo-vencimento">
+                            Relatório Vencimento
+                        </Link>
+                        <Link to="/relatorio-emprestimo-emissao">
+                            Relatório Emissão
+                        </Link>
+                        <Link to="/relatorio-emprestimo-cliente-vencimento">
+                            Relatório Cliente/Vencimento
+                        </Link>
+                        <Link to="/relatorio-emprestimo-cliente-emissao">
+                            Relatório Cliente/Emissão
                         </Link>
                     </ul>
                 </li>

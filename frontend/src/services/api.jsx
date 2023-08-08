@@ -1,8 +1,8 @@
 import axios from 'axios';
 export const apiCep = axios.create({
-    baseURL: 'https://viacep.com.br/ws/',
+    baseURL: import.meta.env.VITE_URL_CEP,
 });
 
 export const apiFactoring = axios.create({
-    baseURL: 'http://localhost:8000',
+    baseURL: import.meta.env.VITE_URL_API,
 });

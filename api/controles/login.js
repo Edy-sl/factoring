@@ -1,4 +1,4 @@
-import { compare } from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { db } from '../db.js';
 import {} from 'dotenv/config';
 import jwt from 'jsonwebtoken';
@@ -17,7 +17,7 @@ export const loginFactoring = async (req, res) => {
 
         if (data.length > 0) {
             data.map(async (user) => {
-                const senhaOk = await compare(senha, user.senha);
+                const senhaOk = await bcrypt.compare(senha, user.senha);
                 console.debug(senhaOk);
                 if (senhaOk) {
                     const token = jwt.sign(
