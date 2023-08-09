@@ -98,7 +98,7 @@ export const postCadUsuarioSecundario = async (req, res) => {
 
     console.log(idFactoring);
 
-    const senhaHash = await hash(senha, 8);
+    const senhaHash = await bcrypt.hash(senha, 8);
 
     const sql = 'INSERT INTO usuarios (nome,senha,idFactoring) VALUES (?,?,?)';
     db.query(sql, [nome, senhaHash, idFactoring], (err, data) => {
