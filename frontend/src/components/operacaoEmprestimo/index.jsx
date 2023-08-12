@@ -937,6 +937,9 @@ export const FormOperacionalEmprestimo = () => {
                                 onChange={(e) =>
                                     setIdEmprestimo(e.target.value)
                                 }
+                                onKeyDown={(e) =>
+                                    keyDown(e, 'inputIdClienteEmprestimo')
+                                }
                             />
                             <FiSearch
                                 size="25"

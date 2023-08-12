@@ -16,6 +16,8 @@ import { FiSearch } from 'react-Icons/fi';
 import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
 import { CheckboxPersonalizado } from '../checkbox/checkboxPersonalizado';
 
+import { AuthProvider } from '../../context/authContext';
+
 export const FormCliente = () => {
     const [formBusca, setFormBusca] = useState();
 
@@ -373,10 +375,12 @@ export const FormCliente = () => {
     return (
         <>
             {formBusca == true && (
-                <BuscaClienteNome
-                    setFormBusca={setFormBusca}
-                    setIdCliente={setIdCliente}
-                />
+                <AuthProvider>
+                    <BuscaClienteNome
+                        setFormBusca={setFormBusca}
+                        setIdCliente={setIdCliente}
+                    />
+                </AuthProvider>
             )}
 
             <form className="formCliente" onSubmit={handleSubmit} ref={ref}>

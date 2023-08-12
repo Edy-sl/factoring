@@ -10,16 +10,16 @@ function App() {
 
     return (
         <>
-            <div className="divGeral">
+            <div className="divPrincipaMenu">
                 <AuthProvider>
                     {factoring && autenticado && (
-                        <div className="divPrincipalLeft">
+                        <div className="">
                             <Menu />
                         </div>
                     )}
                 </AuthProvider>
 
-                <div className="divPrincipalRight">
+                <div className="divPrincipal">
                     <AuthProvider>
                         <Outlet />
                     </AuthProvider>

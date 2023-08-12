@@ -14,7 +14,6 @@ import { FormCadastroUsuario } from './components/formCadastroUsuario/index.jsx'
 import { FormCadastroUsuarioSecundario } from './components/formCadastroUsuarioSecundario/index.jsx';
 import { FormCliente } from './components/formCliente/index.jsx';
 import { TaxaCliente } from './components/taxaCliente/taxaCliente.jsx';
-import { GridCheque } from './components/gridCheque/index.jsx';
 import { FormOperacionalEmprestimo } from './components/operacaoEmprestimo/index.jsx';
 import { PrivateRouter } from './pages/rotaPrivada/rotaPrivada.jsx';
 import { AuthProvider } from './context/authContext.jsx';

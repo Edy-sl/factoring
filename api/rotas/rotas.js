@@ -29,11 +29,9 @@ import {
     buscaBordero,
     buscaBorderoId,
     alterarBordero,
+    gravarCheques,
+    listarCheques,
 } from '../controles/bordero.js';
-import {
-    gravarLancamento,
-    listarLancamento,
-} from '../controles/borderoLancamento.js';
 
 import {
     alterarCliente,
@@ -110,8 +108,8 @@ rotaFactoring.post('/gravar-bordero', verifyJWT, gravarBordero);
 rotaFactoring.post('/alterar-bordero', verifyJWT, alterarBordero);
 rotaFactoring.post('/busca-bordero', verifyJWT, buscaBordero);
 rotaFactoring.post('/busca-bordero-id', verifyJWT, buscaBorderoId);
-rotaFactoring.post('/gravar-lancamento', verifyJWT, gravarLancamento);
-rotaFactoring.post('/listar-lancamento', verifyJWT, listarLancamento);
+rotaFactoring.post('/gravar-lancamento', verifyJWT, gravarCheques);
+rotaFactoring.post('/listar-lancamento', verifyJWT, listarCheques);
 
 rotaFactoring.post('/gravar-emprestimo', verifyJWT, gravarEmprestimo);
 rotaFactoring.post('/busca-emprestimo', verifyJWT, buscaEmprestimo);

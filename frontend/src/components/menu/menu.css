@@ -1,35 +1,38 @@
 .divMenu {
     display: flex;
     flex-direction: column;
+    position: fixed;
+    z-index: 999;
 }
 
 #btnSair {
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 ul {
     margin: 0;
-    padding: 0;
+    padding: 5px;
     list-style: none;
-    width: 110px;
+    list-style: none;
+    float: left;
 }
 
 ul li {
     position: relative;
+    float: left;
+    padding-right: 25px;
 }
 
 li ul {
     position: absolute;
-    left: 110px;
-    width: 170px;
-    top: 0;
+    left: 0px;
+    width: 200px;
     display: none;
 }
 ul li a {
     display: block;
     text-decoration: none;
     color: #5c5d5fe7;
-
     padding: 5px;
 }
 
@@ -37,12 +40,12 @@ ul li a:hover {
     display: block;
     text-decoration: none;
     color: #035ff3e7;
-
     padding: 5px;
 }
 
 li:hover ul {
     display: block;
+    box-shadow: 5px 5px 5px black;
 }
 
 #sair {
@@ -50,7 +53,6 @@ li:hover ul {
     display: block;
     text-decoration: none;
     color: #5c5d5fe7;
-
     padding: 5px;
 }
 

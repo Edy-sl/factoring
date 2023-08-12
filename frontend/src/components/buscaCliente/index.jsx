@@ -7,8 +7,11 @@ import { FiSearch } from 'react-Icons/fi';
 import { ImExit } from 'react-icons/im';
 import './BuscaClienteNome.css';
 import { FormCliente } from '../formCliente';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/authContext';
 
 export const BuscaClienteNome = ({ setFormBusca, setIdCliente }) => {
+    const { signOut } = useContext(AuthContext);
     const [clientes, setClientes] = useState([]);
     const ref = useRef();
     const dadosCliente = ref.current;
@@ -35,8 +38,11 @@ export const BuscaClienteNome = ({ setFormBusca, setIdCliente }) => {
             .then(({ data }) => {
                 setClientes(data);
             })
-            .catch(({ data }) => {
-                toast.error(data);
+            .catch((error) => {
+                toast.error(error.response.status);
+                console.log(error.response.status);
+
+                signOut();
             });
     };
 

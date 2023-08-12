@@ -1,6 +1,4 @@
 .divRelatorioEmprestimoData {
-    position: fixed;
-    top: 30px;
     display: flex;
     flex-direction: column;
     background-color: rgb(223, 224, 225);
@@ -40,9 +38,8 @@
 }
 
 #divContainerLista {
-    position: fixed;
-    top: 145px;
     max-height: 550px;
+    padding-top: 10px;
 }
 
 .alignRight {

@@ -1,33 +1,36 @@
-import { GridCheque } from '../gridCheque';
 import './formOperacaoCheque.css';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiSearch } from 'react-Icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
 import { useState, useEffect, useRef } from 'react';
-import { apiFactoring } from '../../services/api';
+import { apiFactoring, apiBancos } from '../../services/api';
 import {
     converteMoedaFloat,
     keyDown,
     retornaDataAtual,
+    converteFloatMoeda,
+    inverteData,
 } from '../../biblitoteca';
 import { BuscaOperacao } from '../buscaOperacaoCheque';
-import { ImLoop2, ImPencil2, ImPlus } from 'react-icons/im';
+import { AuthProvider } from '../../context/authContext';
+import axios from 'axios';
 
 export const FormOperacaoCheque = () => {
-    const [iniOperacao, setIniOperacao] = useState(false);
+    const [onEdit, setOnEdit] = useState(false);
+    const [lancamentos, setLancamentos] = useState([]);
+    let arrayCheques = [];
+    let i = 0;
 
     const [formBusca, setFormBusca] = useState(false);
-    const [cpfCnpj, setCpfCnpj] = useState('');
 
-    const [idBordero, setIdBordero] = useState();
-
-    const [rodaLista, setRodaLista] = useState(false);
+    const [idBordero, setIdBordero] = useState('0');
 
     const [dias, setDias] = useState();
 
     const [formBuscaOperacao, setFormBuscaOperacao] = useState(false);
-    const [idOperacao, setIdOperacao] = useState();
+
+    const [checkCalculaJuros, setCheckCalculaJuros] = useState(true);
 
     const [somaValorCheque, setSomaValorCheque] = useState();
     const [somaValorLiquido, setSomaValorLiquido] = useState();
@@ -44,21 +47,11 @@ export const FormOperacaoCheque = () => {
 
     const exibeFormBuscaOperacao = () => {
         setFormBuscaOperacao(!formBuscaOperacao);
-        setIniOperacao(false);
+        setIdBordero('0');
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    };
-
-    const iniciaOperacao = () => {
-        limpa();
-        const dadosCliente = ref.current;
-
-        setIniOperacao(true);
-        if (dadosCliente.idCliente.value != '' && dadosCliente.operacao == '') {
-            gravarBorderdo();
-        }
     };
 
     const buscaCliente = async () => {
@@ -77,11 +70,15 @@ export const FormOperacaoCheque = () => {
                 }
             )
             .then(({ data }) => {
-                data.map((dados) => {
-                    dadosCliente.nome.value = dados.nome;
-                    dadosCliente.idCliente.value = dados.idcliente;
-                    dadosCliente.jurosMensal.value = dados.taxa_juros;
-                });
+                if (data.length > 0) {
+                    data.map((dados) => {
+                        dadosCliente.nome.value = dados.nome;
+                        dadosCliente.idCliente.value = dados.idcliente;
+                        dadosCliente.jurosMensal.value = dados.taxa_juros;
+                    });
+
+                    calculaJurosDiario();
+                }
             })
             .catch(({ data }) => {
                 toast.error(data);
@@ -89,37 +86,50 @@ export const FormOperacaoCheque = () => {
     };
 
     const buscaOperacao = async () => {
-        const dadosOperacao = ref.current;
-        await apiFactoring
-            .post(
-                '/busca-bordero-id',
-                {
-                    operacao: idOperacao,
-                },
-                {
-                    headers: {
-                        'x-access-token': localStorage.getItem('user'),
+        if (idBordero > 0) {
+            setLancamentos([]);
+            const dadosOperacao = ref.current;
+            await apiFactoring
+                .post(
+                    '/busca-bordero-id',
+                    {
+                        operacao: idBordero,
                     },
-                }
-            )
-            .then(({ data }) => {
-                data.map((dados) => {
-                    dadosOperacao.nome.value = dados.nome;
-                    dadosOperacao.idCliente.value = dados.idcliente;
-                    dadosOperacao.operacao.value = dados.idbordero;
-                    dadosOperacao.dataBase.value = dados.data_base;
-                    dadosOperacao.data.value = dados.data;
-                    dadosOperacao.txTed.value = dados.taxa_ted;
-                    dadosOperacao.jurosMensal.value = dados.juros;
-                    dadosOperacao.jurosDiario.value = dados.juros_diario;
-
-                    setIdBordero(dados.idbordero);
-                    setRodaLista(!rodaLista);
+                    {
+                        headers: {
+                            'x-access-token': localStorage.getItem('user'),
+                        },
+                    }
+                )
+                .then(({ data }) => {
+                    if (data.length > 0) {
+                        data.map((dados) => {
+                            dadosOperacao.nome.value = dados.nome;
+                            dadosOperacao.idCliente.value = dados.idcliente;
+                            dadosOperacao.operacao.value = dados.idbordero;
+                            dadosOperacao.dataBase.value = dados.data_base;
+                            dadosOperacao.data.value = dados.data;
+                            dadosOperacao.txTed.value = dados.taxa_ted;
+                            dadosOperacao.jurosMensal.value = dados.juros;
+                            dadosOperacao.jurosDiario.value =
+                                dados.juros_diario;
+                        });
+                        setOnEdit(true);
+                    } else {
+                        dadosOperacao.nome.value = '';
+                        dadosOperacao.idCliente.value = '';
+                        dadosOperacao.operacao.value = '';
+                        dadosOperacao.dataBase.value = '';
+                        dadosOperacao.data.value = '';
+                        dadosOperacao.txTed.value = '';
+                        dadosOperacao.jurosMensal.value = '';
+                        dadosOperacao.jurosDiario.value = '';
+                    }
+                })
+                .catch(({ data }) => {
+                    toast.error(data);
                 });
-            })
-            .catch(({ data }) => {
-                toast.error(data);
-            });
+        }
     };
 
     const alterarBordero = async () => {
@@ -153,8 +163,7 @@ export const FormOperacaoCheque = () => {
     };
     const gravarBorderdo = async () => {
         const dadosBordero = ref.current;
-        setIdBordero(0);
-        setRodaLista(!rodaLista);
+
         await apiFactoring
             .post(
                 '/gravar-bordero',
@@ -162,11 +171,10 @@ export const FormOperacaoCheque = () => {
                     idcliente: dadosBordero.idCliente.value,
                     dataBase: dadosBordero.dataBase.value,
                     taxaTed: converteMoedaFloat(dadosBordero.txTed.value),
-                    juros: converteMoedaFloat(dadosBordero.jurosMensal.value),
-                    jurosDiario: converteMoedaFloat(
-                        dadosBordero.jurosDiario.value
-                    ),
+                    juros: dadosBordero.jurosMensal.value * 1,
+                    jurosDiario: dadosBordero.jurosDiario.value * 1,
                     idFactoring: localStorage.getItem('factoring'),
+                    arrayCheques: lancamentos,
                 },
                 {
                     headers: {
@@ -176,31 +184,23 @@ export const FormOperacaoCheque = () => {
             )
             .then(({ data }) => {
                 dadosBordero.operacao.value = data.insertId;
-                setIniOperacao(false);
+                setOnEdit(true);
+                setIdBordero(data.insertId);
             })
             .catch();
+
+        console.log(lancamentos);
     };
 
-    const gravarLancamento = async () => {
-        const dadosLancamento = ref.current;
-
-        setIdBordero(dadosLancamento.operacao.value);
-
+    const BuscaCheques = async () => {
         await apiFactoring
             .post(
-                'gravar-lancamento',
+                '/listar-Lancamento',
                 {
-                    numeroBanco: dadosLancamento.numeroBanco.value,
-                    nomeBanco: dadosLancamento.banco.value,
-                    numeroCheque: dadosLancamento.numeroCheque.value,
-                    nomeCheque: dadosLancamento.nomeCheque.value,
-                    dataVencimento: dadosLancamento.dataVencimento.value,
-                    valorCheque: dadosLancamento.valorCheque.value,
-                    dias: dadosLancamento.dias.value,
-                    valorJuros: dadosLancamento.valorJuros.value,
-                    valorLiquido: dadosLancamento.valorLiquido.value,
-                    idBordero: dadosLancamento.operacao.value,
+                    operacao: idBordero,
+                    arrayCheques: lancamentos,
                 },
+
                 {
                     headers: {
                         'x-access-token': localStorage.getItem('user'),
@@ -208,20 +208,122 @@ export const FormOperacaoCheque = () => {
                 }
             )
             .then(({ data }) => {
-                toast.success(data);
-                setRodaLista(!rodaLista);
-                console.log(rodaLista);
+                if (data.length > 0) {
+                    data.map((item) => {
+                        arrayCheques = [
+                            ...arrayCheques,
+                            {
+                                numero_banco: item.numero_banco,
+                                nome_banco: item.nome_banco,
+                                numero_cheque: item.numero_cheque,
+                                nome_cheque: item.nome_cheque,
+                                data_vencimento: item.data_vencimento,
+                                valor_cheque: item.valor_cheque,
+                                dias: item.dias,
+                                valor_juros: item.valor_juros,
+                                valor_liquido: item.valor_liquido,
+                                idlancamento: item.idlancamento,
+                            },
+                        ];
+                    });
+                    setLancamentos(arrayCheques);
+                }
             })
             .catch();
-        alterarBordero();
+    };
+
+    const incluirCheque = () => {
+        calculaValorJuros();
+
+        const dadosLancamento = ref.current;
+
+        let checado = true;
+
+        if (dadosLancamento.numeroBanco.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (dadosLancamento.banco.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (dadosLancamento.numeroCheque.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (dadosLancamento.nomeCheque.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (dadosLancamento.dataVencimento.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (dadosLancamento.valorCheque.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (
+            dadosLancamento.valorJuros.value == '' ||
+            dadosLancamento.valorJuros.value == '0,00'
+        ) {
+            checado = false;
+            console.log(checado);
+        }
+        if (dadosLancamento.valorLiquido.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (dadosLancamento.dias.value == '') {
+            checado = false;
+            console.log(checado);
+        }
+        if (checado == true) {
+            arrayCheques = [
+                ...lancamentos,
+                {
+                    idlancamento: lancamentos.length + 1,
+                    numero_banco: dadosLancamento.numeroBanco.value,
+                    nome_banco: dadosLancamento.banco.value,
+                    numero_cheque: dadosLancamento.numeroCheque.value,
+                    nome_cheque: dadosLancamento.nomeCheque.value,
+                    data_vencimento: dadosLancamento.dataVencimento.value,
+                    valor_cheque: converteMoedaFloat(
+                        dadosLancamento.valorCheque.value
+                    ),
+                    dias: dadosLancamento.dias.value,
+                    valor_juros: converteMoedaFloat(
+                        dadosLancamento.valorJuros.value
+                    ),
+                    valor_liquido: converteMoedaFloat(
+                        dadosLancamento.valorLiquido.value
+                    ),
+                    idBordero: dadosLancamento.operacao.value,
+                },
+            ];
+
+            setLancamentos(arrayCheques);
+            document.getElementById('inputNbco').focus();
+            dadosLancamento.numeroBanco.value = '';
+            dadosLancamento.banco.value = '';
+            dadosLancamento.numeroCheque.value = '';
+            dadosLancamento.nomeCheque.value = '';
+            dadosLancamento.dataVencimento.value = retornaDataAtual();
+            dadosLancamento.valorCheque.value = '';
+            dadosLancamento.valorJuros.value = '';
+            dadosLancamento.valorLiquido.value = '';
+            dadosLancamento.dias.value = '0';
+        } else {
+            toast.error('Compos obrigatórios não preenchidos!');
+            document.getElementById('inputNbco').focus();
+        }
     };
 
     const calculaJurosDiario = () => {
         const dadosJuros = ref.current;
-        const jurosMensal = converteMoedaFloat(dadosJuros.jurosMensal.value);
+        const jurosMensal = dadosJuros.jurosMensal.value;
         const jurosDiario = jurosMensal / 30;
         dadosJuros.jurosDiario.value = jurosDiario.toFixed(4);
-        console.log(jurosDiario);
     };
 
     const calculaDias = () => {
@@ -235,41 +337,149 @@ export const FormOperacaoCheque = () => {
     };
 
     const calculaValorJuros = () => {
-        const dadosJuros = ref.current;
-        const jurosDiario = dadosJuros.jurosDiario.value;
-        const dias = dadosJuros.dias.value;
-        const valorCheque = converteMoedaFloat(dadosJuros.valorCheque.value);
+        console.log(checkCalculaJuros);
 
-        const valorJuros = (dias * jurosDiario * valorCheque) / 100;
-        dadosJuros.valorJuros.value = valorJuros.toFixed(2);
+        if (checkCalculaJuros == true) {
+            const dadosJuros = ref.current;
+            const jurosDiario = dadosJuros.jurosDiario.value;
+            const dias = dadosJuros.dias.value;
+            const valorCheque = converteMoedaFloat(
+                dadosJuros.valorCheque.value
+            );
 
-        dadosJuros.valorLiquido.value = (valorCheque - valorJuros).toFixed(2);
+            const valorJuros = (dias * jurosDiario * valorCheque) / 100;
+            dadosJuros.valorJuros.value = valorJuros.toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            });
+
+            dadosJuros.valorLiquido.value = (
+                valorCheque - valorJuros
+            ).toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            });
+        }
     };
 
     const limpa = () => {
         const dadosOperacao = ref.current;
-        setCpfCnpj('');
-        setIniOperacao(false);
-        setIdBordero();
-        setIdOperacao();
+
+        setIdBordero('0');
+        setLancamentos([]);
+        setIdCliente();
+        setOnEdit(false);
+        setFormBuscaOperacao();
 
         dadosOperacao.nome.value = '';
         dadosOperacao.idCliente.value = '';
         dadosOperacao.operacao.value = '';
-        dadosOperacao.dataBase.value = '';
-        dadosOperacao.data.value = '';
+
         dadosOperacao.txTed.value = '';
         dadosOperacao.jurosMensal.value = '';
         dadosOperacao.jurosDiario.value = '';
+
+        dadosOperacao.data.value = retornaDataAtual();
+        dadosOperacao.dataBase.value = retornaDataAtual();
+        dadosOperacao.dataVencimento.value = retornaDataAtual();
+        dadosOperacao.dias.value = '0';
     };
 
     const formataValorCheque = () => {
         const dadosOperacao = ref.current;
+
         let valorCheque = dadosOperacao.valorCheque.value;
+
         valorCheque = converteMoedaFloat(valorCheque);
 
-        dadosOperacao.valorCheque.value = valorCheque.toLocaleString('pt-BR');
+        dadosOperacao.valorCheque.value = valorCheque.toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        });
     };
+
+    const formataJurosMensal = () => {
+        const dadosJuros = ref.current;
+        dadosJuros.jurosMensal.value = converteMoedaFloat(
+            dadosJuros.jurosMensal.value
+        );
+        calculaJurosDiario();
+    };
+
+    const formataJurosMensalOnFocus = () => {
+        const dadosJuros = ref.current;
+        dadosJuros.jurosMensal.value = converteFloatMoeda(
+            dadosJuros.jurosMensal.value
+        );
+    };
+
+    const buscaBancos = async (codigo) => {
+        const dadosBanco = ref.current;
+        await apiBancos
+            .get('https://brasilapi.com.br/api/banks/v1')
+            .then(({ data }) => {
+                const bancoFiltrado = data.filter((b) => b.code === codigo * 1);
+                bancoFiltrado.map((banco) => {
+                    dadosBanco.banco.value = banco.name;
+                });
+            })
+            .catch();
+    };
+
+    const handleNumeroCheuque = (e) => {
+        const dadosCheque = ref.current;
+        dadosCheque.numeroCheque.value = formataCheque(e);
+    };
+
+    const formataCheque = (value) => {
+        if (!value) return '';
+        value = value.replace(/\D/g, '');
+        value = value
+            .replace(/(\d{6})(\d)/, '$1-$2')
+            .replace(/(-\d{1})\d+?$/, '$1');
+        return value;
+    };
+
+    const atualizaResumo = () => {
+        const dadosResumo = ref.current;
+        let somaValorCheques = 0;
+        let somaValorJuros = 0;
+        let somaValorLiquido = 0;
+        let somaQuantidadeCheques = lancamentos.length;
+        lancamentos.map((resumo) => {
+            somaValorCheques = somaValorCheques * 1 + resumo.valor_cheque * 1;
+            somaValorJuros = somaValorJuros * 1 + resumo.valor_juros * 1;
+            somaValorLiquido = somaValorLiquido * 1 + resumo.valor_liquido * 1;
+        });
+        dadosResumo.totalBruto.value = somaValorCheques.toLocaleString(
+            'pt-BR',
+            {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            }
+        );
+        dadosResumo.totalJuros.value = somaValorJuros.toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        });
+        dadosResumo.totalLiquido.value = somaValorLiquido.toLocaleString(
+            'pt-BR',
+            {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            }
+        );
+        dadosResumo.quantidadeCheques.value = somaQuantidadeCheques;
+    };
+
+    const toogle = () => {
+        setCheckCalculaJuros(!checkCalculaJuros);
+        console.log(checkCalculaJuros);
+    };
+
+    useEffect(() => {
+        atualizaResumo();
+    }, [lancamentos]);
 
     useEffect(() => {
         buscaCliente();
@@ -281,27 +491,35 @@ export const FormOperacaoCheque = () => {
 
     useEffect(() => {
         buscaOperacao();
-    }, [idOperacao]);
+        BuscaCheques();
+    }, [idBordero]);
 
     useEffect(() => {
         const dadosBordero = ref.current;
         dadosBordero.data.value = retornaDataAtual();
         dadosBordero.dataBase.value = retornaDataAtual();
-    });
+        dadosBordero.dataVencimento.value = retornaDataAtual();
+        dadosBordero.dias.value = '0';
+        setIdBordero('0');
+    }, []);
 
     return (
         <>
             {formBusca == true && (
-                <BuscaClienteNome
-                    setFormBusca={setFormBusca}
-                    setIdCliente={setIdCliente}
-                />
+                <AuthProvider>
+                    <BuscaClienteNome
+                        setFormBusca={setFormBusca}
+                        setIdCliente={setIdCliente}
+                    />
+                </AuthProvider>
             )}
             {formBuscaOperacao == true && (
-                <BuscaOperacao
-                    setFormBuscaOperacao={setFormBuscaOperacao}
-                    setIdOperacao={setIdOperacao}
-                />
+                <AuthProvider>
+                    <BuscaOperacao
+                        setFormBuscaOperacao={setFormBuscaOperacao}
+                        setIdOperacao={setIdBordero}
+                    />
+                </AuthProvider>
             )}
 
             <form
@@ -316,27 +534,51 @@ export const FormOperacaoCheque = () => {
                 />
                 <div className="boxOpChequeLeft">
                     <h1>Cheques</h1>
+
                     <div className="boxRow">
-                        <ImPlus id="imPlus" onClick={iniciaOperacao} />
-                        <ImPencil2 id="imPlus" onClick={alterarBordero} />
+                        {!onEdit && (
+                            <button
+                                id="btnGravarEmprestimo"
+                                onClick={gravarBorderdo}
+                            >
+                                Gravar
+                            </button>
+                        )}{' '}
+                        {onEdit && (
+                            <button id="btnGravarEmprestimo" onClick={limpa}>
+                                Novo
+                            </button>
+                        )}{' '}
+                        {onEdit && <button id="btnImprimir">Imprimir</button>}
                     </div>
-                    <div className="boxCol">
+
+                    <div className="boxRow">
                         <div className="boxRow">
-                            <input type="text" id="inputId" name="operacao" />
+                            <input
+                                type="text"
+                                id="inputId"
+                                name="operacao"
+                                value={idBordero || ''}
+                                onChange={(e) => setIdBordero(e.target.value)}
+                                autoComplete="off"
+                                onKeyDown={(e) => keyDown(e, 'inputIdCliente')}
+                            />
                             <FiSearch
                                 size="25"
                                 onClick={exibeFormBuscaOperacao}
                             />
-                            <input type="date" name="data" />
+                            <input type="date" name="data" autoComplete="off" />
                         </div>
 
                         <label>Cliente</label>
                         <div className="boxRow">
                             <input
                                 type="text"
-                                id="inputId"
+                                id="inputIdCliente"
                                 name="idCliente"
-                                readOnly
+                                autoComplete="off"
+                                onChange={(e) => setIdCliente(e.target.value)}
+                                onKeyDown={(e) => keyDown(e, 'inputCliente')}
                             />
                             <input
                                 id="inputCliente"
@@ -344,7 +586,8 @@ export const FormOperacaoCheque = () => {
                                 name="nome"
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputDataBase')}
-                            />{' '}
+                                autoComplete="off"
+                            />
                             <FiSearch size="25" onClick={exibeFormBusca} />
                         </div>
                     </div>
@@ -358,6 +601,7 @@ export const FormOperacaoCheque = () => {
                                 placeholder=""
                                 onChange={calculaDias}
                                 onKeyDown={(e) => keyDown(e, 'inputTxTed')}
+                                autoComplete="off"
                             />
                         </div>
                         <div className="boxCol">
@@ -368,6 +612,7 @@ export const FormOperacaoCheque = () => {
                                 name="txTed"
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputJurosM')}
+                                autoComplete="off"
                             />
                         </div>
                         <div className="boxCol">
@@ -380,6 +625,10 @@ export const FormOperacaoCheque = () => {
                                 placeholder=""
                                 onChange={calculaJurosDiario}
                                 onKeyDown={(e) => keyDown(e, 'inputJurosD')}
+                                onBlur={formataJurosMensal}
+                                onFocus={formataJurosMensalOnFocus}
+                                readOnly
+                                autoComplete="off"
                             />
                         </div>
                         <div className="boxCol">
@@ -392,6 +641,8 @@ export const FormOperacaoCheque = () => {
                                 placeholder=""
                                 onFocus={calculaJurosDiario}
                                 onKeyDown={(e) => keyDown(e, 'inputNbco')}
+                                readOnly
+                                autoComplete="off"
                             />
                         </div>
                     </div>
@@ -405,6 +656,8 @@ export const FormOperacaoCheque = () => {
                                 name="numeroBanco"
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputBanco')}
+                                autoComplete="off"
+                                onChange={(e) => buscaBancos(e.target.value)}
                             />
                         </div>
                         <div className="boxCol">
@@ -416,6 +669,7 @@ export const FormOperacaoCheque = () => {
                                 name="banco"
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputNcheque')}
+                                autoComplete="off"
                             />
                         </div>
 
@@ -428,22 +682,31 @@ export const FormOperacaoCheque = () => {
                                 name="numeroCheque"
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputNomeC')}
+                                autoComplete="off"
+                                onKeyUp={(e) =>
+                                    handleNumeroCheuque(e.target.value)
+                                }
                             />
                         </div>
-                    </div>
-                    <div className="boxRow">
-                        <div className="boxCol">
-                            <label>Nome do Cheque</label>
 
-                            <input
-                                id="inputNomeC"
-                                type="text"
-                                name="nomeCheque"
-                                placeholder="Nome"
-                                onKeyDown={(e) => keyDown(e, 'inputVencimento')}
-                            />
+                        <div className="boxRow">
+                            <div className="boxCol">
+                                <label>Nome do Cheque</label>
+
+                                <input
+                                    id="inputNomeC"
+                                    type="text"
+                                    name="nomeCheque"
+                                    placeholder="Nome"
+                                    onKeyDown={(e) =>
+                                        keyDown(e, 'inputVencimento')
+                                    }
+                                    autoComplete="off"
+                                />
+                            </div>
                         </div>
                     </div>
+
                     <div className="boxRow">
                         <div className="boxCol">
                             <label>Vencimento</label>
@@ -454,6 +717,7 @@ export const FormOperacaoCheque = () => {
                                 placeholder=""
                                 onChange={calculaDias}
                                 onKeyDown={(e) => keyDown(e, 'inputValorC')}
+                                autoComplete="off"
                             />
                         </div>
                         <div className="boxCol">
@@ -467,6 +731,7 @@ export const FormOperacaoCheque = () => {
                                 onChange={calculaValorJuros}
                                 onKeyDown={(e) => keyDown(e, 'inputDias')}
                                 onBlur={formataValorCheque}
+                                autoComplete="off"
                             />
                         </div>
                         <div className="boxCol">
@@ -478,20 +743,30 @@ export const FormOperacaoCheque = () => {
                                 name="dias"
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputValorJuros')}
+                                autoComplete="off"
+                                readOnly
                             />
                         </div>
                         <div className="boxCol">
                             <label>Vl Juros</label>
-
-                            <input
-                                id="inputValorJuros"
-                                type="text"
-                                name="valorJuros"
-                                placeholder=""
-                                onKeyDown={(e) =>
-                                    keyDown(e, 'inputValorLiquido')
-                                }
-                            />
+                            <div className="boxRow">
+                                <input
+                                    id="inputValorJuros"
+                                    type="text"
+                                    name="valorJuros"
+                                    placeholder=""
+                                    onKeyDown={(e) =>
+                                        keyDown(e, 'inputValorLiquido')
+                                    }
+                                    autoComplete="off"
+                                />
+                                <input
+                                    type="checkbox"
+                                    id="checkP"
+                                    name="checkP"
+                                    onClick={toogle}
+                                />
+                            </div>
                         </div>
                         <div className="boxCol">
                             <label>Vl Liquido</label>
@@ -504,48 +779,108 @@ export const FormOperacaoCheque = () => {
                                 onKeyDown={(e) =>
                                     keyDown(e, 'btnGravarLancamento')
                                 }
+                                autoComplete="off"
+                                readOnly
                             />
                         </div>
+                        <button
+                            id="btnGravarLancamento"
+                            onClick={incluirCheque}
+                        >
+                            Incluir
+                        </button>
                     </div>
-                    <button id="btnGravarLancamento" onClick={gravarLancamento}>
-                        Incluir
-                    </button>
                 </div>
                 <div className="boxOpChequeRight">
                     <h2>Resumo</h2>
 
                     <div className="boxResumo">
                         <label>Cheques Lançados</label>
-                        <input type="text" value={quantidadeCheques} />
+                        <input
+                            type="text"
+                            name="quantidadeCheques"
+                            autoComplete="off"
+                        />
                     </div>
 
                     <div className="boxResumo">
                         <label>Total Bruto</label>
-                        <input type="text" value={somaValorCheque} />
+                        <input
+                            type="text"
+                            autoComplete="off"
+                            name="totalBruto"
+                        />
                     </div>
 
                     <div className="boxResumo">
                         <label>Deduções</label>
-                        <input type="text" />
+                        <input type="text" autoComplete="off" />
                     </div>
                     <div className="boxResumo">
                         <label>Total Juros</label>
-                        <input type="text" value={somaValorJuros} />
+                        <input
+                            type="text"
+                            value={somaValorJuros}
+                            autoComplete="off"
+                            name="totalJuros"
+                        />
                     </div>
                     <div className="boxResumo">
                         <label>Total Liquido</label>
-                        <input type="text" value={somaValorLiquido} />
+                        <input
+                            type="text"
+                            value={somaValorLiquido}
+                            autoComplete="off"
+                            name="totalLiquido"
+                        />
                     </div>
                 </div>
             </form>
-            <GridCheque
-                idBordero={idBordero}
-                rodaLista={rodaLista}
-                setSomaValorCheque={setSomaValorCheque}
-                setSomaValorLiquido={setSomaValorLiquido}
-                setSomaValorJuros={setSomaValorJuros}
-                setQuantidadeCheques={setQuantidadeCheques}
-            />
+            <div>
+                <div className="gridCheque">
+                    <div>N.Banco</div>
+                    <div>Banco</div>
+                    <div>N. Cheque</div>
+                    <div>Nome</div>
+                    <div className="alignRight">Vencimento</div>
+                    <div className="alignRight">Valor</div>
+                    <div className="alignRight">Prazo</div>
+                    <div className="alignRight">Valor Juros</div>
+                    <div className="alignRight">Valor Liquido</div>
+                </div>
+                {lancamentos.map((item) => (
+                    <div className="gridLinhaCheque" key={item.idlancamento}>
+                        <div>{item.numero_banco}</div>
+                        <div>{item.nome_banco}</div>
+                        <div>{item.numero_cheque}</div>
+                        <div className="upercase">{item.nome_cheque}</div>
+
+                        <div className="alignRight">
+                            {inverteData(item.data_vencimento)}
+                        </div>
+
+                        <div className="alignRight">
+                            {item.valor_cheque.toLocaleString('pt-BR', {
+                                style: 'decimal',
+                                minimumFractionDigits: 2,
+                            })}
+                        </div>
+                        <div className="alignRight">{item.dias} dias</div>
+                        <div className="alignRight">
+                            {item.valor_juros.toLocaleString('pt-BR', {
+                                style: 'decimal',
+                                minimumFractionDigits: 2,
+                            })}
+                        </div>
+                        <div className="alignRight">
+                            {item.valor_liquido.toLocaleString('pt-BR', {
+                                style: 'decimal',
+                                minimumFractionDigits: 2,
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </>
     );
 };

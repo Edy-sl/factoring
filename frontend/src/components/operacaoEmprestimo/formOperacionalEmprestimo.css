@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     background-color: rgb(223, 224, 225);
-    padding: 20px;
+    padding: 5px 20px 25px 15px;
 }
 
 .boxGeralOperacionalEmprestimo {
@@ -66,7 +66,7 @@
 }
 
 #divResultadoEmprestimo {
-    max-height: 250px;
+    max-height: 150px;
     overflow: scroll;
 }
 

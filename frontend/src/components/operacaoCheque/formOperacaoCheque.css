@@ -73,7 +73,7 @@
 }
 
 #inputBanco {
-    width: 110px;
+    width: 200px;
 }
 
 #inputAgencia {
@@ -81,7 +81,7 @@
 }
 
 #inputNcheque {
-    width: 100px;
+    width: 70px;
 }
 
 #inputCpfCnpj {
@@ -117,6 +117,24 @@
     color: blue;
     padding: 5px 15px 15px;
     cursor: pointer;
+}
+
+.gridCheque {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+
+    background-color: rgb(185, 185, 188);
+
+    margin-top: 20px;
+}
+
+.gridLinhaCheque {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+}
+
+.upercase {
+    text-transform: uppercase;
 }
 
 @media only screen and (max-width: 700px) {

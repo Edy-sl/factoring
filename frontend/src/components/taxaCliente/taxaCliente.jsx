@@ -11,6 +11,7 @@ import { ImCheckboxUnchecked } from 'react-icons/im';
 import { apiFactoring } from '../../services/api';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from '../../context/authContext';
 
 export const TaxaCliente = () => {
     const [idCliente, setIdCliente] = useState(0);
@@ -112,10 +113,12 @@ export const TaxaCliente = () => {
                 position={toast.POSITION.BOTTOM_LEFT}
             />
             {formBusca == true && (
-                <BuscaClienteNome
-                    setFormBusca={setFormBusca}
-                    setIdCliente={setIdCliente}
-                />
+                <AuthProvider>
+                    <BuscaClienteNome
+                        setFormBusca={setFormBusca}
+                        setIdCliente={setIdCliente}
+                    />
+                </AuthProvider>
             )}
             <form
                 className="form"

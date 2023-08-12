@@ -28,17 +28,20 @@ export const Menu = () => {
                     <a href="#">Empréstimos</a>
                     <ul>
                         <Link to="/emprestimo">Lançamento</Link>
+                        <label>-------------------</label>
                         <Link to="/relatorio-emprestimo-vencimento">
-                            Relatório Vencimento
+                            Relatório por Vencimento
                         </Link>
+
                         <Link to="/relatorio-emprestimo-emissao">
-                            Relatório Emissão
+                            Relatório por Emissão
                         </Link>
+                        <label>-------------------</label>
                         <Link to="/relatorio-emprestimo-cliente-vencimento">
-                            Relatório Cliente/Vencimento
+                            Relatório por Cliente / Vencimento
                         </Link>
                         <Link to="/relatorio-emprestimo-cliente-emissao">
-                            Relatório Cliente/Emissão
+                            Relatório por Cliente / Emissão
                         </Link>
                     </ul>
                 </li>

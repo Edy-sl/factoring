@@ -60,6 +60,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setAuth();
         setFactoring('null');
+
         window.location.reload();
     };
 

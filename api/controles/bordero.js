@@ -15,6 +15,7 @@ export const gravarBordero = (req, res) => {
     const { juros } = req.body;
     const { jurosDiario } = req.body;
     const { idFactoring } = req.body;
+    const { arrayCheques } = req.body;
 
     const sql =
         'insert into borderos (data, idcliente, data_base, taxa_ted, juros, Juros_diario, idfactoring) values (?,?,?,?,?,?,?)';
@@ -32,7 +33,12 @@ export const gravarBordero = (req, res) => {
         ],
         (err, data) => {
             if (err) return res.json(err);
-            return res.status(200).json(data);
+            gravarCheques(data.insertId, arrayCheques);
+
+            return res.status(200).json({
+                insertId: data.insertId,
+                msg: 'Operação gravada com sucesso!',
+            });
         }
     );
 };
@@ -75,6 +81,29 @@ export const alterarBordero = (req, res) => {
     );
 };
 
+export const gravarCheques = (idBordero, arrayCheques) => {
+    arrayCheques.map((item) => {
+        const sql =
+            'insert into borderos_lancamentos (numero_banco,nome_banco,numero_cheque,nome_cheque,data_vencimento,valor_cheque,dias,valor_juros,valor_liquido,idbordero) values (?,?,?,?,?,?,?,?,?,?)';
+        db.query(
+            sql,
+            [
+                item.numero_banco,
+                item.nome_banco,
+                item.numero_cheque,
+                item.nome_cheque,
+                item.data_vencimento,
+                item.valor_cheque,
+                item.dias,
+                item.valor_juros,
+                item.valor_liquido,
+                idBordero,
+            ],
+            (err, data) => {}
+        );
+    });
+};
+
 export const buscaBordero = (req, res) => {
     const { dataI } = req.body;
     const { dataF } = req.body;
@@ -92,6 +121,16 @@ export const buscaBorderoId = (req, res) => {
 
     const sql =
         'select * from borderos, clientes where borderos.idcliente = clientes.idcliente and idbordero = ?';
+    db.query(sql, [operacao], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};
+
+export const listarCheques = (req, res) => {
+    const { operacao } = req.body;
+    console.log(operacao);
+    const sql = 'select * from borderos_lancamentos where `idbordero` = ?';
     db.query(sql, [operacao], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
