@@ -30,7 +30,7 @@ export const postCadUsuario = async (req, res) => {
             db.query(sql, [nome, senhaHash], (err, data) => {
                 if (err) return res.json(err);
                 permissaoAdminInicial(data.insertId);
-                return res.status(200).json('Usuario cadastrado com sucesso!');
+                return res.status(200).json('Usuario cadastrado!');
                 return res.status(200).json({
                     status: 'erro',
                     msg: 'Usário Admin cadastrado com sucesso!',
@@ -104,6 +104,14 @@ export const postCadUsuarioSecundario = async (req, res) => {
     db.query(sql, [nome, senhaHash, idFactoring], (err, data) => {
         if (err) return res.json(err);
         permissaoOperacionalInicial(data.insertId);
-        return res.status(200).json('Usuario cadastrado com sucesso!');
+        return res.status(200).json('Usuario cadastrado!');
+    });
+};
+
+export const listaUsuarios = (req, res) => {
+    const sql = 'select * from usuarios order by nome ';
+    db.query(sql, [], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
     });
 };

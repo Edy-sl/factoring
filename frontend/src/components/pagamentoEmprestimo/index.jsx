@@ -51,8 +51,8 @@ export const FormPagamentoEmprestimo = ({
                 listaPagamentos();
                 setAtualizaParcelas(!atualizaParcelas);
             })
-            .catch((data) => {
-                toast.error(data);
+            .catch((error) => {
+                toast.error(error.response.data);
             });
     };
 
@@ -84,8 +84,8 @@ export const FormPagamentoEmprestimo = ({
                 { headers: { 'x-access-token': localStorage.getItem('user') } }
             )
             .then(({ data }) => toast.success(data))
-            .catch((data) => {
-                toast.error(data);
+            .catch((error) => {
+                toast.error(error.response.data);
             });
         setIdPagamento(0);
     };
@@ -100,7 +100,7 @@ export const FormPagamentoEmprestimo = ({
         <div className="divPagamentoEmprestimo">
             {idPagamento != 0 && (
                 <div>
-                    <button onClick={excluirPagamento}>
+                    <button id="btnConfirmaExclusao" onClick={excluirPagamento}>
                         Confirmar exclusão do Pagamento?
                     </button>
                 </div>

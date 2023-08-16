@@ -84,6 +84,18 @@ select {
     padding: 0px 7px 0px 7px;
 }
 
+.alignRight {
+    text-align: right;
+}
+
+.alignLeft {
+    text-align: left;
+}
+
+.alignCenter {
+    text-align: center;
+}
+
 .inputData {
     max-width: 115px;
 }
@@ -143,7 +155,7 @@ ul {
 }
 @media (max-width: 1024px) {
     :root {
-        color: #010b14d5;
+        color: #140501d5;
         background-color: #ffffff;
         font-size: 0.7em;
         font-weight: 900;

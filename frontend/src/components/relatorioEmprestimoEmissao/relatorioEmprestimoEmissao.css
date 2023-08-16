@@ -41,21 +41,6 @@
     max-height: 550px;
 }
 
-.alignRight {
-    text-align: right;
-    padding-right: 5px;
-    padding-left: 20px;
-}
-
-.alignLeft {
-    text-align: left;
-    padding-right: 5px;
-}
-
-.alignCenter {
-    text-align: center;
-}
-
 #divCheckbox {
     padding-top: 10px;
 }

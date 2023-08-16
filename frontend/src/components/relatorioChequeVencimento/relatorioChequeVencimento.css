@@ -1,0 +1,72 @@
+.divRelatorioChequeData {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(223, 224, 225);
+}
+
+.divListaRcheques {
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+}
+
+.gridChequeRelatorio {
+    display: grid;
+    grid-template-columns: 150px 80px 200px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    background-color: rgb(185, 185, 188);
+    margin-top: 20px;
+    gap: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.gridLinhaChequeRelatorio {
+    display: grid;
+    grid-template-columns: 150px 80px 200px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    text-transform: uppercase;
+    gap: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.gridLinhaChequeRelatorio:hover {
+    display: grid;
+    grid-template-columns: 150px 80px 200px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    text-transform: uppercase;
+    gap: 15px;
+    background-color: rgb(223, 224, 225);
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.divListaRContainerCheque {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 480px;
+}
+
+.divTotaisRcheques {
+    display: grid;
+    grid-template-columns: 150px 80px 200px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    text-transform: uppercase;
+    gap: 15px;
+    background-color: rgb(223, 224, 225);
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+@media only screen and (max-width: 700px) {
+    .formOperacaoChequeRelatorio {
+        flex-direction: column;
+    }
+    .boxResumo {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        max-width: 300px;
+    }
+    .boxOpChequeRelatorioRight {
+        align-self: flex-start;
+    }
+}

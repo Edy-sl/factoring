@@ -1,0 +1,26 @@
+.gridPermissoes {
+    display: grid;
+    grid-template-columns: 150px 150px 150px;
+    text-transform: uppercase;
+    gap: 15px;
+    border: 1px solid #c5c5d6;
+}
+
+.gridPermissoes:hover {
+    display: grid;
+    grid-template-columns: 150px 150px 150px;
+    text-transform: uppercase;
+    gap: 15px;
+    border: 1px solid #c5c5d6;
+    background-color: rgb(223, 224, 225);
+}
+
+select {
+    text-transform: uppercase;
+    margin: 20px;
+}
+
+.divPermissoes {
+    background-color: rgb(223, 224, 225);
+    padding-right: 20px;
+}

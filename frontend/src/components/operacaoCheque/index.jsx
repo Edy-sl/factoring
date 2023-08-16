@@ -1,7 +1,7 @@
 import './formOperacaoCheque.css';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FiSearch } from 'react-Icons/fi';
+import { FiSearch, FiEdit, FiDelete } from 'react-Icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
 import { useState, useEffect, useRef } from 'react';
 import { apiFactoring, apiBancos } from '../../services/api';
@@ -11,16 +11,17 @@ import {
     retornaDataAtual,
     converteFloatMoeda,
     inverteData,
+    dataHoraAtual,
 } from '../../biblitoteca';
 import { BuscaOperacao } from '../buscaOperacaoCheque';
 import { AuthProvider } from '../../context/authContext';
 import axios from 'axios';
+import { ImBin } from 'react-icons/im';
 
 export const FormOperacaoCheque = () => {
     const [onEdit, setOnEdit] = useState(false);
     const [lancamentos, setLancamentos] = useState([]);
     let arrayCheques = [];
-    let i = 0;
 
     const [formBusca, setFormBusca] = useState(false);
 
@@ -30,7 +31,16 @@ export const FormOperacaoCheque = () => {
 
     const [formBuscaOperacao, setFormBuscaOperacao] = useState(false);
 
-    const [checkCalculaJuros, setCheckCalculaJuros] = useState(true);
+    let varIncluirCheque = true;
+    let idIndexCheque = 0;
+
+    let varCalculaJuros = false;
+
+    const [arrayBancos, setArrayBancos] = useState([]);
+
+    const [especial, setEspecial] = useState();
+
+    const [taxaMinima, setTaxaMinima] = useState();
 
     const [somaValorCheque, setSomaValorCheque] = useState();
     const [somaValorLiquido, setSomaValorLiquido] = useState();
@@ -54,6 +64,27 @@ export const FormOperacaoCheque = () => {
         e.preventDefault();
     };
 
+    const buscaTaxaMinina = async () => {
+        await apiFactoring
+            .post(
+                '/seleciona-factoring',
+                {
+                    idFactoring: localStorage.getItem('factoring'),
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setTaxaMinima(data[0].taxa_minima);
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+    };
+
     const buscaCliente = async () => {
         const dadosCliente = ref.current;
 
@@ -75,6 +106,7 @@ export const FormOperacaoCheque = () => {
                         dadosCliente.nome.value = dados.nome;
                         dadosCliente.idCliente.value = dados.idcliente;
                         dadosCliente.jurosMensal.value = dados.taxa_juros;
+                        setEspecial(dados.especial);
                     });
 
                     calculaJurosDiario();
@@ -109,7 +141,12 @@ export const FormOperacaoCheque = () => {
                             dadosOperacao.operacao.value = dados.idbordero;
                             dadosOperacao.dataBase.value = dados.data_base;
                             dadosOperacao.data.value = dados.data;
-                            dadosOperacao.txTed.value = dados.taxa_ted;
+                            dadosOperacao.txTed.value = (
+                                dados.taxa_ted * 1
+                            ).toLocaleString('pt-BR', {
+                                style: 'decimal',
+                                minimumFractionDigits: 2,
+                            });
                             dadosOperacao.jurosMensal.value = dados.juros;
                             dadosOperacao.jurosDiario.value =
                                 dados.juros_diario;
@@ -132,7 +169,7 @@ export const FormOperacaoCheque = () => {
         }
     };
 
-    const alterarBordero = async () => {
+    const alterarBorderdo = async () => {
         const dadosBordero = ref.current;
 
         await apiFactoring
@@ -143,11 +180,10 @@ export const FormOperacaoCheque = () => {
                     idcliente: dadosBordero.idCliente.value,
                     dataBase: dadosBordero.dataBase.value,
                     taxaTed: converteMoedaFloat(dadosBordero.txTed.value),
-                    juros: converteMoedaFloat(dadosBordero.jurosMensal.value),
-                    jurosDiario: converteMoedaFloat(
-                        dadosBordero.jurosDiario.value
-                    ),
+                    juros: dadosBordero.jurosMensal.value * 1,
+                    jurosDiario: dadosBordero.jurosDiario.value * 1,
                     idFactoring: localStorage.getItem('factoring'),
+                    arrayCheques: lancamentos,
                 },
                 {
                     headers: {
@@ -156,11 +192,13 @@ export const FormOperacaoCheque = () => {
                 }
             )
             .then(({ data }) => {
-                setIniOperacao(false);
                 toast.success(data);
             })
-            .catch();
+            .catch((error) => {
+                toast.error(error.response.data);
+            });
     };
+
     const gravarBorderdo = async () => {
         const dadosBordero = ref.current;
 
@@ -188,8 +226,6 @@ export const FormOperacaoCheque = () => {
                 setIdBordero(data.insertId);
             })
             .catch();
-
-        console.log(lancamentos);
     };
 
     const BuscaCheques = async () => {
@@ -209,10 +245,11 @@ export const FormOperacaoCheque = () => {
             )
             .then(({ data }) => {
                 if (data.length > 0) {
-                    data.map((item) => {
+                    data.map((item, index) => {
                         arrayCheques = [
                             ...arrayCheques,
                             {
+                                index: index,
                                 numero_banco: item.numero_banco,
                                 nome_banco: item.nome_banco,
                                 numero_cheque: item.numero_cheque,
@@ -234,89 +271,125 @@ export const FormOperacaoCheque = () => {
 
     const incluirCheque = () => {
         calculaValorJuros();
-
         const dadosLancamento = ref.current;
 
-        let checado = true;
+        if (varIncluirCheque === true) {
+            let checado = true;
 
-        if (dadosLancamento.numeroBanco.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (dadosLancamento.banco.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (dadosLancamento.numeroCheque.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (dadosLancamento.nomeCheque.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (dadosLancamento.dataVencimento.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (dadosLancamento.valorCheque.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (
-            dadosLancamento.valorJuros.value == '' ||
-            dadosLancamento.valorJuros.value == '0,00'
-        ) {
-            checado = false;
-            console.log(checado);
-        }
-        if (dadosLancamento.valorLiquido.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (dadosLancamento.dias.value == '') {
-            checado = false;
-            console.log(checado);
-        }
-        if (checado == true) {
-            arrayCheques = [
-                ...lancamentos,
-                {
-                    idlancamento: lancamentos.length + 1,
-                    numero_banco: dadosLancamento.numeroBanco.value,
-                    nome_banco: dadosLancamento.banco.value,
-                    numero_cheque: dadosLancamento.numeroCheque.value,
-                    nome_cheque: dadosLancamento.nomeCheque.value,
-                    data_vencimento: dadosLancamento.dataVencimento.value,
-                    valor_cheque: converteMoedaFloat(
-                        dadosLancamento.valorCheque.value
-                    ),
-                    dias: dadosLancamento.dias.value,
-                    valor_juros: converteMoedaFloat(
-                        dadosLancamento.valorJuros.value
-                    ),
-                    valor_liquido: converteMoedaFloat(
-                        dadosLancamento.valorLiquido.value
-                    ),
-                    idBordero: dadosLancamento.operacao.value,
-                },
-            ];
+            if (dadosLancamento.numeroBanco.value == '') {
+                checado = false;
+            }
+            if (dadosLancamento.banco.value == '') {
+                checado = false;
+            }
+            if (dadosLancamento.numeroCheque.value == '') {
+                checado = false;
+            }
+            if (dadosLancamento.nomeCheque.value == '') {
+                checado = false;
+            }
+            if (dadosLancamento.dataVencimento.value == '') {
+                checado = false;
+            }
+            if (dadosLancamento.valorCheque.value == '') {
+                checado = false;
+            }
+            if (
+                dadosLancamento.valorJuros.value == '' ||
+                dadosLancamento.valorJuros.value == '0,00'
+            ) {
+                checado = false;
+            }
+            if (dadosLancamento.valorLiquido.value == '') {
+                checado = false;
+            }
+            if (dadosLancamento.dias.value == '') {
+                checado = false;
+            }
+            if (checado == true) {
+                arrayCheques = [
+                    ...lancamentos,
+                    {
+                        index: lancamentos.length,
+                        idlancamento: 0,
+                        numero_banco: dadosLancamento.numeroBanco.value,
+                        nome_banco: dadosLancamento.banco.value,
+                        numero_cheque: dadosLancamento.numeroCheque.value,
+                        nome_cheque: dadosLancamento.nomeCheque.value,
+                        data_vencimento: dadosLancamento.dataVencimento.value,
+                        valor_cheque: converteMoedaFloat(
+                            dadosLancamento.valorCheque.value
+                        ),
+                        dias: dadosLancamento.dias.value,
+                        valor_juros: converteMoedaFloat(
+                            dadosLancamento.valorJuros.value
+                        ),
+                        valor_liquido: converteMoedaFloat(
+                            dadosLancamento.valorLiquido.value
+                        ),
+                        idBordero: dadosLancamento.operacao.value,
+                    },
+                ];
 
-            setLancamentos(arrayCheques);
-            document.getElementById('inputNbco').focus();
-            dadosLancamento.numeroBanco.value = '';
-            dadosLancamento.banco.value = '';
-            dadosLancamento.numeroCheque.value = '';
-            dadosLancamento.nomeCheque.value = '';
-            dadosLancamento.dataVencimento.value = retornaDataAtual();
-            dadosLancamento.valorCheque.value = '';
-            dadosLancamento.valorJuros.value = '';
-            dadosLancamento.valorLiquido.value = '';
-            dadosLancamento.dias.value = '0';
+                setLancamentos(arrayCheques);
+                document.getElementById('inputNbco').focus();
+                dadosLancamento.numeroBanco.value = '';
+                dadosLancamento.banco.value = '';
+                dadosLancamento.numeroCheque.value = '';
+                dadosLancamento.nomeCheque.value = '';
+                dadosLancamento.dataVencimento.value = retornaDataAtual();
+                dadosLancamento.valorCheque.value = '';
+                dadosLancamento.valorJuros.value = '';
+                dadosLancamento.valorLiquido.value = '';
+                dadosLancamento.dias.value = '0';
+            } else {
+                toast.error('Compos obrigatórios não preenchidos!');
+                document.getElementById('inputNbco').focus();
+            }
         } else {
-            toast.error('Compos obrigatórios não preenchidos!');
-            document.getElementById('inputNbco').focus();
+            dadosLancamento.btnIncluirLancamento.innerText = 'Incluir';
+            gravarAlteracaoCheuqe(idIndexCheque);
         }
+    };
+
+    const gravarAlteracaoCheuqe = () => {
+        const dadosLancamento = ref.current;
+
+        for (let i = 0; i < lancamentos.length; i++) {
+            if (lancamentos[i].index == idIndexCheque) {
+                lancamentos[i].numero_banco = dadosLancamento.numeroBanco.value;
+                lancamentos[i].nome_banco = dadosLancamento.banco.value;
+                lancamentos[i].numero_cheque =
+                    dadosLancamento.numeroCheque.value;
+                lancamentos[i].nome_cheque = dadosLancamento.nomeCheque.value;
+                lancamentos[i].data_vencimento =
+                    dadosLancamento.dataVencimento.value;
+                lancamentos[i].valor_cheque = converteMoedaFloat(
+                    dadosLancamento.valorCheque.value
+                );
+                lancamentos[i].dias = dadosLancamento.dias.value;
+                lancamentos[i].valor_juros = converteMoedaFloat(
+                    dadosLancamento.valorJuros.value
+                );
+                lancamentos[i].valor_liquido = converteMoedaFloat(
+                    dadosLancamento.valorLiquido.value
+                );
+            }
+        }
+
+        arrayCheques = [...lancamentos];
+        setLancamentos(arrayCheques);
+
+        document.getElementById('inputNbco').focus();
+        dadosLancamento.numeroBanco.value = '';
+        dadosLancamento.banco.value = '';
+        dadosLancamento.numeroCheque.value = '';
+        dadosLancamento.nomeCheque.value = '';
+        dadosLancamento.dataVencimento.value = retornaDataAtual();
+        dadosLancamento.valorCheque.value = '';
+        dadosLancamento.valorJuros.value = '';
+        dadosLancamento.valorLiquido.value = '';
+        dadosLancamento.dias.value = '0';
     };
 
     const calculaJurosDiario = () => {
@@ -337,17 +410,38 @@ export const FormOperacaoCheque = () => {
     };
 
     const calculaValorJuros = () => {
-        console.log(checkCalculaJuros);
+        const dadosJuros = ref.current;
+        console.log(varCalculaJuros);
 
-        if (checkCalculaJuros == true) {
-            const dadosJuros = ref.current;
+        if (varCalculaJuros == false) {
             const jurosDiario = dadosJuros.jurosDiario.value;
             const dias = dadosJuros.dias.value;
             const valorCheque = converteMoedaFloat(
                 dadosJuros.valorCheque.value
             );
 
-            const valorJuros = (dias * jurosDiario * valorCheque) / 100;
+            let valorJuros = 0;
+
+            //calcula juros
+            const valorJurosCliente = (dias * jurosDiario * valorCheque) / 100;
+
+            //calcula juros minimo pela taxa da factoring
+            const valorJurosMinimo = (taxaMinima * valorCheque) / 100;
+
+            console.log(valorJurosMinimo);
+
+            if (especial != 'SIM' && valorJurosMinimo > valorJurosCliente) {
+                valorJuros = valorJurosMinimo;
+            }
+
+            if (especial != 'SIM' && valorJurosMinimo < valorJurosCliente) {
+                valorJuros = valorJurosCliente;
+            }
+
+            if (especial == 'SIM') {
+                valorJuros = valorJurosCliente;
+            }
+
             dadosJuros.valorJuros.value = valorJuros.toLocaleString('pt-BR', {
                 style: 'decimal',
                 minimumFractionDigits: 2,
@@ -360,6 +454,20 @@ export const FormOperacaoCheque = () => {
                 minimumFractionDigits: 2,
             });
         }
+    };
+
+    const calculaValorLiquido = () => {
+        varCalculaJuros = true;
+        const dadosJuros = ref.current;
+        console.log(varCalculaJuros);
+
+        dadosJuros.valorLiquido.value = (
+            converteMoedaFloat(dadosJuros.valorCheque.value) -
+            converteMoedaFloat(dadosJuros.valorJuros.value) * 1
+        ).toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        });
     };
 
     const limpa = () => {
@@ -386,6 +494,8 @@ export const FormOperacaoCheque = () => {
     };
 
     const formataValorCheque = () => {
+        calculaValorJuros();
+
         const dadosOperacao = ref.current;
 
         let valorCheque = dadosOperacao.valorCheque.value;
@@ -413,17 +523,23 @@ export const FormOperacaoCheque = () => {
         );
     };
 
-    const buscaBancos = async (codigo) => {
-        const dadosBanco = ref.current;
+    const carregaBancos = async () => {
         await apiBancos
             .get('https://brasilapi.com.br/api/banks/v1')
             .then(({ data }) => {
-                const bancoFiltrado = data.filter((b) => b.code === codigo * 1);
-                bancoFiltrado.map((banco) => {
-                    dadosBanco.banco.value = banco.name;
-                });
+                setArrayBancos(data);
             })
             .catch();
+    };
+
+    const buscaBancos = (codigo) => {
+        const dadosBanco = ref.current;
+
+        const bancoFiltrado = arrayBancos.filter((b) => b.code === codigo * 1);
+        dadosBanco.banco.value = '';
+        bancoFiltrado.map((banco) => {
+            dadosBanco.banco.value = banco.name;
+        });
     };
 
     const handleNumeroCheuque = (e) => {
@@ -449,8 +565,13 @@ export const FormOperacaoCheque = () => {
         lancamentos.map((resumo) => {
             somaValorCheques = somaValorCheques * 1 + resumo.valor_cheque * 1;
             somaValorJuros = somaValorJuros * 1 + resumo.valor_juros * 1;
+
             somaValorLiquido = somaValorLiquido * 1 + resumo.valor_liquido * 1;
         });
+
+        somaValorJuros =
+            somaValorJuros + converteMoedaFloat(dadosResumo.txTed.value) * 1;
+
         dadosResumo.totalBruto.value = somaValorCheques.toLocaleString(
             'pt-BR',
             {
@@ -473,8 +594,219 @@ export const FormOperacaoCheque = () => {
     };
 
     const toogle = () => {
-        setCheckCalculaJuros(!checkCalculaJuros);
-        console.log(checkCalculaJuros);
+        // setCheckCalculaJuros(!checkCalculaJuros);
+        varCalculaJuros = !varCalculaJuros;
+        console.log(varCalculaJuros);
+    };
+
+    const editarCheque = (id) => {
+        varIncluirCheque = false;
+
+        const dadosLancamento = ref.current;
+        dadosLancamento.btnIncluirLancamento.innerText = 'Alterar';
+
+        const lancamentoFiltrado = lancamentos.filter(
+            (l) => l.index === id * 1
+        );
+        lancamentoFiltrado.map((lanc) => {
+            document.getElementById('inputNbco').focus();
+            dadosLancamento.numeroBanco.value = lanc.numero_banco;
+            dadosLancamento.banco.value = lanc.nome_banco;
+            dadosLancamento.numeroCheque.value = lanc.numero_cheque;
+            dadosLancamento.nomeCheque.value = lanc.nome_cheque;
+            dadosLancamento.dataVencimento.value = lanc.data_vencimento;
+            dadosLancamento.valorCheque.value = (
+                lanc.valor_cheque * 1
+            ).toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            });
+            dadosLancamento.valorJuros.value = (
+                lanc.valor_juros * 1
+            ).toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            });
+            dadosLancamento.valorLiquido.value =
+                lanc.valor_liquido.toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                });
+            dadosLancamento.dias.value = lanc.dias;
+
+            idIndexCheque = lanc.index;
+        });
+    };
+
+    const formataValorTaxa = () => {
+        const dadosTaxa = ref.current;
+
+        let vl = dadosTaxa.txTed.value;
+
+        vl = converteMoedaFloat(vl);
+
+        dadosTaxa.txTed.value = vl.toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        });
+    };
+
+    const excluirCheque = async (id) => {
+        varIncluirCheque = false;
+
+        const dadosLancamento = ref.current;
+        if (onEdit) {
+            await apiFactoring
+                .post(
+                    '/excluir-cheque',
+                    { idlancamento: lancamentos[id].idlancamento },
+                    {
+                        headers: {
+                            'x-access-token': localStorage.getItem('user'),
+                        },
+                    }
+                )
+                .then(({ data }) => {
+                    toast.success(data);
+                    lancamentos.splice([id]);
+                    arrayCheques = [...lancamentos];
+                    setLancamentos(arrayCheques);
+                })
+                .catch((err) => {
+                    toast.error(err.response.data);
+                });
+        }
+        if (!onEdit) {
+            lancamentos.splice([id]);
+            arrayCheques = [...lancamentos];
+            setLancamentos(arrayCheques);
+        }
+    };
+
+    const imprimir = () => {
+        const dadosOperacao = ref.current;
+
+        const win = window.open('', '', 'heigth=700, width=700');
+        win.document.write('<html>');
+        win.document.write('<head >');
+        win.document.write('<title></title>');
+        win.document.write('</head>');
+        win.document.write('<body>');
+        win.document.write('<table border="0" style="width: 400px">');
+        win.document.write('<tr><td colspan="4" style="text-align : right">');
+        win.document.write(dataHoraAtual());
+        win.document.write('</tr></td>');
+        win.document.write('<tr ><td colspan="4" style="text-align : center">');
+        win.document.write(
+            '--------------------------------------------------------------------------'
+        );
+
+        win.document.write('<tr>');
+        win.document.write('<td>');
+        win.document.write(dadosOperacao.nome.value);
+        win.document.write('</td>');
+        win.document.write('<td>');
+        win.document.write('</td>');
+        win.document.write('<td>');
+        win.document.write(dadosOperacao.data.value);
+        win.document.write('</td>');
+        win.document.write('<td>');
+        win.document.write('Op: ' + dadosOperacao.operacao.value);
+        win.document.write('</td>');
+        win.document.write('</tr>');
+
+        win.document.write('<tr><td colspan="4" style="text-align : center">');
+        win.document.write(
+            '--------------------------------------------------------------------------'
+        );
+        win.document.write('</td ></tr >');
+
+        win.document.write('<tr>');
+        win.document.write('<td>');
+        win.document.write('Nº Cheque');
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right">');
+        win.document.write('Vencimento');
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right">');
+        win.document.write('Valor');
+        win.document.write('</td>');
+        win.document.write('<td  style="text-align: right">');
+        win.document.write(
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Juros'
+        );
+
+        win.document.write('</td>');
+        win.document.write('</tr>');
+
+        lancamentos.map((cheque, index) => {
+            win.document.write('<tr>');
+            win.document.write('<td>');
+            win.document.write(cheque.numero_cheque);
+            win.document.write('</td>');
+            win.document.write('<td style="text-align: right">');
+            win.document.write(cheque.data_vencimento);
+            win.document.write('</td>');
+            win.document.write('<td style="text-align: right">');
+            win.document.write(
+                cheque.valor_cheque.toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+            win.document.write('</td>');
+            win.document.write('<td style="text-align: right">');
+            win.document.write(
+                cheque.valor_juros.toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+            win.document.write('</td>');
+            win.document.write('</tr>');
+        });
+
+        win.document.write('<tr><td colspan="4" style="text-align : center">');
+        win.document.write(
+            '--------------------------------------------------------------------------'
+        );
+        win.document.write('</td ></tr >');
+
+        win.document.write('<tr>');
+        win.document.write('<td>');
+        win.document.write('</td>');
+        win.document.write('<td>');
+        win.document.write(
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Total'
+        );
+        win.document.write('</td>');
+
+        win.document.write('<td style="text-align: right">');
+        win.document.write(dadosOperacao.totalBruto.value);
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right">');
+        win.document.write(dadosOperacao.totalJuros.value);
+        win.document.write('</td>');
+        win.document.write('</tr>');
+
+        win.document.write('<tr>');
+        win.document.write('<td>');
+        win.document.write('</td>');
+        win.document.write('<td>');
+        win.document.write('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Liquido');
+        win.document.write('</td>');
+
+        win.document.write('<td style="text-align: right">');
+        win.document.write(dadosOperacao.totalLiquido.value);
+        win.document.write('</td>');
+        win.document.write('<td style="text-align: right">');
+        win.document.write('</td>');
+        win.document.write('</tr>');
+
+        win.document.write('</body>');
+        win.document.write('</html>');
+        win.print();
+        //  win.close();
     };
 
     useEffect(() => {
@@ -501,6 +833,8 @@ export const FormOperacaoCheque = () => {
         dadosBordero.dataVencimento.value = retornaDataAtual();
         dadosBordero.dias.value = '0';
         setIdBordero('0');
+        carregaBancos();
+        buscaTaxaMinina();
     }, []);
 
     return (
@@ -543,13 +877,25 @@ export const FormOperacaoCheque = () => {
                             >
                                 Gravar
                             </button>
-                        )}{' '}
+                        )}
                         {onEdit && (
                             <button id="btnGravarEmprestimo" onClick={limpa}>
                                 Novo
                             </button>
-                        )}{' '}
-                        {onEdit && <button id="btnImprimir">Imprimir</button>}
+                        )}
+                        {onEdit && (
+                            <button
+                                id="btnGravarEmprestimo"
+                                onClick={alterarBorderdo}
+                            >
+                                Alterar
+                            </button>
+                        )}
+                        {onEdit && (
+                            <button id="btnImprimir" onClick={imprimir}>
+                                Imprimir
+                            </button>
+                        )}
                     </div>
 
                     <div className="boxRow">
@@ -613,6 +959,7 @@ export const FormOperacaoCheque = () => {
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputJurosM')}
                                 autoComplete="off"
+                                onBlur={formataValorTaxa}
                             />
                         </div>
                         <div className="boxCol">
@@ -644,6 +991,14 @@ export const FormOperacaoCheque = () => {
                                 readOnly
                                 autoComplete="off"
                             />
+                        </div>
+                        <div className="boxCol">
+                            <div className="alignRight">
+                                <label>Especial</label>
+                            </div>
+                            <div className="alignRight">
+                                <label>{especial}</label>
+                            </div>
                         </div>
                     </div>
 
@@ -759,13 +1114,25 @@ export const FormOperacaoCheque = () => {
                                         keyDown(e, 'inputValorLiquido')
                                     }
                                     autoComplete="off"
+                                    onChange={calculaValorLiquido}
                                 />
-                                <input
-                                    type="checkbox"
-                                    id="checkP"
-                                    name="checkP"
-                                    onClick={toogle}
-                                />
+                                {varCalculaJuros == true && (
+                                    <input
+                                        type="checkbox"
+                                        id="checkP"
+                                        name="checkP"
+                                        checked
+                                        onClick={toogle}
+                                    />
+                                )}
+                                {varCalculaJuros == false && (
+                                    <input
+                                        type="checkbox"
+                                        id="checkP"
+                                        name="checkP"
+                                        onClick={toogle}
+                                    />
+                                )}
                             </div>
                         </div>
                         <div className="boxCol">
@@ -785,6 +1152,7 @@ export const FormOperacaoCheque = () => {
                         </div>
                         <button
                             id="btnGravarLancamento"
+                            name="btnIncluirLancamento"
                             onClick={incluirCheque}
                         >
                             Incluir
@@ -836,24 +1204,25 @@ export const FormOperacaoCheque = () => {
                     </div>
                 </div>
             </form>
-            <div>
-                <div className="gridCheque">
-                    <div>N.Banco</div>
-                    <div>Banco</div>
-                    <div>N. Cheque</div>
-                    <div>Nome</div>
-                    <div className="alignRight">Vencimento</div>
-                    <div className="alignRight">Valor</div>
-                    <div className="alignRight">Prazo</div>
-                    <div className="alignRight">Valor Juros</div>
-                    <div className="alignRight">Valor Liquido</div>
-                </div>
-                {lancamentos.map((item) => (
-                    <div className="gridLinhaCheque" key={item.idlancamento}>
+            <div className="gridCheque">
+                <div>N.Banco</div>
+                <div>Banco</div>
+                <div className="alignCenter">N. Cheque</div>
+                <div>Nome</div>
+                <div className="alignRight">Vencimento</div>
+                <div className="alignRight">Valor</div>
+                <div className="alignRight">Prazo</div>
+                <div className="alignRight">V. Juros</div>
+                <div className="alignRight">V. Liquido</div>
+                <div className="alignRight">Editar</div>
+            </div>
+            <div className="containerCheques">
+                {lancamentos.map((item, index) => (
+                    <div className="gridLinhaCheque" key={index}>
                         <div>{item.numero_banco}</div>
-                        <div>{item.nome_banco}</div>
-                        <div>{item.numero_cheque}</div>
-                        <div className="upercase">{item.nome_cheque}</div>
+                        <div id="maximo_200px">{item.nome_banco}</div>
+                        <div className="alignCenter">{item.numero_cheque}</div>
+                        <div id="maximo_200px">{item.nome_cheque}</div>
 
                         <div className="alignRight">
                             {inverteData(item.data_vencimento)}
@@ -877,6 +1246,12 @@ export const FormOperacaoCheque = () => {
                                 style: 'decimal',
                                 minimumFractionDigits: 2,
                             })}
+                        </div>
+                        <div className="alignRight">
+                            <FiEdit onClick={(e) => editarCheque(item.index)} />
+                            &nbsp;&nbsp;&nbsp;
+                            <ImBin onClick={(e) => excluirCheque(item.index)} />
+                            &nbsp;
                         </div>
                     </div>
                 ))}

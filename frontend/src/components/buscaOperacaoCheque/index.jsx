@@ -12,8 +12,6 @@ export const BuscaOperacao = ({ setIdOperacao, setFormBuscaOperacao }) => {
     const ref = useRef();
 
     const [operacao, setOperacao] = useState([]);
-    const [dataAtualI, setDataAtualI] = useState();
-    const [dataAtualF, setDataAtualF] = useState();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,9 +67,9 @@ export const BuscaOperacao = ({ setIdOperacao, setFormBuscaOperacao }) => {
                         onKeyDown={(e) => keyDown(e, 'inputDataF')}
                     />
                     <input type="date" id="inputDataF" name="dataF" />
-                    <FiSearch id="icone" onClick={buscaBordero} />
+                    <FiSearch className="icone" onClick={buscaBordero} />
                     <ImExit
-                        id="icone"
+                        className="icone"
                         onClick={() => setFormBuscaOperacao(false)}
                     />
                 </form>

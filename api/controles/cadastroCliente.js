@@ -57,7 +57,7 @@ export const postCliente = (req, res) => {
         ],
         (err, data) => {
             if (err) return res.json(err);
-            return res.status(200).json('Cliente cadastrado com sucesso!');
+            return res.status(200).json('Cliente cadastrado!');
         }
     );
 };
@@ -103,7 +103,7 @@ export const alterarCliente = (req, res) => {
         ],
         (err, data) => {
             if (err) return res.json(err);
-            return res.status(200).json('Cliente cadastrado com sucesso!');
+            return res.status(200).json('Cliente cadastrado!');
         }
     );
 };

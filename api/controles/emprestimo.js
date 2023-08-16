@@ -52,7 +52,7 @@ export const gravarEmprestimo = (req, res) => {
 
             return res.status(200).json({
                 insertId: data.insertId,
-                msg: 'Emprestimo gravado com sucesso!',
+                msg: 'Emprestimo gravado!',
             });
         }
     );
@@ -122,7 +122,7 @@ export const excluirPagamentoParcelaEmprestimo = (req, res) => {
     const sql = 'delete from pagamentos_parcelas where idpagamento = ? ';
     db.query(sql, [idPagamento], (err, data) => {
         if (err) return res.json(err);
-        return res.status(200).json('Pagammento excluido com sucesso!');
+        return res.status(200).json('Pagammento excluido!');
     });
 };
 

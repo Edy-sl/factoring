@@ -34,3 +34,9 @@
     grid-template-columns: 1fr 1fr 1fr;
     padding: 2px 5px 2px 5px;
 }
+
+#btnConfirmaExclusao {
+    background-color: rgb(210, 30, 30);
+    min-width: 400px;
+    margin-bottom: 10px;
+}

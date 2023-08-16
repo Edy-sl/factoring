@@ -136,7 +136,7 @@ export const putAtualizaFactoring = (req, res) => {
             ],
             async (err, data) => {
                 if (err) return res.json(err);
-                return res.status(200).json('Cadastro alterado com sucesso!');
+                return res.status(200).json('Cadastro alterado!');
             }
         );
     });

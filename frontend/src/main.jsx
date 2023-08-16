@@ -25,6 +25,10 @@ import { RelatorioEmprestimoPorVencimento } from './components/relatorioEmpresti
 import { RelatorioEmprestimoPorEmissao } from './components/relatorioEmprestimoEmissao/index.jsx';
 import { RelatorioEmprestimoPorClienteVencimento } from './components/relatorioEmprestimoClienteVencimento/index.jsx';
 import { RelatorioEmprestimoPorClienteEmissao } from './components/relatorioEmprestimoClienteEmissao/index.jsx';
+import { RelatorioChequePorVencimento } from './components/relatorioChequeVencimento/index.jsx';
+import { RelatorioChequePorEmissao } from './components/relatorioChequeEmissao/index.jsx';
+import { RelatorioChequePorClienteVencimento } from './components/relatorioChequeClienteVencimento/index.jsx';
+import { RelatorioChequePorClienteEmissao } from './components/relatorioChequeClienteEmissao/index.jsx';
 const router = createBrowserRouter([
     {
         path: '/',
@@ -76,6 +80,31 @@ const router = createBrowserRouter([
                     </PrivateRouter>
                 ),
             },
+
+            {
+                path: '/relatorio-emprestimo-vencimento',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioEmprestimoPorVencimento />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/relatorio-cheque-cliente-vencimento',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioChequePorClienteVencimento />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/relatorio-cheque-cliente-emissao',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioChequePorClienteEmissao />
+                    </PrivateRouter>
+                ),
+            },
             {
                 path: '/cadastro-usuario',
                 element: <FormCadastroUsuario />,
@@ -106,14 +135,21 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: '/relatorio-emprestimo-vencimento',
+                path: '/relatorio-cheque-vencimento',
                 element: (
                     <PrivateRouter>
-                        <RelatorioEmprestimoPorVencimento />
+                        <RelatorioChequePorVencimento />
                     </PrivateRouter>
                 ),
             },
-
+            {
+                path: '/relatorio-cheque-emissao',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioChequePorEmissao />
+                    </PrivateRouter>
+                ),
+            },
             {
                 path: '/relatorio-emprestimo-emissao',
                 element: (

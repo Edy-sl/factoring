@@ -50,8 +50,8 @@ export const TaxaCliente = () => {
             .then(({ data }) => {
                 toast.success(data);
             })
-            .catch((err) => {
-                toast.error('Erro ao gravar!');
+            .catch((error) => {
+                toast.error(error.response.data);
             });
     };
 

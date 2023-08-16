@@ -5,12 +5,18 @@ import { loginFactoring } from '../controles/login.js';
 import {
     postCadUsuario,
     postCadUsuarioSecundario,
+    listaUsuarios,
 } from '../controles/cadastroUsuario.js';
 import { recuperaSenha } from '../controles/recuperaSenha.js';
 import { postFactoring } from '../controles/cadastroEmpresa.js';
 import { postSelecionaFactoring } from '../controles/cadastroEmpresa.js';
 import { putAtualizaFactoring } from '../controles/cadastroEmpresa.js';
-import { getPermissoes } from '../controles/permissoes.js';
+import {
+    getPermissoes,
+    atualizaPermissao,
+    listaGrupoPermissao,
+    excluirPermissao,
+} from '../controles/permissoes.js';
 import {
     buscaEmprestimo,
     buscaEmprestimoId,
@@ -31,6 +37,11 @@ import {
     alterarBordero,
     gravarCheques,
     listarCheques,
+    exluirCheque,
+    relatorioPorVencimento,
+    relatorioPorEmissao,
+    relatorioPorClienteVencimento,
+    relatorioPorClienteEmissao,
 } from '../controles/bordero.js';
 
 import {
@@ -49,7 +60,7 @@ const rotaFactoring = express.Router();
 function verifyJWT(req, res, next) {
     const token = req.headers['x-access-token'];
     jwt.verify(token, SECRET, (err, decoded) => {
-        if (err) return res.status(401).end();
+        if (err) return res.status(401).json('Token invalido!').end();
         req.userID = decoded.userID;
         next();
     });
@@ -60,7 +71,7 @@ function verificaPermissao(req, res, next) {
     jwt.verify(token, SECRET, (err, decoded) => {
         if (err) return res.status(401).end();
         if (decoded.grupo !== 'admin')
-            return res.status(200).json('Usuário sem permissão').end();
+            return res.status(401).json('Usuário sem permissão!').end();
         next();
     });
 }
@@ -73,6 +84,12 @@ rotaFactoring.post(
     postCadUsuarioSecundario
 );
 
+rotaFactoring.post(
+    '/lista-usuarios',
+    verifyJWT,
+    verificaPermissao,
+    listaUsuarios
+);
 rotaFactoring.post('/login', loginFactoring);
 
 rotaFactoring.get('/recupera-senha', recuperaSenha);
@@ -105,15 +122,49 @@ rotaFactoring.post(
 );
 
 rotaFactoring.post('/gravar-bordero', verifyJWT, gravarBordero);
-rotaFactoring.post('/alterar-bordero', verifyJWT, alterarBordero);
+rotaFactoring.post(
+    '/alterar-bordero',
+    verifyJWT,
+    verificaPermissao,
+    alterarBordero
+);
 rotaFactoring.post('/busca-bordero', verifyJWT, buscaBordero);
 rotaFactoring.post('/busca-bordero-id', verifyJWT, buscaBorderoId);
 rotaFactoring.post('/gravar-lancamento', verifyJWT, gravarCheques);
 rotaFactoring.post('/listar-lancamento', verifyJWT, listarCheques);
-
 rotaFactoring.post('/gravar-emprestimo', verifyJWT, gravarEmprestimo);
 rotaFactoring.post('/busca-emprestimo', verifyJWT, buscaEmprestimo);
 rotaFactoring.post('/busca-emprestimo-id', verifyJWT, buscaEmprestimoId);
+rotaFactoring.post(
+    '/excluir-cheque',
+    verifyJWT,
+    verificaPermissao,
+    exluirCheque
+);
+
+//relatorio de cheques por vencimento
+rotaFactoring.post(
+    '/relatorio-cheque-vencimento',
+    verifyJWT,
+    relatorioPorVencimento
+);
+
+//relatorio de cheques por dt. emissao operacao
+rotaFactoring.post('/relatorio-cheque-emissao', verifyJWT, relatorioPorEmissao);
+
+//relatorio de cheques por cliente e dt de vencimento
+rotaFactoring.post(
+    '/relatorio-cheque-cliente-vencimento',
+    verificaPermissao,
+    relatorioPorClienteVencimento
+);
+
+//relatorio de cheques por cliente e dt de emissao da op.
+rotaFactoring.post(
+    '/relatorio-cheque-cliente-emissao',
+    verifyJWT,
+    relatorioPorClienteEmissao
+);
 
 //relatorio
 rotaFactoring.post(
@@ -169,6 +220,27 @@ rotaFactoring.post(
     buscaParcelasIdEmprestimo
 );
 
-rotaFactoring.get('/permissoes', verifyJWT, getPermissoes);
+rotaFactoring.post('/permissoes', verifyJWT, getPermissoes);
+
+rotaFactoring.post(
+    '/aplicar-permissao',
+    verifyJWT,
+    verificaPermissao,
+    atualizaPermissao
+);
+
+rotaFactoring.post(
+    '/lista-grupos-permissao',
+    verifyJWT,
+    verificaPermissao,
+    listaGrupoPermissao
+);
+
+rotaFactoring.post(
+    '/excluir-permissao',
+    verifyJWT,
+    verificaPermissao,
+    excluirPermissao
+);
 
 export default rotaFactoring;

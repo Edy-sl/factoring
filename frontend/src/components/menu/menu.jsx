@@ -50,7 +50,20 @@ export const Menu = () => {
                     <a href="#">Cheques</a>
                     <ul>
                         <Link to="/bordero">Lançamento</Link>
-                        <a href="#">Relatório</a>
+                        <label>-------------------</label>
+                        <Link to="/relatorio-cheque-vencimento">
+                            Relatório por Vencimento
+                        </Link>
+                        <Link to="/relatorio-cheque-emissao">
+                            Relatório por Emissao Op.
+                        </Link>
+                        <label>-------------------</label>
+                        <Link to="/relatorio-cheque-cliente-vencimento">
+                            Relatório por Cliente / Vencimento
+                        </Link>
+                        <Link to="/relatorio-cheque-cliente-emissao">
+                            Relatório por Cliente / Emissão op.
+                        </Link>
                     </ul>
                 </li>
 

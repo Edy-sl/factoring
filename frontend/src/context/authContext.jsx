@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
         setFactoring('null');
 
         window.location.reload();
+        //  navigate('/');
     };
 
     return (
