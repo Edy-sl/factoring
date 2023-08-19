@@ -9,8 +9,6 @@ export const gravarBordero = (req, res) => {
 
     const dataCadastro = ano + '-' + mes + '-' + dia;
 
-    console.log(dataCadastro);
-
     const { idcliente } = req.body;
     const { dataBase } = req.body;
     const { taxaTed } = req.body;
@@ -88,25 +86,17 @@ export const alterarBordero = (req, res) => {
 export const gravarCheques = (idBordero, arrayCheques) => {
     let sql = '';
 
-    arrayCheques.map((item) => {
+    arrayCheques.map((item, index) => {
         if (item.idlancamento > 0) {
-            console.log(item.numero_banco);
-            console.log(item.nome_banco);
-            console.log(item.numero_cheque);
-            console.log(item.nome_cheque);
-            console.log(item.data_vencimento);
-            console.log(item.valor_cheque);
-            console.log(item.dias);
-            console.log(item.valor_juros);
-            console.log(item.valor_liquido);
-            console.log(item.idlancamento);
-
             sql =
                 'update borderos_lancamentos set numero_banco = ?, ' +
                 'nome_banco = ?, numero_cheque = ?, ' +
                 'nome_cheque = ?, data_vencimento = ?, ' +
                 'valor_cheque = ? , dias = ?, ' +
-                'valor_juros = ?, valor_liquido = ? where idlancamento = ? ';
+                'taxa_ted = ?, ' +
+                'valor_juros = ?, valor_liquido = ?, ' +
+                'status = ? ' +
+                'where idlancamento = ? ';
             db.query(
                 sql,
                 [
@@ -117,16 +107,21 @@ export const gravarCheques = (idBordero, arrayCheques) => {
                     item.data_vencimento,
                     item.valor_cheque,
                     item.dias,
+                    item.taxa_ted,
                     item.valor_juros,
                     item.valor_liquido,
+                    item.status,
                     item.idlancamento,
                 ],
                 (err, data) => {}
             );
-        } else {
-            console.log('inserindo ' + item.idlancamento);
+        } else if (item.idlancamento < 1) {
             sql =
-                'insert into borderos_lancamentos (numero_banco,nome_banco,numero_cheque,nome_cheque,data_vencimento,valor_cheque,dias,valor_juros,valor_liquido,idbordero) values (?,?,?,?,?,?,?,?,?,?)';
+                'insert into borderos_lancamentos ' +
+                '(numero_banco, nome_banco, numero_cheque, ' +
+                'nome_cheque, data_vencimento, valor_cheque, ' +
+                'dias, taxa_ted, valor_juros, valor_liquido, status, idbordero) ' +
+                'values (?,?,?,?,?,?,?,?,?,?,?,?)';
 
             db.query(
                 sql,
@@ -138,8 +133,10 @@ export const gravarCheques = (idBordero, arrayCheques) => {
                     item.data_vencimento,
                     item.valor_cheque,
                     item.dias,
+                    item.taxa_ted,
                     item.valor_juros,
                     item.valor_liquido,
+                    item.status,
                     idBordero,
                 ],
                 (err, data) => {}
@@ -184,7 +181,7 @@ export const buscaBorderoId = (req, res) => {
 
 export const listarCheques = (req, res) => {
     const { operacao } = req.body;
-    console.log(operacao);
+
     const sql = 'select * from borderos_lancamentos where `idbordero` = ?';
     db.query(sql, [operacao], (err, data) => {
         if (err) return res.json(err);
@@ -201,24 +198,27 @@ export const relatorioPorVencimento = (req, res) => {
     let sql = '';
     if (status === 'GERAL') {
         sql =
-            'SELECT * FROM dbfactoring.borderos_lancamentos ' +
-            'as cheques inner join dbfactoring.borderos as operacao ' +
-            'on cheques.idbordero = operacao.idbordero ' +
-            'where data_vencimento between  ? and ? order by valor_cheque';
+            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
+            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where cheques.data_vencimento between  ? and ? order by cheques.data_vencimento`;
     }
     if (status === 'DEVOLVIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            'as cheques inner join dbfactoring.borderos as operacao ' +
-            'on cheques.idbordero = operacao.idbordero ' +
-            `where data_vencimento between  ? and ? and status = 'DEVOLVIDO' order by valor_cheque`;
+            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where cheques.data_vencimento between  ? and ? and status = 'DEVOLVIDO' order by cheques.data_vencimento`;
     }
     if (status === 'RECEBIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            'as cheques inner join dbfactoring.borderos as operacao ' +
-            'on cheques.idbordero = operacao.idbordero ' +
-            `where data_vencimento between  ? and ? and status = 'RECEBIDO' order by valor_cheque`;
+            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where cheques.data_vencimento between  ? and ? and status = 'RECEBIDO' order by cheques.data_vencimento`;
     }
 
     db.query(sql, [dataI, dataF], (err, data) => {
@@ -236,24 +236,27 @@ export const relatorioPorEmissao = (req, res) => {
     let sql = '';
     if (status === 'GERAL') {
         sql =
-            'SELECT * FROM dbfactoring.borderos_lancamentos ' +
-            'as cheques inner join dbfactoring.borderos as operacao ' +
-            'on cheques.idbordero = operacao.idbordero ' +
-            'where operacao.data between  ? and ? order by valor_cheque';
+            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
+            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where operacao.data between  ? and ? order by cheques.data_vencimento`;
     }
     if (status === 'DEVOLVIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
             `as cheques inner join dbfactoring.borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
-            `where operacao.data between  ? and ? and cheques.status = 'DEVOLVIDO' order by valor_cheque`;
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where operacao.data between  ? and ? and cheques.status = 'DEVOLVIDO' order by cheques.data_vencimento`;
     }
     if (status === 'RECEBIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
             `as cheques inner join dbfactoring.borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
-            `where operacao.data between  ? and ? and cheques.status = 'RECEBIDO' order by valor_cheque`;
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where operacao.data between  ? and ? and cheques.status = 'RECEBIDO' order by cheques.data_vencimento`;
     }
 
     db.query(sql, [dataI, dataF], (err, data) => {
@@ -269,8 +272,6 @@ export const relatorioPorClienteVencimento = (req, res) => {
     const { status } = req.body;
     const { idCliente } = req.body;
 
-    console.log(idCliente);
-
     let sql = '';
 
     if (status === 'GERAL') {
@@ -278,29 +279,30 @@ export const relatorioPorClienteVencimento = (req, res) => {
             'SELECT * FROM dbfactoring.borderos_lancamentos ' +
             'as cheques inner join dbfactoring.borderos as operacao ' +
             'on cheques.idbordero = operacao.idbordero ' +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             'where cheques.data_vencimento between  ? and ? and ' +
-            'operacao.idcliente = ? order by valor_cheque';
+            'operacao.idcliente = ? order by cheques.data_vencimento';
     }
     if (status === 'DEVOLVIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
             `as cheques inner join dbfactoring.borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where cheques.data_vencimento between  ? and ? and ` +
             `operacao.idcliente = ? and ` +
-            `cheques.status = 'DEVOLVIDO' order by valor_cheque`;
+            `cheques.status = 'DEVOLVIDO' order by cheques.data_vencimento`;
     }
     if (status === 'RECEBIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
             `as cheques inner join dbfactoring.borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where cheques.data_vencimento between  ? and ? and ` +
             `operacao.idcliente = ? and ` +
-            `cheques.status = 'RECEBIDO' order by valor_cheque`;
+            `cheques.status = 'RECEBIDO' order by cheques.data_vencimento`;
     }
-
-    console.log(sql);
 
     db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
@@ -315,8 +317,6 @@ export const relatorioPorClienteEmissao = (req, res) => {
     const { status } = req.body;
     const { idCliente } = req.body;
 
-    console.log(idCliente);
-
     let sql = '';
 
     if (status === 'GERAL') {
@@ -324,29 +324,30 @@ export const relatorioPorClienteEmissao = (req, res) => {
             'SELECT * FROM dbfactoring.borderos_lancamentos ' +
             'as cheques inner join dbfactoring.borderos as operacao ' +
             'on cheques.idbordero = operacao.idbordero ' +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             'where operacao.data between  ? and ? and ' +
-            'operacao.idcliente = ? order by valor_cheque';
+            'operacao.idcliente = ? order by cheques.data_vencimento';
     }
     if (status === 'DEVOLVIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
             `as cheques inner join dbfactoring.borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where operacao.data between  ? and ? and ` +
             `operacao.idcliente = ? and ` +
-            `cheques.status = 'DEVOLVIDO' order by valor_cheque`;
+            `cheques.status = 'DEVOLVIDO' order by cheques.data_vencimento`;
     }
     if (status === 'RECEBIDO') {
         sql =
             `SELECT * FROM dbfactoring.borderos_lancamentos ` +
             `as cheques inner join dbfactoring.borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where operacao.data between  ? and ? and ` +
             `operacao.idcliente = ? and ` +
-            `cheques.status = 'RECEBIDO' order by valor_cheque`;
+            `cheques.status = 'RECEBIDO' order by cheques.data_vencimento`;
     }
-
-    console.log(sql);
 
     db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);

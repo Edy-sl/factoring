@@ -1,45 +1,7 @@
 .divRelatorioEmprestimoData {
     display: flex;
     flex-direction: column;
-    background-color: rgb(223, 224, 225);
-}
-.divListaRContainer {
-    display: flex;
-    flex-direction: column;
-
-    max-height: 550px;
-    overflow: scroll;
-    background-color: blue;
-}
-
-.divListaR {
-    display: grid;
-    background-color: #ffffff;
-    padding: 3px;
-    padding-right: 15px;
-    grid-template-columns: 1fr 250px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 60px;
-    text-transform: uppercase;
-}
-.divListaR:hover {
-    display: grid;
     background-color: rgb(225, 224, 223);
-    padding: 3px;
-    padding-right: 15px;
-    grid-template-columns: 1fr 250px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 60px;
-    text-transform: uppercase;
-}
-
-.divListaTitulo {
-    display: grid;
-    grid-template-columns: 1fr 250px 1fr 1fr 1fr 1fr 1fr 1fr 1fr 60px;
-    background-color: rgb(225, 224, 223);
-    padding: 10px;
-    margin-right: 15px;
-}
-
-#divContainerLista {
-    max-height: 550px;
-    padding-top: 10px;
 }
 
 #divCheckbox {
@@ -51,7 +13,7 @@
     color: blueviolet;
 }
 
-#divListaRtotais {
-    background-color: rgb(225, 224, 223);
-    font-weight: bold;
+#divTituloRelatorio {
+    background-color: rgb(185, 185, 188);
+    text-align: center;
 }

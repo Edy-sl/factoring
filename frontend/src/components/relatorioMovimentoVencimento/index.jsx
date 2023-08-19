@@ -1,25 +1,35 @@
-import { FiSearch, FiDollarSign } from 'react-Icons/fi';
+import './relatorioChequeVencimento.css';
+import { FiSearch, FiDollarSign, FiPrinter } from 'react-Icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CheckboxPersonalizado } from '../checkbox/checkboxPersonalizado';
+import { GridChequeRelatorio } from '../gridRelatorioCheques';
 import {
     converteFloatMoeda,
     inverteData,
     retornaDataAtual,
 } from '../../biblitoteca.jsx';
-import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
-export const RelatorioEmprestimoPorEmissao = () => {
+
+import { ImpressaoMovimento } from '../menu/functions/impressaoMovimento';
+
+export const RelatorioMovimentoPorVencimento = () => {
     const ref = useRef();
 
-    const [listagem, setListagem] = useState([]);
+    const [listagemCheque, setListagemCheque] = useState([]);
+    const [listagemEmprestimo, setListagemEmprestimo] = useState([]);
+
+    const [dadosCheque, setDadosCheque] = useState([]);
 
     const [checkRel, setCheckRel] = useState();
 
     const [dataIni, setDataIni] = useState(retornaDataAtual());
     const [dataFim, setDataFim] = useState(retornaDataAtual());
+
+    var totalValorCheques = 0;
+    var totalValorLiquido = 0;
+    var totalValorJuros = 0;
 
     var totalValor = 0;
     var totalRecebido = 0;
@@ -28,6 +38,10 @@ export const RelatorioEmprestimoPorEmissao = () => {
     const [totalValorR, setTotalValorR] = useState(0);
     const [totalValorRecebido, setTotalValorRecebido] = useState(0);
     const [totalValorReceber, setTotalValorReceber] = useState(0);
+
+    const [totalValCheques, setTotalValorCheques] = useState(0);
+    const [totalValLiquido, setTotalValorLiquido] = useState(0);
+    const [totalValJuros, setTotalValorJuros] = useState(0);
 
     const [idParcela, setIdParcela] = useState(0);
     const [parcelaN, setParcelaN] = useState(0);
@@ -45,7 +59,29 @@ export const RelatorioEmprestimoPorEmissao = () => {
 
         await apiFactoring
             .post(
-                '/relatorio-emprestimo-emissao',
+                '/relatorio-movimento-cheque-vencimento',
+                {
+                    dataI: dataI,
+                    dataF: dataF,
+                    status: checkRel,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                console.log(data);
+                setListagemCheque(data);
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+
+        await apiFactoring
+            .post(
+                '/relatorio-movimento-emprestimo-vencimento',
                 {
                     dataI: dataI,
                     dataF: dataF,
@@ -59,7 +95,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
             )
             .then(({ data }) => {
                 console.log(data);
-                setListagem(data);
+                setListagemEmprestimo(data);
             })
             .catch(({ data }) => {
                 toast.error(data);
@@ -67,7 +103,21 @@ export const RelatorioEmprestimoPorEmissao = () => {
     };
 
     useEffect(() => {
-        listagem.map((somaTotais) => {
+        listagemCheque.map((somaTotais) => {
+            totalValorCheques =
+                totalValorCheques + parseFloat(somaTotais.valor_cheque);
+            totalValorLiquido =
+                totalValorLiquido + parseFloat(somaTotais.valor_liquido);
+            totalValorJuros =
+                totalValorJuros + parseFloat(somaTotais.valor_juros);
+        });
+        setTotalValorCheques(totalValorCheques);
+        setTotalValorLiquido(totalValorLiquido);
+        setTotalValorJuros(totalValorJuros);
+    }, [listagemCheque]);
+
+    useEffect(() => {
+        listagemEmprestimo.map((somaTotais) => {
             totalValor = totalValor + parseFloat(somaTotais.valor);
             totalRecebido = totalRecebido + parseFloat(somaTotais.valor_pago);
             totalReceber = totalValor - totalRecebido;
@@ -75,7 +125,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
         setTotalValorR(totalValor);
         setTotalValorRecebido(totalRecebido);
         setTotalValorReceber(totalReceber);
-    }, [listagem]);
+    }, [listagemEmprestimo]);
 
     return (
         <>
@@ -85,7 +135,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
                 position={toast.POSITION.BOTTOM_LEFT}
             />
             {idParcela != 0 && (
-                <FormPagamentoEmprestimo
+                <FormPagamentoCheque
                     parcelaN={parcelaN}
                     idParcela={idParcela}
                     setIdParcela={setIdParcela}
@@ -93,51 +143,17 @@ export const RelatorioEmprestimoPorEmissao = () => {
                     atualizaParcelas={atualizaParcelas}
                 />
             )}
-            <div className="divRelatorioEmprestimoData">
+            <div className="divRelatorioChequeData">
                 <div id="divTituloRelatorio">
-                    <label>Realtório de Empréstimo por Data de Emissão</label>
+                    <label>Realtório por Data de Emissão</label>
                 </div>
                 <form className="" ref={ref} onSubmit={handleSubmit}>
-                    <div className="boxRow">
+                    <div className="boxRow" id="divFiltroMovimentoEmissao">
                         <div className="boxCol">
-                            <label>A Receber</label>
-                            <label>Recebidos</label>
                             <label>Geral</label>
                         </div>
 
                         <div className="boxCol" id="divCheckbox">
-                            {checkRel == 'PAGAR' ? (
-                                <input
-                                    type="checkbox"
-                                    name="chekedPagar"
-                                    checked
-                                    id="checkRel"
-                                />
-                            ) : (
-                                <input
-                                    type="checkbox"
-                                    name="chekedPagar"
-                                    id="checkRel"
-                                    onChange={(e) => setCheckRel('PAGAR')}
-                                />
-                            )}
-
-                            {checkRel == 'PAGAS' ? (
-                                <input
-                                    type="checkbox"
-                                    name="chekedPagas"
-                                    id="checkRel"
-                                    checked
-                                />
-                            ) : (
-                                <input
-                                    type="checkbox"
-                                    name="chekedPagas"
-                                    id="checkRel"
-                                    onChange={(e) => setCheckRel('PAGAS')}
-                                />
-                            )}
-
                             {checkRel == 'GERAL' ? (
                                 <input
                                     type="checkbox"
@@ -176,13 +192,31 @@ export const RelatorioEmprestimoPorEmissao = () => {
                                 <FiSearch
                                     className="icone2"
                                     onClick={checkRel && relatorioPorData}
+                                />{' '}
+                                <FiPrinter
+                                    className="icone2"
+                                    onClick={(e) =>
+                                        ImpressaoMovimento(
+                                            listagemCheque,
+                                            listagemEmprestimo
+                                        )
+                                    }
                                 />
                             </div>
                         </div>
                     </div>
                 </form>
-            </div>{' '}
-            <GridRelatorioEmprestimo listagem={listagem} />
+            </div>
+            <GridChequeRelatorio
+                lista={listagemCheque}
+                ValCheques={totalValCheques}
+            />
+            <GridRelatorioEmprestimo
+                listagem={listagemEmprestimo}
+                ValorEmprestimos={totalValorR}
+                valorRecebido={totalValorRecebido}
+                valorReceber={totalValorReceber}
+            />
         </>
     );
 };

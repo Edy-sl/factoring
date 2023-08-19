@@ -29,6 +29,8 @@ import { RelatorioChequePorVencimento } from './components/relatorioChequeVencim
 import { RelatorioChequePorEmissao } from './components/relatorioChequeEmissao/index.jsx';
 import { RelatorioChequePorClienteVencimento } from './components/relatorioChequeClienteVencimento/index.jsx';
 import { RelatorioChequePorClienteEmissao } from './components/relatorioChequeClienteEmissao/index.jsx';
+import { RelatorioMovimentoPorVencimento } from './components/relatorioMovimentoVencimento/index.jsx';
+import { RelatorioMovimentoPorEmissao } from './components/relatorioMovimentoEmissao/index.jsx';
 const router = createBrowserRouter([
     {
         path: '/',
@@ -171,6 +173,23 @@ const router = createBrowserRouter([
                 element: (
                     <PrivateRouter>
                         <RelatorioEmprestimoPorClienteEmissao />
+                    </PrivateRouter>
+                ),
+            },
+
+            {
+                path: '/relatorio-movimento-vencimento',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioMovimentoPorVencimento />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/relatorio-movimento-emissao',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioMovimentoPorEmissao />
                     </PrivateRouter>
                 ),
             },

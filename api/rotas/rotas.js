@@ -53,6 +53,13 @@ import {
     atualizaTaxaCliente,
 } from '../controles/cadastroCliente.js';
 
+import {
+    movimentoChequesPorVencimento,
+    movimentoEmprestimoVencimento,
+    relatorioMovimentoChequesPorEmissao,
+    relatorioMovimentoEmprestimoEmissao,
+} from '../controles/movimento.js';
+
 const SECRET = process.env.SECRET;
 
 const rotaFactoring = express.Router();
@@ -155,7 +162,7 @@ rotaFactoring.post('/relatorio-cheque-emissao', verifyJWT, relatorioPorEmissao);
 //relatorio de cheques por cliente e dt de vencimento
 rotaFactoring.post(
     '/relatorio-cheque-cliente-vencimento',
-    verificaPermissao,
+    verifyJWT,
     relatorioPorClienteVencimento
 );
 
@@ -241,6 +248,32 @@ rotaFactoring.post(
     verifyJWT,
     verificaPermissao,
     excluirPermissao
+);
+
+//relatorio de cheques/emprestimos por dt de vencimento
+rotaFactoring.post(
+    '/relatorio-movimento-cheque-vencimento',
+    verifyJWT,
+    movimentoChequesPorVencimento
+);
+
+rotaFactoring.post(
+    '/relatorio-movimento-emprestimo-vencimento',
+    verifyJWT,
+    movimentoEmprestimoVencimento
+);
+
+//relatorio de cheques/emprestimos por dt de vencimento
+rotaFactoring.post(
+    '/relatorio-movimento-cheque-emissao',
+    verifyJWT,
+    relatorioMovimentoChequesPorEmissao
+);
+
+rotaFactoring.post(
+    '/relatorio-movimento-emprestimo-emissao',
+    verifyJWT,
+    relatorioMovimentoEmprestimoEmissao
 );
 
 export default rotaFactoring;

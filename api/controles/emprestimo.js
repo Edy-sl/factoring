@@ -18,14 +18,6 @@ export const gravarEmprestimo = (req, res) => {
     const { idFactoring } = req.body;
     const { arrayParcelas } = req.body;
 
-    console.log(jurosMensal);
-    console.log(valorEmprestimo);
-    console.log(quatidadeParcelas);
-    console.log(intervalo);
-    console.log(valorParcela);
-    console.log(valorJuros);
-    console.log(valorTotal);
-
     const sql =
         'insert into emprestimos (data_cadastro,juros_mensal,idcliente,cnpj_cpf_credor,nome_credor,valor_emprestimo,quantidade_parcelas,data_base,intervalo,valor_parcela,valor_juros,valor_total,idfactoring) values (?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
@@ -128,7 +120,7 @@ export const excluirPagamentoParcelaEmprestimo = (req, res) => {
 
 export const listaPagamentoParcela = (req, res) => {
     const { idParcela } = req.body;
-    console.log(idParcela);
+
     const sql = 'select * from pagamentos_parcelas where idparcela = ?';
     db.query(sql, [idParcela], (err, data) => {
         if (err) return res.json(err);
@@ -155,6 +147,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -166,6 +159,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -207,6 +201,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -218,6 +213,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -259,6 +255,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -270,6 +267,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from ' +
@@ -297,7 +295,6 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'order by idemprestimo, parcela ';
     }
 
-    console.log(tipoRel);
     db.query(sql, [dataI, dataF], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
@@ -323,6 +320,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -334,6 +332,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -374,6 +373,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -385,6 +385,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -425,6 +426,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -436,6 +438,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from ' +
@@ -462,7 +465,6 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'order by idemprestimo, parcela ';
     }
 
-    console.log(tipoRel);
     db.query(sql, [dataI, dataF], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
@@ -490,6 +492,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -501,6 +504,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -543,6 +547,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -554,6 +559,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -596,6 +602,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -607,6 +614,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from ' +
@@ -635,7 +643,6 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'order by idemprestimo, parcela ';
     }
 
-    console.log(tipoRel);
     db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
@@ -662,6 +669,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -673,6 +681,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -714,6 +723,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -725,6 +735,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -766,6 +777,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -777,6 +789,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from ' +
@@ -804,7 +817,6 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'order by idemprestimo, parcela ';
     }
 
-    console.log(tipoRel);
     db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);

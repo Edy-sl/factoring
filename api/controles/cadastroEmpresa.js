@@ -107,8 +107,6 @@ export const putAtualizaFactoring = (req, res) => {
     const { taxaMinima } = req.body;
     const { id } = req.body;
 
-    console.log(req);
-
     const token = req.headers['x-access-token'];
 
     jwt.verify(token, SECRET, (err, decoded) => {

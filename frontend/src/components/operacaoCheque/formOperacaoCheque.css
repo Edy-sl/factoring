@@ -121,7 +121,7 @@
 
 .gridCheque {
     display: grid;
-    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 100px 100px 1fr 100px 1fr;
     background-color: rgb(185, 185, 188);
     margin-top: 20px;
     gap: 15px;
@@ -131,7 +131,7 @@
 
 .gridLinhaCheque {
     display: grid;
-    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 100px 100px 1fr 100px 1fr;
     text-transform: uppercase;
     gap: 15px;
     padding-left: 5px;
@@ -140,7 +140,7 @@
 
 .gridLinhaCheque:hover {
     display: grid;
-    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 100px 100px 1fr 100px 1fr;
     text-transform: uppercase;
     gap: 15px;
     background-color: rgb(223, 224, 225);

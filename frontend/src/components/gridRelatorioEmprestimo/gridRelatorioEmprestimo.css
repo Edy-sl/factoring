@@ -1,0 +1,43 @@
+.divListaRContainer {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 430px;
+    overflow: scroll;
+}
+
+.divListaR {
+    display: grid;
+    background-color: #ffffff;
+    padding: 3px;
+    padding-right: 10px;
+    grid-template-columns: 90px 195px 80px 110px 110px 145px 145px 145px 100px 145px 20px;
+    text-transform: uppercase;
+}
+.divListaR:hover {
+    display: grid;
+    background-color: rgb(225, 224, 223);
+    padding: 3px;
+    padding-right: 10px;
+    grid-template-columns: 90px 195px 80px 110px 110px 145px 145px 145px 100px 145px 20px;
+    text-transform: uppercase;
+}
+
+.divListaTitulo {
+    display: grid;
+    grid-template-columns: 90px 195px 80px 110px 110px 145px 145px 145px 100px 145px 55px;
+    background-color: rgb(225, 224, 223);
+}
+
+#divContainerLista {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(225, 224, 223);
+    max-height: 480px;
+    margin-top: 20px;
+}
+
+#divListaRtotais {
+    background-color: rgb(225, 224, 223);
+    font-weight: bold;
+}

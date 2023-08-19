@@ -137,6 +137,11 @@ export const calculaParcelaEmprestimo = (
     return [calculos];
 };
 
+export const tamanhoMaximo = (texto, tamanho) => {
+    let cortada = texto.substring(0, tamanho);
+    return cortada;
+};
+
 function zeroFill(n) {
     return n < 10 ? `0${n}` : `${n}`;
 }

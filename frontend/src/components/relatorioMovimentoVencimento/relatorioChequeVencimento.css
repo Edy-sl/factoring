@@ -12,17 +12,17 @@
 
 .gridChequeRelatorio {
     display: grid;
-    grid-template-columns: 50px 80px 200px 200px 1fr 1fr 1fr 1fr 1fr;
-    background-color: rgb(225, 224, 223);
+    grid-template-columns: 50px 100px 220px 220px 100px 100px 1fr 150px 150px;
+    background-color: rgb(223, 224, 225);
     margin-top: 20px;
     gap: 15px;
     padding-left: 5px;
-    padding-right: 5px;
+    padding-right: 20px;
 }
 
 .gridLinhaChequeRelatorio {
     display: grid;
-    grid-template-columns: 50px 80px 200px 200px 1fr 100px 1fr 1fr 1fr;
+    grid-template-columns: 50px 100px 220px 220px 100px 100px 1fr 1fr 1fr;
     text-transform: uppercase;
     gap: 15px;
     padding-left: 5px;
@@ -31,10 +31,11 @@
 
 .gridLinhaChequeRelatorio:hover {
     display: grid;
-    grid-template-columns: 50px 80px 200px 200px 1fr 100px 1fr 1fr 1fr;
+    grid-template-columns: 50px 100px 220px 220px 100px 100px 1fr 1fr 1fr;
     text-transform: uppercase;
-    gap: 15px;
+
     background-color: rgb(223, 224, 225);
+    gap: 15px;
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -48,12 +49,16 @@
 
 .divTotaisRcheques {
     display: grid;
-    grid-template-columns: 150px 80px 200px 200px 100px 1fr 1fr 1fr 1fr;
+    grid-template-columns: 50px 80px 200px 200px 100px 100px 1fr 1fr 1fr;
     text-transform: uppercase;
     gap: 15px;
     background-color: rgb(223, 224, 225);
     padding-left: 5px;
-    padding-right: 5px;
+    padding-right: 20px;
+}
+
+#divFiltroMovimentoEmissao {
+    padding-bottom: 20px;
 }
 
 @media only screen and (max-width: 700px) {

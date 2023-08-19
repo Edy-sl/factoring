@@ -13,6 +13,7 @@ import { apiFactoring } from '../../services/api';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
+import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 
 export const RelatorioEmprestimoPorClienteEmissao = () => {
     const [idCliente, setIdCliente] = useState(0);
@@ -159,7 +160,9 @@ export const RelatorioEmprestimoPorClienteEmissao = () => {
             )}
             <div className="divRelatorioEmprestimoData">
                 <div id="divTituloRelatorio">
-                    <label>Realtório por Data de Emissão</label>
+                    <label>
+                        Realtório de Empréstimo por Cliente e Data de Emissão
+                    </label>
                 </div>
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
@@ -285,107 +288,7 @@ export const RelatorioEmprestimoPorClienteEmissao = () => {
                     </div>
                 </form>
             </div>{' '}
-            <div className="boxCol" id="divContainerLista">
-                <div className="divListaTitulo">
-                    <div className="alignLeft">Operação</div>
-                    <div className="alignLeft">Cliente</div>
-                    <div className="alignRight">Parcela</div>
-                    <div className="alignCenter">Data</div>
-                    <div className="alignRight">Vencimento</div>
-                    <div className="alignRight">Valor Total</div>
-                    <div className="alignRight">Valor</div>
-                    <div className="alignRight">Recebido</div>
-                    <div className="alignRight">A Receber</div>
-                    <div className="alignRight"></div>
-                </div>
-                <div className="divListaRContainer">
-                    {' '}
-                    {listagem.map((lista, i) => (
-                        <div key={i} className="divListaR">
-                            <div className="alignLet">{lista.idemprestimo}</div>
-                            <div className="alignLeft">{lista.nome}</div>
-                            <div className="alignRight">
-                                {lista.parcela}/{lista.quantidade_parcelas}
-                            </div>
-                            <div className="alignRight">
-                                {inverteData(lista.data_cadastro)}
-                            </div>
-                            <div className="alignRight">
-                                {inverteData(lista.vencimento)}
-                            </div>
-                            <div className="alignRight">
-                                {(lista.valor_total * 1).toLocaleString(
-                                    'pt-BR',
-                                    {
-                                        style: 'decimal',
-                                        minimumFractionDigits: 2,
-                                    }
-                                )}
-                            </div>
-                            <div className="alignRight">
-                                {(lista.valor * 1).toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-                            <div className="alignRight">
-                                {(lista.valor_pago * 1).toLocaleString(
-                                    'pt-BR',
-                                    {
-                                        style: 'decimal',
-                                        minimumFractionDigits: 2,
-                                    }
-                                )}
-                            </div>
-                            <div className="alignRight">
-                                {(
-                                    (lista.valor - lista.valor_pago) *
-                                    1
-                                ).toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-                            <div className="alignRight">
-                                <FiDollarSign
-                                    id="iconeDollarPagar"
-                                    onClick={(e) => {
-                                        setIdParcela(lista.idparcela);
-                                        setParcelaN(lista.parcela);
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="divListaR" id="divListaRtotais">
-                    <div className="alignLet"></div>
-                    <div className="alignLeft"></div>
-                    <div className="alignRight"></div>
-                    <div className="alignRight"></div>
-                    <div className="alignRight"></div>
-                    <div className="alignRight"></div>
-                    <div className="alignRight">
-                        {(totalValorR * 1).toLocaleString('pt-BR', {
-                            style: 'decimal',
-                            minimumFractionDigits: 2,
-                        })}
-                    </div>
-                    <div className="alignRight">
-                        {totalValorRecebido.toLocaleString('pt-BR', {
-                            style: 'decimal',
-                            minimumFractionDigits: 2,
-                        })}
-                    </div>
-                    <div className="alignRight">
-                        {totalValorReceber.toLocaleString('pt-BR', {
-                            style: 'decimal',
-                            minimumFractionDigits: 2,
-                        })}
-                    </div>
-                </div>
-            </div>
+            <GridRelatorioEmprestimo listagem={listagem} />
         </>
     );
 };

@@ -66,6 +66,25 @@ export const Menu = () => {
                         </Link>
                     </ul>
                 </li>
+                <li>
+                    {' '}
+                    <a href="#">Movimentação</a>
+                    <ul>
+                        <Link to="/relatorio-movimento-vencimento">
+                            Relatório por Vencimento
+                        </Link>
+                        <Link to="/relatorio-movimento-emissao">
+                            Relatório por Emissao
+                        </Link>
+                        <label>-------------------</label>
+                        <Link to="/relatorio-movimento-cliente-vencimento">
+                            Relatório por Cliente / Vencimento
+                        </Link>
+                        <Link to="/relatorio-movimento-cliente-emissao">
+                            Relatório por Cliente / Emissão op.
+                        </Link>
+                    </ul>
+                </li>
 
                 <li>
                     <a href="#">Empresa</a>

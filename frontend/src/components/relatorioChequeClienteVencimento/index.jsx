@@ -12,6 +12,7 @@ import { BuscaClienteNome } from '../buscaCliente';
 import { apiFactoring } from '../../services/api';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { GridChequeRelatorio } from '../gridRelatorioCheques';
 
 export const RelatorioChequePorClienteVencimento = () => {
     const [idCliente, setIdCliente] = useState(0);
@@ -30,20 +31,10 @@ export const RelatorioChequePorClienteVencimento = () => {
 
     const [listagem, setListagem] = useState([]);
 
-    const [dadosCheque, setDadosCheque] = useState([]);
-
     const [checkRel, setCheckRel] = useState();
 
     const [dataIni, setDataIni] = useState(retornaDataAtual());
     const [dataFim, setDataFim] = useState(retornaDataAtual());
-
-    var totalValorCheques = 0;
-    var totalValorLiquido = 0;
-    var totalValorJuros = 0;
-
-    const [totalValCheques, setTotalValorCheques] = useState(0);
-    const [totalValLiquido, setTotalValorLiquido] = useState(0);
-    const [totalValJuros, setTotalValorJuros] = useState(0);
 
     const [idParcela, setIdParcela] = useState(0);
     const [parcelaN, setParcelaN] = useState(0);
@@ -78,20 +69,6 @@ export const RelatorioChequePorClienteVencimento = () => {
                 toast.error(data);
             });
     };
-
-    useEffect(() => {
-        listagem.map((somaTotais) => {
-            totalValorCheques =
-                totalValorCheques + parseFloat(somaTotais.valor_cheque);
-            totalValorLiquido =
-                totalValorLiquido + parseFloat(somaTotais.valor_liquido);
-            totalValorJuros =
-                totalValorJuros + parseFloat(somaTotais.valor_juros);
-        });
-        setTotalValorCheques(totalValorCheques);
-        setTotalValorLiquido(totalValorLiquido);
-        setTotalValorJuros(totalValorJuros);
-    }, [listagem]);
 
     const buscaClienteCodigo = async () => {
         const dadosCliente = ref.current;
@@ -161,7 +138,9 @@ export const RelatorioChequePorClienteVencimento = () => {
             )}
             <div className="divRelatorioChequeData">
                 <div id="divTituloRelatorio">
-                    <label>Realtório por Data de Vencimento</label>
+                    <label>
+                        Realtório de Cheques por Cliente e Data de Vencimento
+                    </label>
                 </div>
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
@@ -287,91 +266,7 @@ export const RelatorioChequePorClienteVencimento = () => {
                     </div>
                 </form>
             </div>{' '}
-            <div className="divListaRContainerCheque">
-                <div className="gridChequeRelatorio">
-                    <div>Banco</div>
-                    <div className="alignCenter">N. Cheque</div>
-                    <div>Nome</div>
-                    <div className="alignRight">Vencimento</div>
-                    <div className="alignRight">Valor</div>
-                    <div className="alignRight">Prazo</div>
-                    <div className="alignRight">V. Juros</div>
-                    <div className="alignRight">V. Liquido</div>
-                    <div className="alignRight">Status</div>
-                    <div className="alignRight">Operação</div>
-                    <div>Emissão</div>
-                </div>
-                <div className="divListaRcheques">
-                    {listagem.map((item, index) => (
-                        <div className="gridLinhaChequeRelatorio" key={index}>
-                            <div>{item.nome_banco}</div>
-
-                            <div className="alignCenter">
-                                {item.numero_cheque}
-                            </div>
-                            <div id="maximo_200px">{item.nome_cheque}</div>
-
-                            <div className="alignRight">
-                                {inverteData(item.data_vencimento)}
-                            </div>
-
-                            <div className="alignRight">
-                                {item.valor_cheque.toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-                            <div className="alignRight">{item.dias} dias</div>
-                            <div className="alignRight">
-                                {item.valor_juros.toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-                            <div className="alignRight">
-                                {item.valor_liquido.toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-                            <div className="alignRight">{item.status}</div>
-                            <div className="alignRight">{item.idbordero}</div>
-                            <div id="maximo_200px">
-                                {inverteData(item.data)}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="divTotaisRcheques" id="divListaRtotais">
-                    <div className=""></div>
-                    <div className=""></div>
-                    <div className=""></div>
-                    <div className=""></div>
-                    <div className="alignRight">
-                        {totalValCheques.toLocaleString('pt-BR', {
-                            style: 'decimal',
-                            minimumFractionDigits: 2,
-                        })}
-                    </div>
-                    <div className=""></div>
-                    <div className="alignRight">
-                        {totalValJuros.toLocaleString('pt-BR', {
-                            style: 'decimal',
-                            minimumFractionDigits: 2,
-                        })}
-                    </div>
-                    <div className="alignRight">
-                        {totalValLiquido.toLocaleString('pt-BR', {
-                            style: 'decimal',
-                            minimumFractionDigits: 2,
-                        })}
-                    </div>
-                    <div className=""></div>
-
-                    <div></div>
-                    <div></div>
-                </div>
-            </div>
+            <GridChequeRelatorio listagem={listagem} />
         </>
     );
 };

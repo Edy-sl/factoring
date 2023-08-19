@@ -18,7 +18,7 @@ export const loginFactoring = async (req, res) => {
         if (data.length > 0) {
             data.map(async (user) => {
                 const senhaOk = await bcrypt.compare(senha, user.senha);
-                console.debug(senhaOk);
+
                 if (senhaOk) {
                     const token = jwt.sign(
                         {
