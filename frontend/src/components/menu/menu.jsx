@@ -1,17 +1,15 @@
 import './menu.css';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { ImExit } from 'react-icons/im';
+import { useNavigate } from 'react-router-dom';
+import { FormLogin } from '../formLogin';
 
 export const Menu = () => {
-    const { signOut } = useContext(AuthContext);
+    const navigate = useNavigate();
 
-    const sair = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('factoring');
-        localStorage.removeItem('logado');
-    };
+    const { signOut } = useContext(AuthContext);
 
     return (
         <div className="">
@@ -21,6 +19,10 @@ export const Menu = () => {
                     <ul>
                         <Link to="/cadastro-cliente">Cadastro</Link>
                         <Link to="/taxa-cliente">Taxas</Link>
+                        <label>-------------------</label>
+                        <Link to="/relatorio-clientes">
+                            Relatório de Clientes
+                        </Link>
                     </ul>
                 </li>
 
@@ -75,13 +77,6 @@ export const Menu = () => {
                         </Link>
                         <Link to="/relatorio-movimento-emissao">
                             Relatório por Emissao
-                        </Link>
-                        <label>-------------------</label>
-                        <Link to="/relatorio-movimento-cliente-vencimento">
-                            Relatório por Cliente / Vencimento
-                        </Link>
-                        <Link to="/relatorio-movimento-cliente-emissao">
-                            Relatório por Cliente / Emissão op.
                         </Link>
                     </ul>
                 </li>

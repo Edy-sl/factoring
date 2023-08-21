@@ -76,3 +76,8 @@
 #inputDataNascimento {
     width: 120px;
 }
+
+#selectUf {
+    padding: 2px;
+    margin: 0;
+}

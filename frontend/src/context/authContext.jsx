@@ -57,12 +57,16 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('logado');
         localStorage.removeItem('user');
         localStorage.removeItem('factoring');
+
+        setUser('');
+        setAuth('');
+        setFactoring('');
+
         setUser(null);
         setAuth();
         setFactoring('null');
 
         window.location.reload();
-        //  navigate('/');
     };
 
     return (

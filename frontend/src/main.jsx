@@ -7,7 +7,11 @@ import { Home } from './pages/home.jsx';
 import { ErrorPage } from './pages/errorPage.jsx';
 
 // 1 - configurando router
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+    BrowserRouter,
+    createBrowserRouter,
+    RouterProvider,
+} from 'react-router-dom';
 import { FormLogin } from './components/formLogin/index.jsx';
 import { FormOperacaoCheque } from './components/operacaoCheque/index.jsx';
 import { FormCadastroUsuario } from './components/formCadastroUsuario/index.jsx';
@@ -31,6 +35,8 @@ import { RelatorioChequePorClienteVencimento } from './components/relatorioChequ
 import { RelatorioChequePorClienteEmissao } from './components/relatorioChequeClienteEmissao/index.jsx';
 import { RelatorioMovimentoPorVencimento } from './components/relatorioMovimentoVencimento/index.jsx';
 import { RelatorioMovimentoPorEmissao } from './components/relatorioMovimentoEmissao/index.jsx';
+import { RelatorioClientes } from './components/relatorioClientes/index.jsx';
+
 const router = createBrowserRouter([
     {
         path: '/',
@@ -129,6 +135,14 @@ const router = createBrowserRouter([
                 ),
             },
             {
+                path: '/relatorio-clientes',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioClientes />
+                    </PrivateRouter>
+                ),
+            },
+            {
                 path: '/emprestimo',
                 element: (
                     <PrivateRouter>
@@ -197,6 +211,8 @@ const router = createBrowserRouter([
                 path: '/recupera-senha',
                 element: <FormRecuperaSenha />,
             },
+
+            { basename: '/' },
 
             /* {
       path: "/contact",

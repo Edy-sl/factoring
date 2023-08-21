@@ -37,6 +37,36 @@ export const FormCliente = () => {
         e.preventDefault();
     };
 
+    let siglas = [
+        { uf: 'AC', nome: 'Acre' },
+        { uf: 'AL', nome: 'Alagoas' },
+        { uf: 'AP', nome: 'Amapá' },
+        { uf: 'AM', nome: 'Amazonas' },
+        { uf: 'BA', nome: 'Bahia' },
+        { uf: 'CE', nome: 'Ceará' },
+        { uf: 'DF', nome: 'Distrito Federal' },
+        { uf: 'ES', nome: 'Espirito Santo' },
+        { uf: 'GO', nome: 'Goiás' },
+        { uf: 'MA', nome: 'Maranhão' },
+        { uf: 'MS', nome: 'Mato Grosso do Sul' },
+        { uf: 'MT', nome: 'Mato Grosso' },
+        { uf: 'MG', nome: 'Minas Gerais' },
+        { uf: 'PA', nome: 'Pará' },
+        { uf: 'PB', nome: 'Paraíba' },
+        { uf: 'PR', nome: 'Paraná' },
+        { uf: 'PE', nome: 'Pernambuco' },
+        { uf: 'PI', nome: 'Piauí' },
+        { uf: 'RJ', nome: 'Rio de Janeiro' },
+        { uf: 'RN', nome: 'Rio Grande do Norte' },
+        { uf: 'RS', nome: 'Rio Grande do Sul' },
+        { uf: 'RO', nome: 'Rondônia' },
+        { uf: 'RR', nome: 'Roraima' },
+        { uf: 'SC', nome: 'Santa Catarina' },
+        { uf: 'SP', nome: 'São Paulo' },
+        { uf: 'SE', nome: 'Sergipe' },
+        { uf: 'TO', nome: 'Tocantins' },
+    ];
+
     const buscaCep = async () => {
         const dadosFactoring = ref.current;
 
@@ -53,6 +83,8 @@ export const FormCliente = () => {
             dadosFactoring.bairro.value = respostaCep.data.bairro;
             dadosFactoring.cidade.value = respostaCep.data.localidade;
             dadosFactoring.uf.value = respostaCep.data.uf;
+
+            console.log(respostaCep.data.uf);
         } catch {
             toast.error('Erro ao buscar o CEP!');
         }
@@ -264,6 +296,7 @@ export const FormCliente = () => {
                         dadosCliente.complemento.value = dados.complemento;
                         dadosCliente.bairro.value = dados.bairro;
                         dadosCliente.cidade.value = dados.cidade;
+                        dadosCliente.uf.value = dados.uf;
                         dadosCliente.telefone.value = dados.telefone;
                         dadosCliente.dataNascimento.value =
                             dados.data_nascimento;
@@ -536,9 +569,9 @@ export const FormCliente = () => {
                             name="uf"
                             onKeyDown={(e) => keyDown(e, 'inputTelefone')}
                         >
-                            <option value="SP">SP</option>
-                            <option value="">Valor 2</option>
-                            <option value="">Valor 3</option>
+                            {siglas.map((uf) => (
+                                <option value={uf.uf}>{uf.uf}</option>
+                            ))}
                         </select>
                     </div>
                 </div>

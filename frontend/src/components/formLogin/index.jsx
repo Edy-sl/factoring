@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRef, useState, useContext } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from '../../context/authContext';
 import { Link } from 'react-router-dom';
 import './formlogin.css';
-export const FormLogin = () => {
-    const { signIn, autenticado, loading } = useContext(AuthContext);
+
+export const FormLogin = (sair) => {
+    const { signIn, signOut } = useContext(AuthContext);
+    const [logoff, setLogoff] = useState();
+
+    console.log(sair);
 
     const ref = useRef();
 

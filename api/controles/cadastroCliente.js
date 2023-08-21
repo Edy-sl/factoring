@@ -77,11 +77,8 @@ export const alterarCliente = (req, res) => {
     const { dataNascimento } = req.body;
     const { observacao } = req.body;
 
-    const { taxaJuros } = req.body;
-    const { especial } = req.body;
-
     const sql =
-        'update clientes set ie_rg = ?, nome = ?, cep = ?, rua = ?, numero = ?, bairro = ?, complemento = ?, cidade = ?, uf = ?, telefone = ?, data_nascimento = ?, observacao = ?, taxa_juros = ?, especial = ? where cnpj_cpf = ?';
+        'update clientes set ie_rg = ?, nome = ?, cep = ?, rua = ?, numero = ?, bairro = ?, complemento = ?, cidade = ?, uf = ?, telefone = ?, data_nascimento = ?, observacao = ? where cnpj_cpf = ?';
     db.query(
         sql,
         [
@@ -97,8 +94,6 @@ export const alterarCliente = (req, res) => {
             telefone,
             dataNascimento,
             observacao,
-            taxaJuros,
-            especial,
             cnpjCpf,
         ],
         (err, data) => {
@@ -150,5 +145,14 @@ export const atualizaTaxaCliente = (req, res) => {
     db.query(sql, [taxaJuros, especial, idCliente], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json('Taxa atualizada!');
+    });
+};
+
+//lista todos os clientes
+export const listaClientes = (req, res) => {
+    const sql = 'select * from clientes order by nome';
+    db.query(sql, [], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
     });
 };

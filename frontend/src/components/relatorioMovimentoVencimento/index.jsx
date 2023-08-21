@@ -12,7 +12,7 @@ import {
 } from '../../biblitoteca.jsx';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 
-import { ImpressaoMovimento } from '../menu/functions/impressaoMovimento';
+import { impressaoMovimento } from '../menu/functions/impressaoMovimento';
 
 export const RelatorioMovimentoPorVencimento = () => {
     const ref = useRef();
@@ -22,7 +22,7 @@ export const RelatorioMovimentoPorVencimento = () => {
 
     const [dadosCheque, setDadosCheque] = useState([]);
 
-    const [checkRel, setCheckRel] = useState();
+    const [checkRel, setCheckRel] = useState('GERAL');
 
     const [dataIni, setDataIni] = useState(retornaDataAtual());
     const [dataFim, setDataFim] = useState(retornaDataAtual());
@@ -102,31 +102,6 @@ export const RelatorioMovimentoPorVencimento = () => {
             });
     };
 
-    useEffect(() => {
-        listagemCheque.map((somaTotais) => {
-            totalValorCheques =
-                totalValorCheques + parseFloat(somaTotais.valor_cheque);
-            totalValorLiquido =
-                totalValorLiquido + parseFloat(somaTotais.valor_liquido);
-            totalValorJuros =
-                totalValorJuros + parseFloat(somaTotais.valor_juros);
-        });
-        setTotalValorCheques(totalValorCheques);
-        setTotalValorLiquido(totalValorLiquido);
-        setTotalValorJuros(totalValorJuros);
-    }, [listagemCheque]);
-
-    useEffect(() => {
-        listagemEmprestimo.map((somaTotais) => {
-            totalValor = totalValor + parseFloat(somaTotais.valor);
-            totalRecebido = totalRecebido + parseFloat(somaTotais.valor_pago);
-            totalReceber = totalValor - totalRecebido;
-        });
-        setTotalValorR(totalValor);
-        setTotalValorRecebido(totalRecebido);
-        setTotalValorReceber(totalReceber);
-    }, [listagemEmprestimo]);
-
     return (
         <>
             {' '}
@@ -145,7 +120,7 @@ export const RelatorioMovimentoPorVencimento = () => {
             )}
             <div className="divRelatorioChequeData">
                 <div id="divTituloRelatorio">
-                    <label>Realtório por Data de Emissão</label>
+                    <label>Movimento por Data de Vencimento</label>
                 </div>
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow" id="divFiltroMovimentoEmissao">
@@ -196,7 +171,7 @@ export const RelatorioMovimentoPorVencimento = () => {
                                 <FiPrinter
                                     className="icone2"
                                     onClick={(e) =>
-                                        ImpressaoMovimento(
+                                        impressaoMovimento(
                                             listagemCheque,
                                             listagemEmprestimo
                                         )
@@ -207,16 +182,8 @@ export const RelatorioMovimentoPorVencimento = () => {
                     </div>
                 </form>
             </div>
-            <GridChequeRelatorio
-                lista={listagemCheque}
-                ValCheques={totalValCheques}
-            />
-            <GridRelatorioEmprestimo
-                listagem={listagemEmprestimo}
-                ValorEmprestimos={totalValorR}
-                valorRecebido={totalValorRecebido}
-                valorReceber={totalValorReceber}
-            />
+            <GridChequeRelatorio listagem={listagemCheque} />
+            <GridRelatorioEmprestimo listagem={listagemEmprestimo} />
         </>
     );
 };

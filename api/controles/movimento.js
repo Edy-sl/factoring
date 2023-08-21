@@ -1,7 +1,7 @@
 import { db } from '../db.js';
 import {} from 'dotenv/config';
 
-////relatorios por data de vencimento
+////movimento remprestimo por data de vencimento
 export const movimentoEmprestimoVencimento = (req, res) => {
     var { dataI } = req.body;
     var { dataF } = req.body;
@@ -111,7 +111,7 @@ export const movimentoEmprestimoVencimento = (req, res) => {
             'order by idemprestimo, parcela ';
     }
 
-    /*por data de vencimento - Geral*/
+    /*rel. emprestimo movimento  / por data de vencimento - Geral*/
     if (tipoRel == 'GERAL') {
         var sql =
             'select ' +
@@ -124,6 +124,7 @@ export const movimentoEmprestimoVencimento = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'cli.nome ' +
             'from ' +
@@ -135,6 +136,7 @@ export const movimentoEmprestimoVencimento = (req, res) => {
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
+            'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from ' +
@@ -168,34 +170,33 @@ export const movimentoEmprestimoVencimento = (req, res) => {
     });
 };
 
-/////relatorios de cheque por data de vencimento
+/////relatorios moviemto de cheque por data de vencimento
 export const movimentoChequesPorVencimento = (req, res) => {
     const { dataI } = req.body;
     const { dataF } = req.body;
     const { status } = req.body;
-    console.log(dataI);
 
     let sql = '';
     if (status === 'GERAL') {
         sql =
-            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `SELECT * FROM borderos_lancamentos ` +
+            `as cheques inner join borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where cheques.data_vencimento between  ? and ? order by cheques.data_vencimento`;
     }
     if (status === 'DEVOLVIDO') {
         sql =
-            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `SELECT * FROM borderos_lancamentos ` +
+            `as cheques inner join borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where cheques.data_vencimento between  ? and ? and status = 'DEVOLVIDO' order by cheques.data_vencimento`;
     }
     if (status === 'RECEBIDO') {
         sql =
-            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `SELECT * FROM borderos_lancamentos ` +
+            `as cheques inner join borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where cheques.data_vencimento between  ? and ? and status = 'RECEBIDO' order by cheques.data_vencimento`;
@@ -208,7 +209,7 @@ export const movimentoChequesPorVencimento = (req, res) => {
 };
 
 /****** */
-////relatorios por data de emissao
+////Movimento emprestimos por data de emissao
 export const relatorioMovimentoEmprestimoEmissao = (req, res) => {
     var { dataI } = req.body;
     var { dataF } = req.body;
@@ -376,7 +377,7 @@ export const relatorioMovimentoEmprestimoEmissao = (req, res) => {
     });
 };
 
-/////relatorio por data da emissao da operação
+/////Movimento de Cheques por data da emissao da operação
 export const relatorioMovimentoChequesPorEmissao = (req, res) => {
     const { dataI } = req.body;
     const { dataF } = req.body;
@@ -385,24 +386,24 @@ export const relatorioMovimentoChequesPorEmissao = (req, res) => {
     let sql = '';
     if (status === 'GERAL') {
         sql =
-            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `SELECT * FROM borderos_lancamentos ` +
+            `as cheques inner join borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where operacao.data between  ? and ? order by cheques.data_vencimento`;
     }
     if (status === 'DEVOLVIDO') {
         sql =
-            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `SELECT * FROM borderos_lancamentos ` +
+            `as cheques inner join borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where operacao.data between  ? and ? and cheques.status = 'DEVOLVIDO' order by cheques.data_vencimento`;
     }
     if (status === 'RECEBIDO') {
         sql =
-            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
-            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `SELECT * FROM borderos_lancamentos ` +
+            `as cheques inner join borderos as operacao ` +
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where operacao.data between  ? and ? and cheques.status = 'RECEBIDO' order by cheques.data_vencimento`;

@@ -51,6 +51,7 @@ import {
     buscaClienteNome,
     postCliente,
     atualizaTaxaCliente,
+    listaClientes,
 } from '../controles/cadastroCliente.js';
 
 import {
@@ -127,6 +128,7 @@ rotaFactoring.post(
     verificaPermissao,
     atualizaTaxaCliente
 );
+rotaFactoring.post('/lista-clientes', verifyJWT, listaClientes);
 
 rotaFactoring.post('/gravar-bordero', verifyJWT, gravarBordero);
 rotaFactoring.post(
