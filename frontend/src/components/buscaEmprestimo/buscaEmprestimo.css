@@ -1,7 +1,7 @@
 .divBuscaEmprestimo {
     position: fixed;
     z-index: 999;
-    top: 100px;
+    top: 25vh;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -10,6 +10,7 @@
     justify-content: center;
 
     box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    text-transform: uppercase;
 }
 
 .divResultadoBuscaEmprestimo {
@@ -19,6 +20,7 @@
     cursor: pointer;
     overflow: scroll;
     max-height: 350px;
+    text-transform: uppercase;
 }
 
 .divEmprestimo {
@@ -34,10 +36,12 @@
     flex-direction: row;
     background-color: rgb(11, 34, 57);
     color: #fff;
+    text-transform: uppercase;
 }
 
 #divIdEmprestimo {
     margin-right: 5px;
+    text-transform: uppercase;
 }
 
 #divData {
@@ -49,4 +53,5 @@
     flex-direction: row;
     align-items: center;
     padding-bottom: 15px;
+    text-transform: uppercase;
 }

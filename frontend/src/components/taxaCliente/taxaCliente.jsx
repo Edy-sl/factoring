@@ -4,7 +4,7 @@ import {
     converteFloatMoeda,
     keyDown,
 } from '../../biblitoteca';
-import { FiSearch } from 'react-Icons/fi';
+import { FiSearch } from 'react-icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
 import { ImCheckboxChecked } from 'react-icons/im';
 import { ImCheckboxUnchecked } from 'react-icons/im';

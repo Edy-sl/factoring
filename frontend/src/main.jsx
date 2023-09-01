@@ -10,6 +10,7 @@ import { ErrorPage } from './pages/errorPage.jsx';
 import {
     BrowserRouter,
     createBrowserRouter,
+    createHashRouter,
     RouterProvider,
 } from 'react-router-dom';
 import { FormLogin } from './components/formLogin/index.jsx';
@@ -36,8 +37,10 @@ import { RelatorioChequePorClienteEmissao } from './components/relatorioChequeCl
 import { RelatorioMovimentoPorVencimento } from './components/relatorioMovimentoVencimento/index.jsx';
 import { RelatorioMovimentoPorEmissao } from './components/relatorioMovimentoEmissao/index.jsx';
 import { RelatorioClientes } from './components/relatorioClientes/index.jsx';
+import { Devolucao } from './components/devolucao/index.jsx';
+import { PagamentoCheque } from './components/pagamentoCheque/index.jsx';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
     {
         path: '/',
         element: (
@@ -85,6 +88,22 @@ const router = createBrowserRouter([
                 element: (
                     <PrivateRouter>
                         <FormOperacaoCheque />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/devolucao',
+                element: (
+                    <PrivateRouter>
+                        <Devolucao />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/pagamento',
+                element: (
+                    <PrivateRouter>
+                        <PagamentoCheque />
                     </PrivateRouter>
                 ),
             },
@@ -211,8 +230,6 @@ const router = createBrowserRouter([
                 path: '/recupera-senha',
                 element: <FormRecuperaSenha />,
             },
-
-            { basename: '/' },
 
             /* {
       path: "/contact",

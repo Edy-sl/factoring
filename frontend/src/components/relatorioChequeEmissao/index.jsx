@@ -1,4 +1,4 @@
-import { FiSearch, FiDollarSign } from 'react-Icons/fi';
+import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
@@ -26,6 +26,8 @@ export const RelatorioChequePorEmissao = () => {
 
     const [atualizaParcelas, setAtualizaParcelas] = useState(false);
 
+    let newArray = [];
+
     const handleSubmit = (e) => {
         e.preventDefault();
     };
@@ -50,8 +52,24 @@ export const RelatorioChequePorEmissao = () => {
                 }
             )
             .then(({ data }) => {
-                console.log(data);
-                setListagem(data);
+                data.map((item) => {
+                    newArray = [
+                        ...newArray,
+                        {
+                            numero_banco: item.numero_banco,
+                            numero_cheque: item.numero_cheque,
+                            nome_cheque: item.nome_cheque,
+                            nome: item.nome,
+                            idbordero: item.idbordero,
+                            data: item.data,
+                            data_vencimento: item.data_vencimento,
+                            valor_cheque: item.valor_cheque,
+                            valor_juros: item.valor_juros,
+                            idbordero_deducao: '0',
+                        },
+                    ];
+                });
+                setListagem(newArray);
             })
             .catch(({ data }) => {
                 toast.error(data);
@@ -105,7 +123,7 @@ export const RelatorioChequePorEmissao = () => {
                                 />
                             )}
 
-                            {checkRel == 'RECEBIDO' ? (
+                            {checkRel == 'PAGO' ? (
                                 <input
                                     type="checkbox"
                                     name="chekedRecebido"
@@ -117,7 +135,7 @@ export const RelatorioChequePorEmissao = () => {
                                     type="checkbox"
                                     name="chekedRecebido"
                                     id="checkRel"
-                                    onChange={(e) => setCheckRel('RECEBIDO')}
+                                    onChange={(e) => setCheckRel('PAGO')}
                                 />
                             )}
 

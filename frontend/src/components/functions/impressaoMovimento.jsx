@@ -4,7 +4,7 @@ import {
     inverteData,
     retornaDataAtual,
     tamanhoMaximo,
-} from '../../../biblitoteca';
+} from '../../biblitoteca';
 
 export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     let totalValorCheques = 0;

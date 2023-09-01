@@ -15,6 +15,7 @@ ul {
     list-style: none;
     list-style: none;
     float: left;
+    font-size: 18px;
 }
 
 ul li {
@@ -46,6 +47,22 @@ ul li a:hover {
 li:hover ul {
     display: block;
     box-shadow: 5px 5px 5px black;
+}
+
+#fullScreen {
+    display: block;
+    text-decoration: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+#fullScreen:hover {
+    display: block;
+    text-decoration: none;
+    color: #035ff3e7;
+    padding: 5px;
+
+    cursor: pointer;
 }
 
 #sair {

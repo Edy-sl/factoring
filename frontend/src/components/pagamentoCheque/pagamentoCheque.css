@@ -1,0 +1,53 @@
+#divGeralPagamentos {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 430px;
+    overflow: scroll;
+}
+
+.gridTituloChequePagamento {
+    display: grid;
+    grid-template-columns: 250px 100px 100px 250px 250px 100px 200px;
+    background-color: rgb(223, 224, 225);
+    margin-top: 20px;
+    padding-left: 5px;
+    max-width: 1267px;
+    min-width: 1267px;
+}
+
+.gridChequePagamento {
+    display: grid;
+    grid-template-columns: 250px 100px 100px 250px 250px 100px 200px;
+    text-transform: uppercase;
+    align-items: center;
+    background-color: #ffffff;
+    padding-left: 5px;
+    max-width: 1250px;
+    min-width: 1250px;
+}
+.gridChequePagamento:hover {
+    display: grid;
+    grid-template-columns: 250px 100px 100px 250px 250px 100px 200px;
+    text-transform: uppercase;
+    align-items: center;
+    background-color: rgb(223, 224, 225);
+    padding-left: 5px;
+    max-width: 1250px;
+    min-width: 1250px;
+}
+
+#checkPag {
+    color: rgb(6, 187, 24);
+    font-size: 23px;
+    padding-right: 5px;
+}
+
+#dataDev {
+    width: 110px;
+}
+
+#divTituloPagamento {
+    background-color: rgb(185, 185, 188);
+    text-align: center;
+}

@@ -3,7 +3,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import { apiFactoring } from '../../services/api';
 import { useEffect, useRef, useState } from 'react';
-import { FiSearch } from 'react-Icons/fi';
+import { FiSearch } from 'react-icons/fi';
 import { ImExit } from 'react-icons/im';
 import './buscaEmprestimo.css';
 import { keyDown, retornaDataAtual } from '../../biblitoteca';

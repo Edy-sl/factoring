@@ -17,7 +17,7 @@ import {
 } from '../../biblitoteca';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FiSearch, FiEdit, FiDollarSign } from 'react-Icons/fi';
+import { FiSearch, FiEdit, FiDollarSign } from 'react-icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
 import { BuscaEmprestimo } from '../buscaEmprestimo';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';

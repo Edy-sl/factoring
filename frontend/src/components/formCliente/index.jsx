@@ -12,7 +12,7 @@ import {
     converteFloatMoeda,
 } from '../../biblitoteca';
 import { BuscaClienteNome } from '../buscaCliente';
-import { FiSearch } from 'react-Icons/fi';
+import { FiSearch } from 'react-icons/fi';
 import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
 import { CheckboxPersonalizado } from '../checkbox/checkboxPersonalizado';
 
@@ -570,7 +570,9 @@ export const FormCliente = () => {
                             onKeyDown={(e) => keyDown(e, 'inputTelefone')}
                         >
                             {siglas.map((uf) => (
-                                <option value={uf.uf}>{uf.uf}</option>
+                                <option key={uf.uf} value={uf.uf}>
+                                    {uf.uf}
+                                </option>
                             ))}
                         </select>
                     </div>

@@ -1,4 +1,4 @@
-import { FiSearch, FiPrinter } from 'react-Icons/fi';
+import { FiSearch, FiPrinter } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,15 +11,16 @@ import {
     tamanhoMaximo,
 } from '../../biblitoteca.jsx';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
-import { impressaoMovimento } from '../menu/functions/impressaoMovimento';
+import { impressaoMovimento } from '../functions/impressaoMovimento';
 
 export const RelatorioMovimentoPorEmissao = () => {
     const ref = useRef();
 
     const [listagemCheque, setListagemCheque] = useState([]);
+    const [listagemChequeDeducao, setListagemChequeDeducao] = useState([]);
     const [listagemEmprestimo, setListagemEmprestimo] = useState([]);
 
-    const [checkRel, setCheckRel] = useState('GERAL');
+    const [isCheckedDeducao, setIsCheckedDeducao] = useState(false);
 
     const [dataIni, setDataIni] = useState(retornaDataAtual());
     const [dataFim, setDataFim] = useState(retornaDataAtual());
@@ -38,13 +39,14 @@ export const RelatorioMovimentoPorEmissao = () => {
         var dataI = dadosRelatorio.dataI.value;
         var dataF = dadosRelatorio.dataF.value;
 
+        let newArray = [];
+
         await apiFactoring
             .post(
                 '/relatorio-movimento-cheque-emissao',
                 {
                     dataI: dataI,
                     dataF: dataF,
-                    status: checkRel,
                 },
                 {
                     headers: {
@@ -53,8 +55,61 @@ export const RelatorioMovimentoPorEmissao = () => {
                 }
             )
             .then(({ data }) => {
-                console.log(data);
-                setListagemCheque(data);
+                data.map((item) => {
+                    newArray = [
+                        ...newArray,
+                        {
+                            numero_banco: item.numero_banco,
+                            numero_cheque: item.numero_cheque,
+                            nome_cheque: item.nome_cheque,
+                            nome: item.nome,
+                            idbordero: item.idbordero,
+                            data: item.data,
+                            data_vencimento: item.data_vencimento,
+                            valor_cheque: item.valor_cheque,
+                            valor_juros: item.valor_juros,
+                            idbordero_deducao: '0',
+                        },
+                    ];
+                });
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+
+        await apiFactoring
+            .post(
+                '/relatorio-movimento-deducao-emissao',
+                {
+                    dataI: dataI,
+                    dataF: dataF,
+                    status: isCheckedDeducao,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                data.map((item) => {
+                    newArray = [
+                        ...newArray,
+                        {
+                            numero_banco: item.numero_banco,
+                            numero_cheque: item.numero_cheque,
+                            nome_cheque: item.nome_cheque,
+                            nome: item.nome,
+                            idbordero: item.idbordero,
+                            data: item.data_deducao,
+                            data_vencimento: 'DV-' + item.data_devolucao,
+                            valor_cheque: item.valor_cheque,
+                            valor_juros: item.juros_devolucao,
+                            idbordero_deducao: item.idbordero_deducao,
+                        },
+                    ];
+                });
+                console.log(newArray);
             })
             .catch(({ data }) => {
                 toast.error(data);
@@ -66,7 +121,6 @@ export const RelatorioMovimentoPorEmissao = () => {
                 {
                     dataI: dataI,
                     dataF: dataF,
-                    tipoRel: checkRel,
                 },
                 {
                     headers: {
@@ -75,13 +129,17 @@ export const RelatorioMovimentoPorEmissao = () => {
                 }
             )
             .then(({ data }) => {
-                console.log(data);
                 setListagemEmprestimo(data);
-                console.log(data);
             })
             .catch(({ data }) => {
                 toast.error(data);
             });
+
+        setListagemCheque(newArray);
+    };
+
+    const handleOnChangeDeducao = () => {
+        setIsCheckedDeducao(!isCheckedDeducao);
     };
 
     return (
@@ -108,24 +166,25 @@ export const RelatorioMovimentoPorEmissao = () => {
                     <div className="boxRow" id="divFiltroMovimentoEmissao">
                         <div className="boxCol">
                             <label>Geral</label>
+                            <label>Sem Dedução</label>
                         </div>
 
                         <div className="boxCol" id="divCheckbox">
-                            {checkRel == 'GERAL' ? (
-                                <input
-                                    type="checkbox"
-                                    name="chekedGeral"
-                                    id="checkRel"
-                                    checked
-                                />
-                            ) : (
-                                <input
-                                    type="checkbox"
-                                    name="chekedGeral"
-                                    id="checkRel"
-                                    onChange={(e) => setCheckRel('GERAL')}
-                                />
-                            )}
+                            <input
+                                type="checkbox"
+                                name="chekeboxGeral"
+                                id="checkRel"
+                                checked={!isCheckedDeducao}
+                                onChange={handleOnChangeDeducao}
+                            />
+
+                            <input
+                                type="checkbox"
+                                name="checkboxDeducao"
+                                id="checkRel"
+                                checked={isCheckedDeducao}
+                                onChange={handleOnChangeDeducao}
+                            />
                         </div>
 
                         <div className="boxCol">
@@ -148,7 +207,7 @@ export const RelatorioMovimentoPorEmissao = () => {
                                 />
                                 <FiSearch
                                     className="icone2"
-                                    onClick={checkRel && relatorioPorData}
+                                    onClick={relatorioPorData}
                                 />{' '}
                                 <FiPrinter
                                     className="icone2"
@@ -164,8 +223,10 @@ export const RelatorioMovimentoPorEmissao = () => {
                     </div>
                 </form>
             </div>
-            <GridChequeRelatorio listagem={listagemCheque} />
-            <GridRelatorioEmprestimo listagem={listagemEmprestimo} />
+            <div id="divListagemMovimento">
+                <GridChequeRelatorio listagem={listagemCheque} />
+                <GridRelatorioEmprestimo listagem={listagemEmprestimo} />
+            </div>
         </>
     );
 };

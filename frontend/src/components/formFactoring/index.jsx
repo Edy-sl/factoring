@@ -5,8 +5,6 @@ import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from '../../context/authContext';
 import { apiCep, apiFactoring } from '../../services/api';
-
-import { FiSearch } from 'react-Icons/fi';
 import { cpfCnpjMask, keyDown, converteMoedaFloat } from '../../biblitoteca';
 
 export const FormFactoring = () => {

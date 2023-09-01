@@ -1,3 +1,7 @@
+#divListagemMovimento {
+    max-height: 80vh;
+}
+
 .divRelatorioChequeData {
     display: flex;
     flex-direction: column;
@@ -27,6 +31,7 @@
     gap: 15px;
     padding-left: 5px;
     padding-right: 5px;
+    background-color: #ffffff;
 }
 
 .gridLinhaChequeRelatorio:hover {
@@ -59,6 +64,11 @@
 
 #divFiltroMovimentoEmissao {
     padding-bottom: 20px;
+}
+
+.jurosDeducao {
+    color: brown;
+    text-align: right;
 }
 
 @media only screen and (max-width: 700px) {

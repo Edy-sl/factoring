@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { inverteData } from '../../biblitoteca';
 
 import { apiFactoring } from '../../services/api';
-import './RelatorioClientes.css';
+import './relatorioClientes.css';
 
 export const RelatorioClientes = () => {
     const [listaClientes, setListaClientes] = useState([]);

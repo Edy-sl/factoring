@@ -6,7 +6,7 @@ import {
     inverteData,
     retornaDataAtual,
 } from '../../biblitoteca';
-import { FiSearch, FiDollarSign } from 'react-Icons/fi';
+import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { ImExit, ImBin } from 'react-icons/im';
 import axios from 'axios';
 import { apiFactoring } from '../../services/api';

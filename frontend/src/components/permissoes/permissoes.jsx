@@ -158,12 +158,12 @@ export const Permissoes = () => {
                 </select>
                 <button onClick={aplicarPermissao}>Aplicar</button>
             </div>
-            <div>
+            <div id="divGeralPermissao">
                 {arrayListPermissoes.map((permissoes, index) => (
                     <div className="gridPermissoes" key={index}>
                         <div>{permissoes.nome}</div>
                         <div>{permissoes.grupo}</div>
-                        <div>
+                        <div className="alignRight">
                             <ImBin
                                 onClick={(e) =>
                                     excluirPermissao(permissoes.idpermissoes)

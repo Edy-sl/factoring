@@ -4,8 +4,7 @@
     font-weight: 400;
 
     color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #ffffff;
+    color: rgba(19, 18, 18, 0.87);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -45,16 +44,21 @@ button:focus-visible {
     outline: 6px auto -webkit-focus-ring-color;
 }
 
+textarea {
+    background-color: #fefeff;
+}
+
 textarea:focus {
     outline: 4px auto #4e9fe6;
 }
+
 label {
     font-size: 1em;
     margin: 0px 7px 0px 7px;
     font-weight: 500;
     font-family: inherit;
     padding: 3px;
-    color: #767171;
+    color: #595656;
 }
 
 select {
@@ -112,6 +116,7 @@ input {
     transition: border-color 0.25s;
 
     color: #585353;
+    background-color: #fefeff;
     text-transform: uppercase;
 }
 
@@ -121,7 +126,6 @@ input:focus {
 
 @media (prefers-color-scheme: light) {
     :root {
-        color: #010b14d5;
         background-color: #ffffff;
         font-size: 1em;
         font-weight: 500;
@@ -152,12 +156,4 @@ ul {
     flex-direction: column;
     background-color: rgb(223, 224, 225);
     padding: 20px;
-}
-@media (max-width: 1024px) {
-    :root {
-        color: #140501d5;
-        background-color: #ffffff;
-        font-size: 0.7em;
-        font-weight: 900;
-    }
 }

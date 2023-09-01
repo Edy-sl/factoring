@@ -6,7 +6,7 @@ import {
     retornaDataAtual,
     inverteData,
 } from '../../biblitoteca';
-import { FiSearch, FiDollarSign } from 'react-Icons/fi';
+import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
 
 import { apiFactoring } from '../../services/api';

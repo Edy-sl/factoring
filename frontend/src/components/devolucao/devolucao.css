@@ -1,0 +1,53 @@
+#divGeralDevolucao {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 430px;
+    overflow: scroll;
+}
+
+.gridTituloChequeDevolucao {
+    display: grid;
+    grid-template-columns: 250px 100px 100px 250px 250px 100px 200px;
+    background-color: rgb(223, 224, 225);
+    margin-top: 20px;
+    padding-left: 5px;
+    max-width: 1267px;
+    min-width: 1267px;
+}
+
+.gridChequeDevolucao {
+    display: grid;
+    grid-template-columns: 250px 100px 100px 250px 250px 100px 200px;
+    text-transform: uppercase;
+    align-items: center;
+    background-color: #ffffff;
+    padding-left: 5px;
+    max-width: 1250px;
+    min-width: 1250px;
+}
+.gridChequeDevolucao:hover {
+    display: grid;
+    grid-template-columns: 250px 100px 100px 250px 250px 100px 200px;
+    text-transform: uppercase;
+    align-items: center;
+    background-color: rgb(223, 224, 225);
+    padding-left: 5px;
+    max-width: 1250px;
+    min-width: 1250px;
+}
+
+#checkDev {
+    color: brown;
+    font-size: 23px;
+    padding-right: 5px;
+}
+
+#dataDev {
+    width: 110px;
+}
+
+#divTituloDevolucao {
+    background-color: rgb(185, 185, 188);
+    text-align: center;
+}

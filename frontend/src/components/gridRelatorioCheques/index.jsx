@@ -42,6 +42,7 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
                     <div className="alignRight">Valor</div>
                     <div className="alignRight">Juros</div>
                 </div>
+
                 <div className="divListaRcheques">
                     {listagem.map((item, index) => (
                         <div className="gridLinhaChequeRelatorio" key={index}>
@@ -75,15 +76,28 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
                                     }
                                 )}
                             </div>
-                            <div className="alignRight">
-                                {(item.valor_juros * 1).toLocaleString(
-                                    'pt-BR',
-                                    {
-                                        style: 'decimal',
-                                        minimumFractionDigits: 2,
-                                    }
-                                )}
-                            </div>
+
+                            {item.idbordero_deducao > 0 ? (
+                                <div className="jurosDeducao">
+                                    {(item.valor_juros * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="alignRight">
+                                    {(item.valor_juros * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

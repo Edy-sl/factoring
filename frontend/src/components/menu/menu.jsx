@@ -1,15 +1,33 @@
 import './menu.css';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { Link, Navigate } from 'react-router-dom';
-import { ImExit } from 'react-icons/im';
+import { FiMonitor } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { FormLogin } from '../formLogin';
 
 export const Menu = () => {
     const navigate = useNavigate();
 
+    const [telaCheia, setTelaCheia] = useState(false);
+
     const { signOut } = useContext(AuthContext);
+
+    function fullScreen() {
+        if (telaCheia) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    const fullScr = () => {
+        setTelaCheia(!telaCheia);
+    };
+
+    useEffect(() => {
+        fullScreen();
+    }, [telaCheia]);
 
     return (
         <div className="">
@@ -52,6 +70,8 @@ export const Menu = () => {
                     <a href="#">Cheques</a>
                     <ul>
                         <Link to="/bordero">Lançamento</Link>
+                        <Link to="/devolucao">Devolução</Link>
+                        <Link to="/pagamento">Pagamento</Link>
                         <label>-------------------</label>
                         <Link to="/relatorio-cheque-vencimento">
                             Relatório por Vencimento
@@ -84,9 +104,7 @@ export const Menu = () => {
                 <li>
                     <a href="#">Empresa</a>
                     <ul>
-                        <Link to="/empresa">
-                            <label>Empresa</label>
-                        </Link>
+                        <Link to="/empresa">Empresa</Link>
                         <Link to="/permissoes">Permissões</Link>
                         <Link to="/cadastro-usuario-secundario">
                             Cadastro de Usuários
@@ -97,6 +115,11 @@ export const Menu = () => {
                 <li>
                     <a id="sair" onClick={signOut}>
                         Sair
+                    </a>
+                </li>
+                <li>
+                    <a>
+                        <FiMonitor id="fullScreen" onClick={fullScr} />
                     </a>
                 </li>
             </ul>

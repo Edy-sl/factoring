@@ -1,4 +1,4 @@
-import { FiSearch, FiDollarSign } from 'react-Icons/fi';
+import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';

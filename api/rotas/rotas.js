@@ -42,6 +42,11 @@ import {
     relatorioPorEmissao,
     relatorioPorClienteVencimento,
     relatorioPorClienteEmissao,
+    buscaChequeNumero,
+    gravarDataDevolucao,
+    listaChequesDevolvidos,
+    listaChequesDeduzidos,
+    gravarDataPagamento,
 } from '../controles/bordero.js';
 
 import {
@@ -57,6 +62,8 @@ import {
 import {
     movimentoChequesPorVencimento,
     movimentoEmprestimoVencimento,
+    relatorioMovimentoChequesDeducaoPorEmissao,
+    relatorioMovimentoChequesDeducaoPorVencimento,
     relatorioMovimentoChequesPorEmissao,
     relatorioMovimentoEmprestimoEmissao,
 } from '../controles/movimento.js';
@@ -149,6 +156,21 @@ rotaFactoring.post(
     verifyJWT,
     verificaPermissao,
     exluirCheque
+);
+rotaFactoring.post('/busca-cheque-numero', verifyJWT, buscaChequeNumero);
+rotaFactoring.post('/gravar-data-devolucao', verifyJWT, gravarDataDevolucao);
+rotaFactoring.post(
+    '/lista-cheques-devolvidos',
+    verifyJWT,
+    listaChequesDevolvidos
+);
+
+rotaFactoring.post('/gravar-data-pagamento', verifyJWT, gravarDataPagamento);
+
+rotaFactoring.post(
+    '/lista-cheques-deduzidos',
+    verifyJWT,
+    listaChequesDeduzidos
 );
 
 //relatorio de cheques por vencimento
@@ -265,7 +287,7 @@ rotaFactoring.post(
     movimentoEmprestimoVencimento
 );
 
-//relatorio de cheques/emprestimos por dt de vencimento
+//relatorio de cheques/dedução/emprestimos por dt de Emissao
 rotaFactoring.post(
     '/relatorio-movimento-cheque-emissao',
     verifyJWT,
@@ -276,6 +298,18 @@ rotaFactoring.post(
     '/relatorio-movimento-emprestimo-emissao',
     verifyJWT,
     relatorioMovimentoEmprestimoEmissao
+);
+
+rotaFactoring.post(
+    '/relatorio-movimento-deducao-emissao',
+    verifyJWT,
+    relatorioMovimentoChequesDeducaoPorEmissao
+);
+
+rotaFactoring.post(
+    '/relatorio-movimento-deducao-vencimento',
+    verifyJWT,
+    relatorioMovimentoChequesDeducaoPorVencimento
 );
 
 export default rotaFactoring;

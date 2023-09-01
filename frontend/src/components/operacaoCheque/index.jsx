@@ -1,7 +1,10 @@
 import './formOperacaoCheque.css';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FiSearch, FiEdit, FiDelete } from 'react-Icons/fi';
+import { FiSearch } from 'react-icons/fi';
+import { FiEdit } from 'react-icons/fi';
+
+import { AiFillCheckCircle } from 'react-icons/ai';
 import { BuscaClienteNome } from '../buscaCliente';
 import { useState, useEffect, useRef } from 'react';
 import { apiFactoring, apiBancos } from '../../services/api';
@@ -20,6 +23,14 @@ import { ImBin } from 'react-icons/im';
 
 export const FormOperacaoCheque = () => {
     const [onEdit, setOnEdit] = useState(false);
+
+    const [devolvidos, setDevolvidos] = useState([]);
+    let arrayDevolvidos = [];
+
+    const [deducao, setDeducao] = useState([]);
+    let arrayDeducao = [];
+
+    const [diasDevolucao, setDiasDevolucao] = useState();
 
     const [lancamentos, setLancamentos] = useState([]);
     let arrayCheques = [];
@@ -49,6 +60,8 @@ export const FormOperacaoCheque = () => {
     const [quantidadeCheques, setQuantidadeCheques] = useState();
 
     const [idCliente, setIdCliente] = useState();
+
+    const [tab, setTab] = useState('cheques');
 
     const ref = useRef();
 
@@ -109,6 +122,7 @@ export const FormOperacaoCheque = () => {
                         dadosCliente.jurosMensal.value = dados.taxa_juros;
                         document.getElementById('inputTxTed').focus();
                         setEspecial(dados.especial);
+                        listaChequesDevolvidos(dados.idcliente);
                     });
 
                     calculaJurosDiario();
@@ -152,6 +166,9 @@ export const FormOperacaoCheque = () => {
                             dadosOperacao.jurosMensal.value = dados.juros;
                             dadosOperacao.jurosDiario.value =
                                 dados.juros_diario;
+                            console.log(dados.idcliente);
+                            listaChequesDevolvidos(dados.idcliente);
+                            listaChequesDeduzidos(dados.idbordero);
                         });
                         setOnEdit(true);
                     } else {
@@ -193,6 +210,7 @@ export const FormOperacaoCheque = () => {
             .post(
                 '/alterar-bordero',
                 {
+                    dataCadastro: dadosBordero.data.value,
                     idBordero: dadosBordero.operacao.value,
                     idcliente: dadosBordero.idCliente.value,
                     dataBase: dadosBordero.dataBase.value,
@@ -201,6 +219,7 @@ export const FormOperacaoCheque = () => {
                     jurosDiario: dadosBordero.jurosDiario.value * 1,
                     idFactoring: localStorage.getItem('factoring'),
                     arrayCheques: lancamentos,
+                    arrayDeducao: deducao,
                 },
                 {
                     headers: {
@@ -232,6 +251,7 @@ export const FormOperacaoCheque = () => {
                     jurosDiario: dadosBordero.jurosDiario.value * 1,
                     idFactoring: localStorage.getItem('factoring'),
                     arrayCheques: lancamentos,
+                    arrayDeducao: deducao,
                 },
                 {
                     headers: {
@@ -569,6 +589,57 @@ export const FormOperacaoCheque = () => {
             .catch();
     };
 
+    const calculaDiasDevolucao = (dataDevolucao) => {
+        const dadosDia = ref.current;
+        const dataBase = dadosDia.data.value;
+        const diffInMs = new Date(dataBase) - new Date(dataDevolucao);
+        const dias = diffInMs / (1000 * 60 * 60 * 24);
+        dadosDia.dias.value = dias;
+
+        return dias;
+    };
+
+    const calculaValorJurosDevolucao = (dias, valorCheque) => {
+        const dadosJuros = ref.current;
+
+        const jurosDiario = dadosJuros.jurosDiario.value;
+
+        let valorJuros = 0;
+        console.log(dias);
+
+        //calcula juros
+        const valorJurosCliente = (dias * jurosDiario * valorCheque) / 100;
+
+        //calcula juros minimo pela taxa da factoring
+        const valorJurosMinimo = (taxaMinima * valorCheque) / 100;
+
+        if (especial != 'SIM' && valorJurosMinimo > valorJurosCliente) {
+            valorJuros = valorJurosMinimo;
+            console.log('especial - nao . jm > jc ' + valorJuros);
+        }
+
+        if (especial != 'SIM' && valorJurosMinimo < valorJurosCliente) {
+            valorJuros = valorJurosCliente;
+            console.log('especial - nao . jm < jc ' + valorJuros);
+        }
+
+        if (especial == 'SIM') {
+            valorJuros = valorJurosCliente;
+            console.log('especial - sim . jm = jc ' + valorJuros);
+        }
+
+        return valorJuros;
+
+        /* dadosJuros.valorLiquido.value = (
+            valorCheque - valorJuros
+        ).toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        });*/
+
+        // calculaValorLiquido();
+    };
+
     const buscaBancos = (codigo) => {
         const dadosBanco = ref.current;
 
@@ -594,17 +665,31 @@ export const FormOperacaoCheque = () => {
     };
 
     const atualizaResumo = () => {
+        console.log('atualizou');
         const dadosResumo = ref.current;
         let somaValorCheques = 0;
         let somaValorJuros = 0;
         let somaValorTxTed = 0;
         let somaValorLiquido = 0;
         let somaQuantidadeCheques = lancamentos.length;
+        let somaDeducao = 0;
+
         lancamentos.map((resumo) => {
             somaValorCheques = somaValorCheques * 1 + resumo.valor_cheque * 1;
             somaValorJuros = somaValorJuros * 1 + resumo.valor_juros * 1;
             somaValorTxTed = somaValorTxTed * 1 + resumo.taxa_ted * 1;
             somaValorLiquido = somaValorLiquido * 1 + resumo.valor_liquido * 1;
+        });
+
+        deducao.map((ded) => {
+            somaDeducao = somaDeducao * 1 + ded.valor_total * 1;
+        });
+
+        somaValorLiquido = somaValorLiquido * 1 - somaDeducao * 1;
+
+        dadosResumo.totalDeducao.value = somaDeducao.toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
         });
 
         dadosResumo.totalBruto.value = somaValorCheques.toLocaleString(
@@ -618,6 +703,7 @@ export const FormOperacaoCheque = () => {
             style: 'decimal',
             minimumFractionDigits: 2,
         });
+
         dadosResumo.totalTxTed.value = somaValorTxTed.toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
@@ -720,7 +806,7 @@ export const FormOperacaoCheque = () => {
                 });
         }
         if (!onEdit) {
-            lancamentos.splice([id]);
+            lancamentos.splice([i]);
             arrayCheques = [...lancamentos];
             setLancamentos(arrayCheques);
         }
@@ -729,6 +815,9 @@ export const FormOperacaoCheque = () => {
 
     const imprimir = () => {
         const dadosOperacao = ref.current;
+
+        let jurosTotal = converteMoedaFloat(dadosOperacao.totalJuros.value);
+        console.log(jurosTotal);
 
         const win = window.open('', '', 'heigth=700, width=700');
         win.document.write('<html>');
@@ -833,6 +922,79 @@ export const FormOperacaoCheque = () => {
             '--------------------------------------------------------------------------------------------'
         );
         win.document.write('</td ></tr >');
+        ////Deduções
+
+        win.document.write('<tr>');
+        win.document.write('<td>');
+        win.document.write('Nº Cheque');
+        win.document.write('</td>');
+
+        win.document.write('<td style="text-align: right">');
+        win.document.write('Devolução');
+        win.document.write('</td>');
+
+        win.document.write('<td style="text-align: right">');
+        win.document.write('Valor');
+        win.document.write('</td>');
+
+        win.document.write('<td style="text-align: right">');
+        win.document.write('Taxa');
+        win.document.write('</td>');
+
+        win.document.write('<td  style="text-align: right">');
+        win.document.write(
+            '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Juros'
+        );
+
+        win.document.write('</td>');
+        win.document.write('</tr>');
+        let jurosDevolucao = 0;
+        deducao.map((ded, index) => {
+            jurosDevolucao = jurosDevolucao * 1 + ded.juros_devolucao * 1;
+            console.log(jurosDevolucao);
+            win.document.write('<tr>');
+            win.document.write('<td>');
+            win.document.write(ded.numero_cheque);
+            win.document.write('</td>');
+            win.document.write('<td style="text-align: right">');
+            win.document.write(inverteData(ded.data_devolucao));
+            win.document.write('</td>');
+            win.document.write('<td style="text-align: right">');
+            win.document.write(
+                (ded.valor_cheque * 1).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+            win.document.write('</td>');
+
+            win.document.write('<td style="text-align: right">');
+            win.document.write(
+                (ded.taxa_cheque * 1).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+            win.document.write('</td>');
+
+            win.document.write('<td style="text-align: right">');
+            win.document.write(
+                (ded.juros_devolucao * 1).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+            win.document.write('</td>');
+            win.document.write('</tr>');
+        });
+
+        ////
+
+        win.document.write('<tr><td colspan="5" style="text-align : center">');
+        win.document.write(
+            '--------------------------------------------------------------------------------------------'
+        );
+        win.document.write('</td ></tr >');
 
         win.document.write('<tr>');
         win.document.write('<td>');
@@ -852,7 +1014,12 @@ export const FormOperacaoCheque = () => {
         win.document.write('</td>');
 
         win.document.write('<td style="text-align: right">');
-        win.document.write(dadosOperacao.totalJuros.value);
+        win.document.write(
+            (jurosDevolucao * 1 + jurosTotal * 1).toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            })
+        );
         win.document.write('</td>');
 
         win.document.write('</tr>');
@@ -895,13 +1062,173 @@ export const FormOperacaoCheque = () => {
             });
     };
 
+    const listaChequesDevolvidos = async (id) => {
+        arrayDevolvidos = [];
+
+        await apiFactoring
+            .post(
+                '/lista-cheques-devolvidos',
+                { idCliente: id },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                data.map((item) => {
+                    let dias = calculaDiasDevolucao(item.data_devolucao);
+                    let juros_devolucao = calculaValorJurosDevolucao(
+                        dias,
+                        item.valor_cheque
+                    );
+                    arrayDevolvidos = [
+                        ...arrayDevolvidos,
+                        {
+                            numero_banco: item.numero_banco,
+                            nome_banco: item.nome_banco,
+                            numero_cheque: item.numero_cheque,
+                            nome_cheque: item.nome_cheque,
+                            data_devolucao: item.data_devolucao,
+                            valor_cheque: item.valor_cheque,
+                            dias: dias,
+                            juros_devolucao: juros_devolucao,
+                            valor_total:
+                                item.valor_cheque * 1 + juros_devolucao * 1,
+                            idlancamento: item.idlancamento,
+                            taxa_ted: item.taxa_ted,
+                        },
+                    ];
+                });
+
+                setDevolvidos(arrayDevolvidos);
+
+                console.log(arrayDevolvidos);
+            })
+            .catch();
+    };
+
+    const listaChequesDeduzidos = async (idBordero) => {
+        let arrayDeduzidos = [];
+        console.log(idBordero);
+        await apiFactoring
+            .post(
+                '/lista-cheques-deduzidos',
+                { idBordero: idBordero },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                console.log(data);
+                data.map((item) => {
+                    let dias = calculaDiasDevolucao(item.data_devolucao);
+                    let juros_devolucao = calculaValorJurosDevolucao(
+                        dias,
+                        item.valor_cheque
+                    );
+                    arrayDeduzidos = [
+                        ...arrayDeduzidos,
+                        {
+                            numero_banco: item.numero_banco,
+                            nome_banco: item.nome_banco,
+                            numero_cheque: item.numero_cheque,
+                            nome_cheque: item.nome_cheque,
+                            data_devolucao: item.data_devolucao,
+                            valor_cheque: item.valor_cheque,
+                            dias: dias,
+                            juros_devolucao: item.juros_devolucao,
+                            valor_total:
+                                item.valor_cheque * 1 + juros_devolucao * 1,
+                            idlancamento: item.idlancamento,
+                            taxa_ted: item.taxa_ted,
+                        },
+                    ];
+                });
+
+                setDeducao(arrayDeduzidos);
+
+                console.log(arrayDeduzidos);
+            })
+            .catch();
+    };
+
+    const addDeducao = (id, index) => {
+        const filtradoDevolvidos = devolvidos.filter(
+            (l) => l.idlancamento === id * 1
+        );
+
+        console.log(filtradoDevolvidos);
+
+        arrayDeducao = [
+            ...deducao,
+            {
+                numero_banco: filtradoDevolvidos[0].numero_banco,
+                nome_banco: filtradoDevolvidos[0].nome_banco,
+                numero_cheque: filtradoDevolvidos[0].numero_cheque,
+                nome_cheque: filtradoDevolvidos[0].nome_cheque,
+                data_devolucao: filtradoDevolvidos[0].data_devolucao,
+                valor_cheque: filtradoDevolvidos[0].valor_cheque,
+                dias: filtradoDevolvidos[0].dias,
+                juros_devolucao: filtradoDevolvidos[0].juros_devolucao,
+                valor_total: filtradoDevolvidos[0].valor_total,
+                idlancamento: filtradoDevolvidos[0].idlancamento,
+                taxa_ted: filtradoDevolvidos[0].taxa_ted,
+            },
+        ];
+
+        const newArray = devolvidos.filter(
+            (arrayDev) => arrayDev.idlancamento !== id
+        );
+
+        console.log(newArray);
+
+        setDevolvidos(newArray);
+
+        setDeducao(arrayDeducao);
+    };
+
+    const removeDeducao = (id, index) => {
+        console.log(id);
+
+        const filtradoDevolvidos = deducao.filter(
+            (l) => l.idlancamento === id * 1
+        );
+
+        arrayDevolvidos = [
+            ...devolvidos,
+            {
+                numero_banco: filtradoDevolvidos[0].numero_banco,
+                nome_banco: filtradoDevolvidos[0].nome_banco,
+                numero_cheque: filtradoDevolvidos[0].numero_cheque,
+                nome_cheque: filtradoDevolvidos[0].nome_cheque,
+                data_devolucao: filtradoDevolvidos[0].data_devolucao,
+                valor_cheque: filtradoDevolvidos[0].valor_cheque,
+                dias: filtradoDevolvidos[0].dias,
+                juros_devolucao: filtradoDevolvidos[0].juros_devolucao,
+                valor_total: filtradoDevolvidos[0].valor_total,
+                idlancamento: filtradoDevolvidos[0].idlancamento,
+                taxa_ted: filtradoDevolvidos[0].taxa_ted,
+            },
+        ];
+
+        const newArray = deducao.filter(
+            (arrayDed) => arrayDed.idlancamento !== id
+        );
+        setDeducao(newArray);
+
+        setDevolvidos(arrayDevolvidos);
+    };
+
     useEffect(() => {
         vefificaPermissao();
     }, []);
 
     useEffect(() => {
         atualizaResumo();
-    }, [lancamentos]);
+    }, [lancamentos, deducao]);
 
     useEffect(() => {
         buscaCliente();
@@ -998,7 +1325,12 @@ export const FormOperacaoCheque = () => {
                                 size="25"
                                 onClick={exibeFormBuscaOperacao}
                             />
-                            <input type="date" name="data" autoComplete="off" />
+                            <input
+                                type="date"
+                                name="data"
+                                autoComplete="off"
+                                readOnly
+                            />
                         </div>
 
                         <label>Cliente</label>
@@ -1132,7 +1464,7 @@ export const FormOperacaoCheque = () => {
 
                         <div className="boxRow">
                             <div className="boxCol">
-                                <label>Nome do Cheque</label>
+                                <label>Nome do Emitente</label>
 
                                 <input
                                     id="inputNomeC"
@@ -1227,6 +1559,26 @@ export const FormOperacaoCheque = () => {
                             Incluir
                         </button>
                     </div>
+                    <div>
+                        <button
+                            className="buttonTab"
+                            onClick={(e) => setTab('cheques')}
+                        >
+                            Cheques
+                        </button>
+                        <button
+                            className="buttonTab"
+                            onClick={(e) => setTab('deducao')}
+                        >
+                            Deduções
+                        </button>
+                        <button
+                            className="buttonTab"
+                            onClick={(e) => setTab('devolvido')}
+                        >
+                            Devolvidos
+                        </button>
+                    </div>
                 </div>
                 <div className="boxOpChequeRight">
                     <h2>Resumo</h2>
@@ -1263,7 +1615,6 @@ export const FormOperacaoCheque = () => {
                         <label>Total Ted</label>
                         <input
                             type="text"
-                            value=""
                             autoComplete="off"
                             name="totalTxTed"
                         />
@@ -1271,7 +1622,11 @@ export const FormOperacaoCheque = () => {
 
                     <div className="boxResumo">
                         <label>Deduções</label>
-                        <input type="text" autoComplete="off" />
+                        <input
+                            type="text"
+                            name="totalDeducao"
+                            autoComplete="off"
+                        />
                     </div>
 
                     <div className="boxResumo">
@@ -1283,67 +1638,242 @@ export const FormOperacaoCheque = () => {
                             name="totalLiquido"
                         />
                     </div>
-                </div>
+                </div>{' '}
             </form>
-            <div className="gridCheque">
-                <div>N.Banco</div>
-                <div>Banco</div>
-                <div className="alignCenter">N. Cheque</div>
-                <div>Nome</div>
-                <div className="alignRight">Vencimento</div>
-                <div className="alignRight">Prazo</div>
-                <div className="alignRight">Valor</div>
-                <div className="alignRight">V. Juros</div>
-                <div className="alignRight">Taxa</div>
-                <div className="alignRight">V. Liquido</div>
-                <div className="alignRight">Editar</div>
-            </div>
-            <div className="containerCheques">
-                {lancamentos.map((item, index) => (
-                    <div className="gridLinhaCheque" key={index}>
-                        <div>{item.numero_banco}</div>
-                        <div id="maximo_200px">{item.nome_banco}</div>
-                        <div className="alignCenter">{item.numero_cheque}</div>
-                        <div id="maximo_200px">{item.nome_cheque}</div>
 
+            {tab === 'cheques' && (
+                <>
+                    <div className="gridCheque">
+                        <div>N.Banco</div>
+                        <div>Banco</div>
+                        <div className="alignCenter">N. Cheque</div>
+                        <div>Nome</div>
+                        <div className="alignRight">Vencimento</div>
+                        <div className="alignRight">Prazo&nbsp;&nbsp;</div>
+                        <div className="alignRight">Valor&nbsp;&nbsp;</div>
+                        <div className="alignRight">V. Juros&nbsp;&nbsp;</div>
+                        <div className="alignRight">Taxa&nbsp;&nbsp;</div>
+                        <div className="alignRight">V. Liquido&nbsp;&nbsp;</div>
                         <div className="alignRight">
-                            {inverteData(item.data_vencimento)}
-                        </div>
-
-                        <div className="alignRight">{item.dias} dias</div>
-                        <div className="alignRight">
-                            {(item.valor_cheque * 1).toLocaleString('pt-BR', {
-                                style: 'decimal',
-                                minimumFractionDigits: 2,
-                            })}
-                        </div>
-                        <div className="alignRight">
-                            {(item.valor_juros * 1).toLocaleString('pt-BR', {
-                                style: 'decimal',
-                                minimumFractionDigits: 2,
-                            })}
-                        </div>
-                        <div className="alignRight">
-                            {(item.taxa_ted * 1).toLocaleString('pt-BR', {
-                                style: 'decimal',
-                                minimumFractionDigits: 2,
-                            })}
-                        </div>
-                        <div className="alignRight">
-                            {(item.valor_liquido * 1).toLocaleString('pt-BR', {
-                                style: 'decimal',
-                                minimumFractionDigits: 2,
-                            })}
-                        </div>
-                        <div className="alignRight">
-                            <FiEdit onClick={(e) => editarCheque(item.index)} />
-                            &nbsp;&nbsp;&nbsp;
-                            <ImBin onClick={(e) => excluirCheque(item.index)} />
-                            &nbsp;
+                            Editar&nbsp;&nbsp;&nbsp;&nbsp;
                         </div>
                     </div>
-                ))}
-            </div>
+
+                    <div className="containerCheques">
+                        {lancamentos.map((item, index) => (
+                            <div className="gridLinhaCheque" key={index}>
+                                <div>{item.numero_banco}</div>
+                                <div id="maximo_200px">{item.nome_banco}</div>
+                                <div className="alignCenter">
+                                    {item.numero_cheque}
+                                </div>
+                                <div id="maximo_200px">{item.nome_cheque}</div>
+
+                                <div className="alignRight">
+                                    {inverteData(item.data_vencimento)}
+                                </div>
+
+                                <div className="alignRight">
+                                    {item.dias} dias
+                                </div>
+                                <div className="alignRight">
+                                    {(item.valor_cheque * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {(item.valor_juros * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {(item.taxa_ted * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {(item.valor_liquido * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    <FiEdit
+                                        onClick={(e) =>
+                                            editarCheque(item.index)
+                                        }
+                                    />
+                                    &nbsp;&nbsp;&nbsp;
+                                    <ImBin
+                                        onClick={(e) =>
+                                            excluirCheque(item.index)
+                                        }
+                                    />
+                                    &nbsp;
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+
+            {tab === 'deducao' && (
+                <>
+                    <div className="gridCheque">
+                        <div>N.Banco</div>
+                        <div>Banco</div>
+                        <div className="alignCenter">N. Cheque</div>
+                        <div>Nome</div>
+                        <div className="alignRight">Devolução</div>
+                        <div className="alignRight">Dias&nbsp;&nbsp;</div>
+                        <div className="alignRight">Valor&nbsp;&nbsp;</div>
+                        <div className="alignRight">V. juros&nbsp;&nbsp;</div>
+                        <div className="alignRight">V. Total&nbsp;&nbsp;</div>
+                        <div className="alignRight">
+                            Excluir&nbsp;&nbsp;&nbsp;
+                        </div>
+                    </div>
+
+                    <div className="containerCheques">
+                        {deducao.map((item, index) => (
+                            <div className="gridLinhaCheque" key={index}>
+                                <div>{item.numero_banco}</div>
+                                <div id="maximo_200px">{item.nome_banco}</div>
+                                <div className="alignCenter">
+                                    {item.numero_cheque}
+                                </div>
+                                <div id="maximo_200px">{item.nome_cheque}</div>
+
+                                <div className="alignRight">
+                                    {inverteData(item.data_devolucao)}
+                                </div>
+
+                                <div className="alignRight">
+                                    {item.dias} dias
+                                </div>
+                                <div className="alignRight">
+                                    {(item.valor_cheque * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {item.juros_devolucao}
+                                </div>
+
+                                <div className="alignRight">
+                                    {(item.valor_total * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    <AiFillCheckCircle
+                                        onClick={(e) =>
+                                            removeDeducao(
+                                                item.idlancamento,
+                                                index
+                                            )
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+
+            {tab === 'devolvido' && (
+                <>
+                    <div className="gridCheque">
+                        <div>N.Banco</div>
+                        <div>Banco</div>
+                        <div className="alignCenter">N. Cheque</div>
+                        <div>Nome</div>
+                        <div className="alignRight">Devolução</div>
+                        <div className="alignRight">Dias&nbsp;&nbsp;</div>
+                        <div className="alignRight">Valor&nbsp;&nbsp;</div>
+                        <div className="alignRight">V. juros&nbsp;&nbsp;</div>
+                        <div className="alignRight">V. Total&nbsp;&nbsp;</div>
+                        <div className="alignRight">
+                            Deduzir&nbsp;&nbsp;&nbsp;
+                        </div>
+                    </div>
+                    <div className="containerCheques">
+                        {devolvidos.map((item, index) => (
+                            <div className="gridLinhaCheque" key={index}>
+                                <div>{item.numero_banco}</div>
+                                <div id="maximo_200px">{item.nome_banco}</div>
+                                <div className="alignCenter">
+                                    {item.numero_cheque}
+                                </div>
+                                <div id="maximo_200px">{item.nome_cheque}</div>
+
+                                <div className="alignRight">
+                                    {inverteData(item.data_devolucao)}
+                                </div>
+
+                                <div className="alignRight">
+                                    {item.dias} dias
+                                </div>
+                                <div className="alignRight">
+                                    {(item.valor_cheque * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {item.juros_devolucao.toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+
+                                <div className="alignRight">
+                                    {item.valor_total.toLocaleString('pt-BR', {
+                                        style: 'decimal',
+                                        minimumFractionDigits: 2,
+                                    })}
+                                </div>
+                                <div className="alignRight">
+                                    <AiFillCheckCircle
+                                        onClick={(e) =>
+                                            addDeducao(item.idlancamento, index)
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
         </>
     );
 };

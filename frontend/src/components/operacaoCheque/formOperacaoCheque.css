@@ -127,30 +127,42 @@
     gap: 15px;
     padding-left: 5px;
     padding-right: 5px;
+    min-width: 1370px;
 }
 
 .gridLinhaCheque {
     display: grid;
-    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 100px 100px 1fr 100px 1fr;
+    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 100px 90px 1fr 90px 1fr;
     text-transform: uppercase;
     gap: 15px;
     padding-left: 5px;
     padding-right: 5px;
+    background-color: #ffffff;
+    min-width: 1354px;
+    max-width: 1354px;
 }
 
 .gridLinhaCheque:hover {
     display: grid;
-    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 100px 100px 1fr 100px 1fr;
+    grid-template-columns: 80px 200px 1fr 200px 1fr 1fr 100px 90px 1fr 90px 1fr;
     text-transform: uppercase;
     gap: 15px;
     background-color: rgb(223, 224, 225);
     padding-left: 5px;
     padding-right: 5px;
+    min-width: 1354px;
+    max-width: 1354px;
 }
 
 .containerCheques {
     max-height: 230px;
     overflow: scroll;
+}
+
+.buttonTab {
+    background-color: darkgrey;
+    margin: 10px 10px 0 0;
+    color: black;
 }
 
 @media only screen and (max-width: 700px) {

@@ -4,7 +4,7 @@ import {
     inverteData,
     tamanhoMaximo,
 } from '../../biblitoteca.jsx';
-import { FiSearch, FiDollarSign } from 'react-Icons/fi';
+import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo/index.jsx';
 import './gridRelatorioEmprestimo.css';
 export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
@@ -27,14 +27,13 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
             totalValor = totalValor + parseFloat(somaTotais.valor);
             totalRecebido = totalRecebido + parseFloat(somaTotais.valor_pago);
             totalReceber = totalValor - totalRecebido;
-            console.log(somaTotais);
+
             totalJuros =
                 totalJuros +
                 parseFloat(
                     somaTotais.valor_juros / somaTotais.quantidade_parcelas
                 );
         });
-        console.log(totalJuros);
 
         setTotalValorR(totalValor);
         setTotalValorRecebido(totalRecebido);

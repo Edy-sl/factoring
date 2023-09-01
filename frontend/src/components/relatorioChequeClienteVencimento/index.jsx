@@ -6,7 +6,7 @@ import {
     retornaDataAtual,
     inverteData,
 } from '../../biblitoteca';
-import { FiSearch, FiDollarSign } from 'react-Icons/fi';
+import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
 
 import { apiFactoring } from '../../services/api';
@@ -18,6 +18,8 @@ export const RelatorioChequePorClienteVencimento = () => {
     const [idCliente, setIdCliente] = useState(0);
     const [formBusca, setFormBusca] = useState();
     const [checkEspecial, setCheckEspecial] = useState('NAO');
+
+    let newArray = [];
 
     const ref = useRef();
 
@@ -62,8 +64,24 @@ export const RelatorioChequePorClienteVencimento = () => {
                 }
             )
             .then(({ data }) => {
-                console.log(data);
-                setListagem(data);
+                data.map((item) => {
+                    newArray = [
+                        ...newArray,
+                        {
+                            numero_banco: item.numero_banco,
+                            numero_cheque: item.numero_cheque,
+                            nome_cheque: item.nome_cheque,
+                            nome: item.nome,
+                            idbordero: item.idbordero,
+                            data: item.data,
+                            data_vencimento: item.data_vencimento,
+                            valor_cheque: item.valor_cheque,
+                            valor_juros: item.valor_juros,
+                            idbordero_deducao: '0',
+                        },
+                    ];
+                });
+                setListagem(newArray);
             })
             .catch(({ data }) => {
                 toast.error(data);
@@ -206,7 +224,7 @@ export const RelatorioChequePorClienteVencimento = () => {
                                 />
                             )}
 
-                            {checkRel == 'RECEBIDO' ? (
+                            {checkRel == 'PAGO' ? (
                                 <input
                                     type="checkbox"
                                     name="chekedRecebido"
@@ -218,7 +236,7 @@ export const RelatorioChequePorClienteVencimento = () => {
                                     type="checkbox"
                                     name="chekeRecebido"
                                     id="checkRel"
-                                    onChange={(e) => setCheckRel('RECEBIDO')}
+                                    onChange={(e) => setCheckRel('PAGO')}
                                 />
                             )}
 
