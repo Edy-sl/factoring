@@ -215,7 +215,7 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
         win.document.write('</td>');
 
         win.document.write('<td style="text-align : right">');
-        win.document.write(emprestimo.data_cadastro);
+        win.document.write(inverteData(emprestimo.data_cadastro));
         win.document.write('</td>');
 
         win.document.write('<td style="text-align : right">');

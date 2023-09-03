@@ -6,13 +6,14 @@ import {
     retornaDataAtual,
     inverteData,
 } from '../../biblitoteca';
-import { FiSearch, FiDollarSign } from 'react-icons/fi';
+import { FiSearch, FiDollarSign, FiPrinter } from 'react-icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
 
 import { apiFactoring } from '../../services/api';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GridChequeRelatorio } from '../gridRelatorioCheques';
+import { impressaoRelCheque } from '../functions/impressaoRelCheque';
 
 export const RelatorioChequePorClienteVencimento = () => {
     const [idCliente, setIdCliente] = useState(0);
@@ -278,6 +279,19 @@ export const RelatorioChequePorClienteVencimento = () => {
                                 <FiSearch
                                     className="icone2"
                                     onClick={checkRel && relatorioPorData}
+                                />
+
+                                <FiPrinter
+                                    className="icone2"
+                                    onClick={(e) =>
+                                        impressaoRelCheque(
+                                            listagem,
+                                            'Realtório de Cheques por Cliente e Data de Vencimento de: ' +
+                                                inverteData(dataIni) +
+                                                ' a ' +
+                                                inverteData(dataFim)
+                                        )
+                                    }
                                 />
                             </div>
                         </div>

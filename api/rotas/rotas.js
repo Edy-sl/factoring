@@ -60,7 +60,9 @@ import {
 } from '../controles/cadastroCliente.js';
 
 import {
+    movimentoChequesPorPagamento,
     movimentoChequesPorVencimento,
+    movimentoEmprestimoPagamento,
     movimentoEmprestimoVencimento,
     relatorioMovimentoChequesDeducaoPorEmissao,
     relatorioMovimentoChequesDeducaoPorVencimento,
@@ -295,9 +297,21 @@ rotaFactoring.post(
 );
 
 rotaFactoring.post(
+    '/relatorio-movimento-cheque-pagamento',
+    verifyJWT,
+    movimentoChequesPorPagamento
+);
+
+rotaFactoring.post(
     '/relatorio-movimento-emprestimo-emissao',
     verifyJWT,
     relatorioMovimentoEmprestimoEmissao
+);
+
+rotaFactoring.post(
+    '/relatorio-movimento-emprestimo-pagamento',
+    verifyJWT,
+    movimentoEmprestimoPagamento
 );
 
 rotaFactoring.post(

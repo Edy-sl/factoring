@@ -13,13 +13,15 @@ export const Menu = () => {
 
     const { signOut } = useContext(AuthContext);
 
-    function fullScreen() {
+    const fullScreen = () => {
         if (telaCheia) {
             document.documentElement.requestFullscreen();
         } else {
-            document.exitFullscreen();
+            if (document.fullscreenElement != null) {
+                document.exitFullscreen();
+            }
         }
-    }
+    };
 
     const fullScr = () => {
         setTelaCheia(!telaCheia);
@@ -97,6 +99,9 @@ export const Menu = () => {
                         </Link>
                         <Link to="/relatorio-movimento-emissao">
                             Relatório por Emissao
+                        </Link>
+                        <Link to="/relatorio-movimento-pagamento">
+                            Relatório por Pagamento
                         </Link>
                     </ul>
                 </li>

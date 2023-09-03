@@ -1,4 +1,3 @@
-import './relatorioChequeVencimento.css';
 import { FiSearch, FiDollarSign, FiPrinter } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
@@ -10,14 +9,18 @@ import {
     inverteData,
     retornaDataAtual,
 } from '../../biblitoteca.jsx';
-import { impressaoRelCheque } from '../functions/impressaoRelCheque';
+import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 
-export const RelatorioChequePorVencimento = () => {
+import { impressaoMovimento } from '../functions/impressaoMovimento';
+
+export const RelatorioMovimentoPorPagamento = () => {
     const ref = useRef();
 
-    const [listagem, setListagem] = useState([]);
+    const [listagemCheque, setListagemCheque] = useState([]);
+    const [listagemChequeDeducao, setListagemChequeDeducao] = useState([]);
+    const [listagemEmprestimo, setListagemEmprestimo] = useState([]);
 
-    const [checkRel, setCheckRel] = useState();
+    const [isCheckedDeducao, setIsCheckedDeducao] = useState(false);
 
     const [dataIni, setDataIni] = useState(retornaDataAtual());
     const [dataFim, setDataFim] = useState(retornaDataAtual());
@@ -40,11 +43,10 @@ export const RelatorioChequePorVencimento = () => {
 
         await apiFactoring
             .post(
-                '/relatorio-cheque-vencimento',
+                '/relatorio-movimento-cheque-pagamento',
                 {
                     dataI: dataI,
                     dataF: dataF,
-                    status: checkRel,
                 },
                 {
                     headers: {
@@ -70,11 +72,36 @@ export const RelatorioChequePorVencimento = () => {
                         },
                     ];
                 });
-                setListagem(newArray);
             })
             .catch(({ data }) => {
                 toast.error(data);
             });
+
+        await apiFactoring
+            .post(
+                '/relatorio-movimento-emprestimo-pagamento',
+                {
+                    dataI: dataI,
+                    dataF: dataF,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setListagemEmprestimo(data);
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+
+        setListagemCheque(newArray);
+    };
+
+    const handleOnChangeDeducao = () => {
+        setIsCheckedDeducao(!isCheckedDeducao);
     };
 
     return (
@@ -95,66 +122,10 @@ export const RelatorioChequePorVencimento = () => {
             )}
             <div className="divRelatorioChequeData">
                 <div id="divTituloRelatorio">
-                    <label>Realtório de Cheques por Data de Vencimento</label>
+                    <label>Realtório por Data de Pagamento</label>
                 </div>
                 <form className="" ref={ref} onSubmit={handleSubmit}>
-                    <div className="boxRow">
-                        <div className="boxCol">
-                            <label>Devolvido</label>
-                            <label>Recebido</label>
-                            <label>Geral</label>
-                        </div>
-
-                        <div className="boxCol" id="divCheckbox">
-                            {checkRel == 'DEVOLVIDO' ? (
-                                <input
-                                    type="checkbox"
-                                    name="chekeDevolvido"
-                                    checked
-                                    id="checkRel"
-                                />
-                            ) : (
-                                <input
-                                    type="checkbox"
-                                    name="chekedDevolvido"
-                                    id="checkRel"
-                                    onChange={(e) => setCheckRel('DEVOLVIDO')}
-                                />
-                            )}
-
-                            {checkRel == 'PAGO' ? (
-                                <input
-                                    type="checkbox"
-                                    name="chekedRecebido"
-                                    id="checkRel"
-                                    checked
-                                />
-                            ) : (
-                                <input
-                                    type="checkbox"
-                                    name="chekedRecebido"
-                                    id="checkRel"
-                                    onChange={(e) => setCheckRel('PAGO')}
-                                />
-                            )}
-
-                            {checkRel == 'GERAL' ? (
-                                <input
-                                    type="checkbox"
-                                    name="chekedGeral"
-                                    id="checkRel"
-                                    checked
-                                />
-                            ) : (
-                                <input
-                                    type="checkbox"
-                                    name="chekedGeral"
-                                    id="checkRel"
-                                    onChange={(e) => setCheckRel('GERAL')}
-                                />
-                            )}
-                        </div>
-
+                    <div className="boxRow" id="divFiltroMovimentoEmissao">
                         <div className="boxCol">
                             <label>Data Inicial</label>
                             <input
@@ -175,17 +146,14 @@ export const RelatorioChequePorVencimento = () => {
                                 />
                                 <FiSearch
                                     className="icone2"
-                                    onClick={checkRel && relatorioPorData}
-                                />
+                                    onClick={relatorioPorData}
+                                />{' '}
                                 <FiPrinter
                                     className="icone2"
                                     onClick={(e) =>
-                                        impressaoRelCheque(
-                                            listagem,
-                                            'Realtório de Cheques por Data de Vencimento de: ' +
-                                                inverteData(dataIni) +
-                                                ' a ' +
-                                                inverteData(dataFim)
+                                        impressaoMovimento(
+                                            listagemCheque,
+                                            listagemEmprestimo
                                         )
                                     }
                                 />
@@ -193,8 +161,11 @@ export const RelatorioChequePorVencimento = () => {
                         </div>
                     </div>
                 </form>
-            </div>{' '}
-            <GridChequeRelatorio listagem={listagem} />
+            </div>
+            <div id="divListagemMovimento">
+                <GridChequeRelatorio listagem={listagemCheque} />
+                <GridRelatorioEmprestimo listagem={listagemEmprestimo} />{' '}
+            </div>
         </>
     );
 };

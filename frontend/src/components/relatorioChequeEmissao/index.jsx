@@ -1,4 +1,4 @@
-import { FiSearch, FiDollarSign } from 'react-icons/fi';
+import { FiSearch, FiDollarSign, FiPrinter } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,6 +10,7 @@ import {
     retornaDataAtual,
 } from '../../biblitoteca.jsx';
 import { GridChequeRelatorio } from '../gridRelatorioCheques';
+import { impressaoRelCheque } from '../functions/impressaoRelCheque';
 
 export const RelatorioChequePorEmissao = () => {
     const ref = useRef();
@@ -177,6 +178,19 @@ export const RelatorioChequePorEmissao = () => {
                                 <FiSearch
                                     className="icone2"
                                     onClick={checkRel && relatorioPorData}
+                                />
+
+                                <FiPrinter
+                                    className="icone2"
+                                    onClick={(e) =>
+                                        impressaoRelCheque(
+                                            listagem,
+                                            'Realtório de Cheques por Data de Emissao da Operação de: ' +
+                                                inverteData(dataIni) +
+                                                ' a ' +
+                                                inverteData(dataFim)
+                                        )
+                                    }
                                 />
                             </div>
                         </div>

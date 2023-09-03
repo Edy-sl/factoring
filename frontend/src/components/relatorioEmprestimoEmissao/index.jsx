@@ -1,4 +1,4 @@
-import { FiSearch, FiDollarSign } from 'react-icons/fi';
+import { FiSearch, FiDollarSign, FiPrinter } from 'react-icons/fi';
 import { useState, useRef, useEffect } from 'react';
 import { apiFactoring } from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,6 +11,7 @@ import {
 } from '../../biblitoteca.jsx';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
+import { impressaoRelEmprestimo } from '../functions/impressaoRelEmprestimo';
 export const RelatorioEmprestimoPorEmissao = () => {
     const ref = useRef();
 
@@ -176,6 +177,19 @@ export const RelatorioEmprestimoPorEmissao = () => {
                                 <FiSearch
                                     className="icone2"
                                     onClick={checkRel && relatorioPorData}
+                                />
+
+                                <FiPrinter
+                                    className="icone2"
+                                    onClick={(e) =>
+                                        impressaoRelEmprestimo(
+                                            listagem,
+                                            'Realtório de Empréstimo por Data de Emissão de: ' +
+                                                inverteData(dataIni) +
+                                                ' - ' +
+                                                inverteData(dataFim)
+                                        )
+                                    }
                                 />
                             </div>
                         </div>
