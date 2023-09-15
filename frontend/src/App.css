@@ -18,6 +18,6 @@
     padding-top: 10px;
     width: 100vw;
     height: 95vh;
-    background-color: #141313;
+    background-color: rgba(244, 244, 244, 0.87);
     overflow: scroll;
 }

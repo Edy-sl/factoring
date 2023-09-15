@@ -175,24 +175,26 @@ export const RelatorioChequePorEmissao = () => {
                                     value={dataFim}
                                     onChange={(e) => setDataFim(e.target.value)}
                                 />
-                                <FiSearch
-                                    className="icone2"
-                                    onClick={checkRel && relatorioPorData}
-                                />
-
-                                <FiPrinter
-                                    className="icone2"
-                                    onClick={(e) =>
-                                        impressaoRelCheque(
-                                            listagem,
-                                            'Realtório de Cheques por Data de Emissao da Operação de: ' +
-                                                inverteData(dataIni) +
-                                                ' a ' +
-                                                inverteData(dataFim)
-                                        )
-                                    }
-                                />
                             </div>
+                        </div>
+                        <div id="divBtnRel">
+                            <FiSearch
+                                className="icone2"
+                                onClick={checkRel && relatorioPorData}
+                            />
+
+                            <FiPrinter
+                                className="icone2"
+                                onClick={(e) =>
+                                    impressaoRelCheque(
+                                        listagem,
+                                        'Realtório de Cheques por Data de Emissao da Operação de: ' +
+                                            inverteData(dataIni) +
+                                            ' a ' +
+                                            inverteData(dataFim)
+                                    )
+                                }
+                            />
                         </div>
                     </div>
                 </form>

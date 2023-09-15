@@ -11,7 +11,7 @@
     background-color: #ffffff;
     padding: 3px;
     padding-right: 10px;
-    grid-template-columns: 90px 195px 80px 110px 110px 145px 145px 145px 100px 145px 20px;
+    grid-template-columns: 90px 195px 80px 110px 110px 120px 120px 120px 100px 110px 55px 55px;
     text-transform: uppercase;
 }
 .divListaR:hover {
@@ -19,13 +19,13 @@
     background-color: rgb(225, 224, 223);
     padding: 3px;
     padding-right: 10px;
-    grid-template-columns: 90px 195px 80px 110px 110px 145px 145px 145px 100px 145px 20px;
+    grid-template-columns: 90px 195px 80px 110px 110px 120px 120px 120px 100px 110px 55px 55px;
     text-transform: uppercase;
 }
 
 .divListaTitulo {
     display: grid;
-    grid-template-columns: 90px 195px 80px 110px 110px 145px 145px 145px 100px 145px 55px;
+    grid-template-columns: 90px 195px 80px 110px 110px 120px 120px 120px 100px 110px 55px 55px;
     background-color: rgb(225, 224, 223);
 }
 

@@ -9,7 +9,7 @@ export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
     let totalJurosEmprestimo = 0;
 
     const win = window.open('', '', 'heigth=700, width=900');
-    win.document.write('<table border="01" width="900">');
+    win.document.write('<table border="0" width="900">');
 
     win.document.write('<tr>');
     win.document.write('<td colspan="8">');

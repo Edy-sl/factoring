@@ -29,6 +29,7 @@ import {
     relatorioEmprestimoEmissao,
     relatorioEmprestimoClienteVencimento,
     relatorioEmprestimoClienteEmissao,
+    pagamentoVariasParcelasEmprestimo,
 } from '../controles/emprestimo.js';
 import {
     gravarBordero,
@@ -232,6 +233,13 @@ rotaFactoring.post(
     verifyJWT,
     verificaPermissao,
     pagamentoParcelaEmprestimo
+);
+
+rotaFactoring.post(
+    '/gravar-pagamento-varias-parcelas',
+    verifyJWT,
+    verificaPermissao,
+    pagamentoVariasParcelasEmprestimo
 );
 
 rotaFactoring.post(

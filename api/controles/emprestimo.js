@@ -108,6 +108,26 @@ export const pagamentoParcelaEmprestimo = (req, res) => {
     });
 };
 
+//gravar varios pagamentos de parcelas
+export const pagamentoVariasParcelasEmprestimo = (req, res) => {
+    const { arrayParcela } = req.body;
+
+    const data = new Date();
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+
+    const dataPagamento = ano + '-' + mes + '-' + dia;
+
+    console.log(arrayParcela);
+
+    arrayParcela.map((P) => {
+        const sql =
+            'insert into pagamentos_parcelas (idparcela,valor_pago,data_pagamento) values (?,?,?)';
+        db.query(sql, [P.idParcela, P.valor, dataPagamento], (err, data) => {});
+    });
+};
+
 //excluir pagamento da parcela
 export const excluirPagamentoParcelaEmprestimo = (req, res) => {
     const { idPagamento } = req.body;

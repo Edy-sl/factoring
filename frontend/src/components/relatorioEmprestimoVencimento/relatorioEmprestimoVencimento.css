@@ -17,3 +17,10 @@
     background-color: rgb(185, 185, 188);
     text-align: center;
 }
+
+#divBtnRel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-bottom: 15px;
+}

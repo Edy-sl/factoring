@@ -109,7 +109,7 @@ export const Menu = () => {
                 <li>
                     <a href="#">Empresa</a>
                     <ul>
-                        <Link to="/empresa">Empresa</Link>
+                        <Link to="/empresa">Cadastro da Empresa</Link>
                         <Link to="/permissoes">Permissões</Link>
                         <Link to="/cadastro-usuario-secundario">
                             Cadastro de Usuários

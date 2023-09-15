@@ -36,9 +36,9 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
                     <div className="alignCenter">N. Cheque</div>
                     <div>Emitente</div>
                     <div>Cliente</div>
-                    <div className="alignRight">Operação</div>
-                    <div>Data Op.</div>
-                    <div className="alignRight">Vencimento</div>
+                    <div className="alignCenter">Operação</div>
+                    <div className="alignCenter">Data Op.</div>
+                    <div className="alignCenter">Vencimento</div>
                     <div className="alignRight">Valor</div>
                     <div className="alignRight">Juros</div>
                 </div>
@@ -58,12 +58,12 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
                                 {tamanhoMaximo(item.nome, 19)}
                             </div>
 
-                            <div className="alignRight">{item.idbordero}</div>
+                            <div className="alignCenter">{item.idbordero}</div>
                             <div id="maximo_200px">
                                 {inverteData(item.data)}
                             </div>
 
-                            <div className="alignRight">
+                            <div className="alignCenter ">
                                 {inverteData(item.data_vencimento)}
                             </div>
 

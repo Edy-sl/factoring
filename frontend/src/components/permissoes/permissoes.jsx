@@ -165,6 +165,7 @@ export const Permissoes = () => {
                         <div>{permissoes.grupo}</div>
                         <div className="alignRight">
                             <ImBin
+                                className="icone2"
                                 onClick={(e) =>
                                     excluirPermissao(permissoes.idpermissoes)
                                 }

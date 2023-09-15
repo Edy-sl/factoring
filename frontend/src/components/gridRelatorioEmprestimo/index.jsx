@@ -7,6 +7,7 @@ import {
 import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo/index.jsx';
 import './gridRelatorioEmprestimo.css';
+import { apiFactoring } from '../../services/api.jsx';
 export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
     let totalValor = 0;
     let totalRecebido = 0;
@@ -22,19 +23,65 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
     const [totalValorReceber, setTotalValorReceber] = useState();
     const [totalValorJuros, setTotalValorJurosE] = useState();
 
+    let arrayParcela = [];
+
+    const filtraEmprestimo = (idParcela, valor) => {
+        console.log(idParcela);
+        console.log(valor);
+
+        const parcelaFiltrada = arrayParcela.filter(
+            (P) => P.idParcela === idParcela
+        );
+
+        if (parcelaFiltrada.length > 0) {
+            const excluirParcela = arrayParcela.filter(
+                (P) => P.idParcela != idParcela
+            );
+            arrayParcela = [];
+            excluirParcela.map((P, index) => {
+                arrayParcela = [
+                    ...arrayParcela,
+                    { idParcela: P.idParcela, valor: valor },
+                ];
+            });
+        } else if (parcelaFiltrada == 0) {
+            arrayParcela = [
+                ...arrayParcela,
+                { idParcela: idParcela, valor: valor },
+            ];
+        }
+
+        console.log(arrayParcela);
+    };
+
+    const gravarPagamentos = async () => {
+        console.log(arrayParcela);
+
+        await apiFactoring
+            .post(
+                '/gravar-pagamento-varias-parcelas',
+                { arrayParcela: arrayParcela },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(window.location.reload())
+            .catch();
+    };
+
     useEffect(() => {
         listagem.map((somaTotais) => {
             totalValor = totalValor + parseFloat(somaTotais.valor);
             totalRecebido = totalRecebido + parseFloat(somaTotais.valor_pago);
             totalReceber = totalValor - totalRecebido;
-
             totalJuros =
                 totalJuros +
                 parseFloat(
                     somaTotais.valor_juros / somaTotais.quantidade_parcelas
                 );
         });
-
         setTotalValorR(totalValor);
         setTotalValorRecebido(totalRecebido);
         setTotalValorReceber(totalReceber);
@@ -42,7 +89,6 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
     }, [listagem]);
     return (
         <>
-            {' '}
             {idParcela != 0 && (
                 <FormPagamentoEmprestimo
                     parcelaN={parcelaN}
@@ -65,9 +111,14 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
                     <div className="alignRight">Recebido</div>
                     <div className="alignRight">A Receber</div>
                     <div className="alignRight"></div>
+                    <div className="alignRight">
+                        <FiDollarSign
+                            id="iconeDollarPagar"
+                            onClick={(e) => gravarPagamentos()}
+                        />
+                    </div>
                 </div>
                 <div className="divListaRContainer">
-                    {' '}
                     {listagem.map((lista, i) => (
                         <div key={i} className="divListaR">
                             <div className="alignLet">{lista.idemprestimo}</div>
@@ -136,6 +187,20 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
                                         setParcelaN(lista.parcela);
                                     }}
                                 />
+                            </div>
+                            <div className="alignRight">
+                                {lista.valor - lista.valor_pago > 1 && (
+                                    <input
+                                        type="checkbox"
+                                        value={lista.idparcela}
+                                        onClick={(e) =>
+                                            filtraEmprestimo(
+                                                e.target.value,
+                                                lista.valor - lista.valor_pago
+                                            )
+                                        }
+                                    />
+                                )}
                             </div>
                         </div>
                     ))}
