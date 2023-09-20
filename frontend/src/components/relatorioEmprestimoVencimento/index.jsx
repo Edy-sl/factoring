@@ -60,6 +60,10 @@ export const RelatorioEmprestimoPorVencimento = () => {
             });
     };
 
+    useEffect(() => {
+        !checkRel && setCheckRel('GERAL');
+    }, []);
+
     return (
         <>
             {' '}
@@ -164,7 +168,7 @@ export const RelatorioEmprestimoPorVencimento = () => {
                         <div id="divBtnRel">
                             <FiSearch
                                 className="icone2"
-                                onClick={checkRel && relatorioPorData}
+                                onClick={relatorioPorData}
                             />
                             <FiPrinter
                                 className="icone2"

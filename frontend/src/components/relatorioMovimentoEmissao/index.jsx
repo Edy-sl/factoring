@@ -55,6 +55,7 @@ export const RelatorioMovimentoPorEmissao = () => {
                 }
             )
             .then(({ data }) => {
+                console.log(data);
                 data.map((item) => {
                     newArray = [
                         ...newArray,
@@ -69,6 +70,7 @@ export const RelatorioMovimentoPorEmissao = () => {
                             valor_cheque: item.valor_cheque,
                             valor_juros: item.valor_juros,
                             idbordero_deducao: '0',
+                            valor_taxa: item.taxa_ted,
                         },
                     ];
                 });
@@ -105,6 +107,7 @@ export const RelatorioMovimentoPorEmissao = () => {
                             data_vencimento: 'DV-' + item.data_devolucao,
                             valor_cheque: item.valor_cheque,
                             valor_juros: item.juros_devolucao,
+                            valor_taxa: item.taxa_ted,
                             idbordero_deducao: item.idbordero_deducao,
                         },
                     ];
@@ -136,6 +139,7 @@ export const RelatorioMovimentoPorEmissao = () => {
             });
 
         setListagemCheque(newArray);
+        console.log(newArray);
     };
 
     const handleOnChangeDeducao = () => {
@@ -208,7 +212,7 @@ export const RelatorioMovimentoPorEmissao = () => {
                                 <FiSearch
                                     className="icone2"
                                     onClick={relatorioPorData}
-                                />{' '}
+                                />
                                 <FiPrinter
                                     className="icone2"
                                     onClick={(e) =>

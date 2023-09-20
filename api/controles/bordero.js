@@ -11,7 +11,7 @@ export const gravarBordero = (req, res) => {
 
     const { idcliente } = req.body;
     const { dataBase } = req.body;
-    const { taxaTed } = req.body;
+
     const { juros } = req.body;
     const { jurosDiario } = req.body;
     const { idFactoring } = req.body;
@@ -19,19 +19,11 @@ export const gravarBordero = (req, res) => {
     const { arrayDeducao } = req.body;
 
     const sql =
-        'insert into borderos (data, idcliente, data_base, taxa_ted, juros, Juros_diario, idfactoring) values (?,?,?,?,?,?,?)';
+        'insert into borderos (data, idcliente, data_base, juros, Juros_diario, idfactoring) values (?,?,?,?,?,?)';
 
     db.query(
         sql,
-        [
-            dataCadastro,
-            idcliente,
-            dataBase,
-            taxaTed,
-            juros,
-            jurosDiario,
-            idFactoring,
-        ],
+        [dataCadastro, idcliente, dataBase, juros, jurosDiario, idFactoring],
         (err, data) => {
             if (err) return res.json(err);
             gravarCheques(data.insertId, arrayCheques);
@@ -76,7 +68,6 @@ export const alterarBordero = (req, res) => {
     const { dataCadastro } = req.body;
     const { idcliente } = req.body;
     const { dataBase } = req.body;
-    const { taxaTed } = req.body;
     const { juros } = req.body;
     const { jurosDiario } = req.body;
     const { idFactoring } = req.body;
@@ -86,7 +77,7 @@ export const alterarBordero = (req, res) => {
     const { arrayDeducao } = req.body;
 
     const sql =
-        'update borderos set data = ?, idcliente = ?, data_base = ?, taxa_ted = ?, juros = ?, Juros_diario = ?, idfactoring = ? where idbordero = ?';
+        'update borderos set data = ?, idcliente = ?, data_base = ?, juros = ?, Juros_diario = ?, idfactoring = ? where idbordero = ?';
 
     db.query(
         sql,
@@ -94,7 +85,6 @@ export const alterarBordero = (req, res) => {
             dataCadastro,
             idcliente,
             dataBase,
-            taxaTed,
             juros,
             jurosDiario,
             idFactoring,

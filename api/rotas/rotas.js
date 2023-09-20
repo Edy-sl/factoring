@@ -30,6 +30,8 @@ import {
     relatorioEmprestimoClienteVencimento,
     relatorioEmprestimoClienteEmissao,
     pagamentoVariasParcelasEmprestimo,
+    alterarValorParcela,
+    atualizarEmprestimo,
 } from '../controles/emprestimo.js';
 import {
     gravarBordero,
@@ -155,6 +157,13 @@ rotaFactoring.post('/gravar-emprestimo', verifyJWT, gravarEmprestimo);
 rotaFactoring.post('/busca-emprestimo', verifyJWT, buscaEmprestimo);
 rotaFactoring.post('/busca-emprestimo-id', verifyJWT, buscaEmprestimoId);
 rotaFactoring.post(
+    '/atualizar-emprestimo',
+    verifyJWT,
+    verificaPermissao,
+    atualizarEmprestimo
+);
+
+rotaFactoring.post(
     '/excluir-cheque',
     verifyJWT,
     verificaPermissao,
@@ -167,8 +176,13 @@ rotaFactoring.post(
     verifyJWT,
     listaChequesDevolvidos
 );
-
 rotaFactoring.post('/gravar-data-pagamento', verifyJWT, gravarDataPagamento);
+rotaFactoring.post(
+    '/alterar-valor-parcela',
+    verifyJWT,
+    verificaPermissao,
+    alterarValorParcela
+);
 
 rotaFactoring.post(
     '/lista-cheques-deduzidos',

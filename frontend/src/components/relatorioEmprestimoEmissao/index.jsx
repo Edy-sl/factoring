@@ -78,6 +78,10 @@ export const RelatorioEmprestimoPorEmissao = () => {
         setTotalValorReceber(totalReceber);
     }, [listagem]);
 
+    useEffect(() => {
+        !checkRel && setCheckRel('GERAL');
+    }, []);
+
     return (
         <>
             {' '}
@@ -179,7 +183,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
                         <div id="divBtnRel">
                             <FiSearch
                                 className="icone2"
-                                onClick={checkRel && relatorioPorData}
+                                onClick={relatorioPorData}
                             />
 
                             <FiPrinter

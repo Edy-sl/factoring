@@ -58,10 +58,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
         localStorage.removeItem('factoring');
 
-        setUser('');
-        setAuth('');
-        setFactoring('');
-
         setUser(null);
         setAuth();
         setFactoring('null');

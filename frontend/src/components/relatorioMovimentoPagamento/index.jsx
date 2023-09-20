@@ -69,6 +69,7 @@ export const RelatorioMovimentoPorPagamento = () => {
                             valor_cheque: item.valor_cheque,
                             valor_juros: item.valor_juros,
                             idbordero_deducao: '0',
+                            valor_taxa: item.taxa_ted,
                         },
                     ];
                 });

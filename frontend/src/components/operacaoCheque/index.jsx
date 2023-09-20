@@ -15,6 +15,7 @@ import {
     converteFloatMoeda,
     inverteData,
     dataHoraAtual,
+    feriadosFixos,
 } from '../../biblitoteca';
 import { BuscaOperacao } from '../buscaOperacaoCheque';
 import { AuthProvider } from '../../context/authContext';
@@ -22,6 +23,8 @@ import axios from 'axios';
 import { ImBin } from 'react-icons/im';
 
 export const FormOperacaoCheque = () => {
+    const [gravarDoc, setGravarDoc] = useState(false);
+
     const [onEdit, setOnEdit] = useState(false);
 
     const [devolvidos, setDevolvidos] = useState([]);
@@ -43,8 +46,12 @@ export const FormOperacaoCheque = () => {
 
     const [formBuscaOperacao, setFormBuscaOperacao] = useState(false);
 
-    let varIncluirCheque = true;
-    let idIndexCheque = 0;
+    //let varIncluirCheque = true;
+
+    const [varIncluirCheque, setVarIncluirCheque] = useState(true);
+
+    //let idIndexCheque = 0;
+    const [idIndexCheque, setIdIndexCheque] = useState(0);
 
     let varCalculaJuros = false;
 
@@ -118,6 +125,7 @@ export const FormOperacaoCheque = () => {
                 if (data.length > 0) {
                     data.map((dados) => {
                         dadosCliente.nome.value = dados.nome;
+
                         dadosCliente.idCliente.value = dados.idcliente;
                         dadosCliente.jurosMensal.value = dados.taxa_juros;
                         document.getElementById('inputTxTed').focus();
@@ -157,12 +165,7 @@ export const FormOperacaoCheque = () => {
                             dadosOperacao.operacao.value = dados.idbordero;
                             dadosOperacao.dataBase.value = dados.data_base;
                             dadosOperacao.data.value = dados.data;
-                            dadosOperacao.txTed.value = (
-                                dados.taxa_ted * 1
-                            ).toLocaleString('pt-BR', {
-                                style: 'decimal',
-                                minimumFractionDigits: 2,
-                            });
+                            dadosOperacao.txTed.value = '0,00';
                             dadosOperacao.jurosMensal.value = dados.juros;
                             dadosOperacao.jurosDiario.value =
                                 dados.juros_diario;
@@ -204,6 +207,8 @@ export const FormOperacaoCheque = () => {
     };
 
     const alterarBorderdo = async () => {
+        setGravarDoc(false);
+
         const dadosBordero = ref.current;
 
         await apiFactoring
@@ -238,6 +243,7 @@ export const FormOperacaoCheque = () => {
     };
 
     const gravarBorderdo = async () => {
+        setGravarDoc(false);
         const dadosBordero = ref.current;
 
         await apiFactoring
@@ -319,7 +325,10 @@ export const FormOperacaoCheque = () => {
     };
 
     const incluirCheque = () => {
+        console.log('aqui..' + varIncluirCheque);
+
         const dadosLancamento = ref.current;
+        setGravarDoc(true);
 
         if (varIncluirCheque === true) {
             let checado = true;
@@ -342,10 +351,7 @@ export const FormOperacaoCheque = () => {
             if (dadosLancamento.valorCheque.value == '') {
                 checado = false;
             }
-            if (
-                dadosLancamento.valorJuros.value == '' ||
-                dadosLancamento.valorJuros.value == '0,00'
-            ) {
+            if (dadosLancamento.valorJuros.value == '') {
                 checado = false;
             }
             if (dadosLancamento.valorLiquido.value == '') {
@@ -355,6 +361,10 @@ export const FormOperacaoCheque = () => {
                 checado = false;
             }
             if (checado == true) {
+                console.log(lancamentos);
+
+                console.log(arrayCheques);
+
                 arrayCheques = [
                     ...lancamentos,
                     {
@@ -385,6 +395,7 @@ export const FormOperacaoCheque = () => {
 
                 setLancamentos(arrayCheques);
                 document.getElementById('inputTxTed').focus();
+
                 dadosLancamento.numeroBanco.value = '';
                 dadosLancamento.banco.value = '';
                 dadosLancamento.numeroCheque.value = '';
@@ -394,18 +405,25 @@ export const FormOperacaoCheque = () => {
                 dadosLancamento.valorJuros.value = '';
                 dadosLancamento.valorLiquido.value = '';
                 dadosLancamento.dias.value = '0';
-                dadosLancamento.txTed.value = '0';
+
+                setVarIncluirCheque(true);
             } else {
                 toast.error('Compos obrigatórios não preenchidos!');
                 document.getElementById('inputTxTed').focus();
             }
         } else {
+            console.log('aqui..**************' + varIncluirCheque);
+
             dadosLancamento.btnIncluirLancamento.innerText = 'Incluir';
             gravarAlteracaoCheque(idIndexCheque);
         }
     };
 
-    const gravarAlteracaoCheque = () => {
+    const gravarAlteracaoCheque = (idIndexCheque) => {
+        console.log('gravar alteração');
+
+        console.log(idIndexCheque);
+
         const dadosLancamento = ref.current;
 
         for (let i = 0; i < lancamentos.length; i++) {
@@ -448,7 +466,8 @@ export const FormOperacaoCheque = () => {
         dadosLancamento.valorJuros.value = '';
         dadosLancamento.valorLiquido.value = '';
         dadosLancamento.dias.value = '0';
-        dadosLancamento.txTed.value = '0';
+
+        setVarIncluirCheque(true);
     };
 
     const calculaJurosDiario = () => {
@@ -466,6 +485,32 @@ export const FormOperacaoCheque = () => {
         const dias = diffInMs / (1000 * 60 * 60 * 24);
         dadosDia.dias.value = dias;
         setDias(dias);
+    };
+
+    const calculaDiasUteis = () => {
+        const dadosCheque = ref.current;
+
+        var data_vencimento = new Date(dadosCheque.dataVencimento.value);
+        data_vencimento.setDate(data_vencimento.getDate() + 1); // Adiciona 1 dias
+
+        //vefifica se é feriado e retorna +1 dia
+        var add_dia = feriadosFixos(data_vencimento);
+        if (add_dia == true) {
+            dadosCheque.dataVencimento.focus();
+            toast.error('Feriado!');
+        }
+
+        //vefifica é sabado ou domingo e acrescenta 1 ou 2 dias
+        // e se o intervalo é maior do q 0 add +1 ao intervalo
+        if (data_vencimento.getDay() == 0) {
+            dadosCheque.dataVencimento.focus();
+            toast.error('Domingo!');
+        }
+
+        if (data_vencimento.getDay() == 6) {
+            dadosCheque.dataVencimento.focus();
+            toast.error('Sábado!');
+        }
     };
 
     const calculaValorJuros = () => {
@@ -493,6 +538,10 @@ export const FormOperacaoCheque = () => {
             valorJuros = valorJurosCliente;
         }
 
+        if (especial != 'SIM' && valorJurosMinimo == valorJurosCliente) {
+            valorJuros = valorJurosCliente;
+        }
+
         if (especial == 'SIM') {
             valorJuros = valorJurosCliente;
         }
@@ -500,6 +549,7 @@ export const FormOperacaoCheque = () => {
         dadosJuros.valorJuros.value = valorJuros.toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
 
         /* dadosJuros.valorLiquido.value = (
@@ -524,10 +574,12 @@ export const FormOperacaoCheque = () => {
         ).toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
     };
 
     const limpa = () => {
+        setGravarDoc(false);
         const dadosOperacao = ref.current;
 
         setIdBordero('0');
@@ -562,6 +614,7 @@ export const FormOperacaoCheque = () => {
         dadosOperacao.valorCheque.value = valorCheque.toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
     };
 
@@ -665,7 +718,6 @@ export const FormOperacaoCheque = () => {
     };
 
     const atualizaResumo = () => {
-        console.log('atualizou');
         const dadosResumo = ref.current;
         let somaValorCheques = 0;
         let somaValorJuros = 0;
@@ -690,6 +742,7 @@ export const FormOperacaoCheque = () => {
         dadosResumo.totalDeducao.value = somaDeducao.toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
 
         dadosResumo.totalBruto.value = somaValorCheques.toLocaleString(
@@ -697,6 +750,7 @@ export const FormOperacaoCheque = () => {
             {
                 style: 'decimal',
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
             }
         );
         dadosResumo.totalJuros.value = somaValorJuros.toLocaleString('pt-BR', {
@@ -707,6 +761,7 @@ export const FormOperacaoCheque = () => {
         dadosResumo.totalTxTed.value = somaValorTxTed.toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
 
         dadosResumo.totalLiquido.value = somaValorLiquido.toLocaleString(
@@ -714,13 +769,17 @@ export const FormOperacaoCheque = () => {
             {
                 style: 'decimal',
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
             }
         );
         dadosResumo.quantidadeCheques.value = somaQuantidadeCheques;
     };
 
     const editarCheque = (id) => {
-        varIncluirCheque = false;
+        //varIncluirCheque = false;
+        setVarIncluirCheque(false);
+
+        console.log(id);
 
         const dadosLancamento = ref.current;
         dadosLancamento.btnIncluirLancamento.innerText = 'Alterar';
@@ -740,18 +799,21 @@ export const FormOperacaoCheque = () => {
             ).toLocaleString('pt-BR', {
                 style: 'decimal',
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
             });
             dadosLancamento.valorJuros.value = (
                 lanc.valor_juros * 1
             ).toLocaleString('pt-BR', {
                 style: 'decimal',
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
             });
             dadosLancamento.valorLiquido.value = (
                 lanc.valor_liquido * 1
             ).toLocaleString('pt-BR', {
                 style: 'decimal',
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
             });
 
             dadosLancamento.txTed.value = (lanc.taxa_ted * 1).toLocaleString(
@@ -759,11 +821,12 @@ export const FormOperacaoCheque = () => {
                 {
                     style: 'decimal',
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                 }
             );
             dadosLancamento.dias.value = lanc.dias;
 
-            idIndexCheque = lanc.index;
+            setIdIndexCheque(lanc.index);
         });
     };
 
@@ -777,11 +840,13 @@ export const FormOperacaoCheque = () => {
         dadosTaxa.txTed.value = vl.toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
         });
     };
 
     const excluirCheque = async (id) => {
-        varIncluirCheque = false;
+        //varIncluirCheque = false;
+        setVarIncluirCheque(true);
 
         const dadosLancamento = ref.current;
         if (onEdit) {
@@ -797,20 +862,55 @@ export const FormOperacaoCheque = () => {
                 )
                 .then(({ data }) => {
                     toast.success(data);
-                    lancamentos.splice([id]);
-                    arrayCheques = [...lancamentos];
+
+                    const lancamentoFiltrado = lancamentos.filter(
+                        (l) => l.index != id * 1
+                    );
+
+                    arrayCheques = [...lancamentoFiltrado];
                     setLancamentos(arrayCheques);
+                    //  BuscaCheques();
                 })
                 .catch((err) => {
                     toast.error(err.response.data);
                 });
         }
         if (!onEdit) {
-            lancamentos.splice([i]);
-            arrayCheques = [...lancamentos];
+            console.log(id);
+
+            const lancamentoFiltrado = lancamentos.filter(
+                (l) => l.index != id * 1
+            );
+
+            console.log(lancamentoFiltrado);
+
+            arrayCheques = [];
+            lancamentoFiltrado.map((lanc, index) => {
+                arrayCheques = [
+                    ...arrayCheques,
+                    {
+                        index: index,
+                        idlancamento: lanc.idlancamento,
+                        numero_banco: lanc.numero_banco,
+                        nome_banco: lanc.nome_banco,
+                        numero_cheque: lanc.numero_cheque,
+                        nome_cheque: lanc.nome_cheque,
+                        data_vencimento: lanc.data_vencimento,
+                        status: lanc.status,
+                        taxa_ted: lanc.taxa_ted,
+                        valor_cheque: lanc.valor_cheque,
+                        dias: lanc.dias,
+                        valor_juros: lanc.valor_juros,
+                        valor_liquido: lanc.valor_liquido,
+                        idBordero: lanc.idBordero,
+                    },
+                ];
+            });
+
+            console.log(arrayCheques);
+
             setLancamentos(arrayCheques);
         }
-        BuscaCheques();
     };
 
     const imprimir = () => {
@@ -893,6 +993,7 @@ export const FormOperacaoCheque = () => {
                 (cheque.valor_cheque * 1).toLocaleString('pt-BR', {
                     style: 'decimal',
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                 })
             );
             win.document.write('</td>');
@@ -902,6 +1003,7 @@ export const FormOperacaoCheque = () => {
                 (cheque.taxa_ted * 1).toLocaleString('pt-BR', {
                     style: 'decimal',
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                 })
             );
             win.document.write('</td>');
@@ -911,6 +1013,7 @@ export const FormOperacaoCheque = () => {
                 (cheque.valor_juros * 1).toLocaleString('pt-BR', {
                     style: 'decimal',
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                 })
             );
             win.document.write('</td>');
@@ -964,6 +1067,7 @@ export const FormOperacaoCheque = () => {
                 (ded.valor_cheque * 1).toLocaleString('pt-BR', {
                     style: 'decimal',
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                 })
             );
             win.document.write('</td>');
@@ -973,6 +1077,7 @@ export const FormOperacaoCheque = () => {
                 (ded.taxa_cheque * 1).toLocaleString('pt-BR', {
                     style: 'decimal',
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                 })
             );
             win.document.write('</td>');
@@ -982,6 +1087,7 @@ export const FormOperacaoCheque = () => {
                 (ded.juros_devolucao * 1).toLocaleString('pt-BR', {
                     style: 'decimal',
                     minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
                 })
             );
             win.document.write('</td>');
@@ -1018,6 +1124,7 @@ export const FormOperacaoCheque = () => {
             (jurosDevolucao * 1 + jurosTotal * 1).toLocaleString('pt-BR', {
                 style: 'decimal',
                 minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
             })
         );
         win.document.write('</td>');
@@ -1222,6 +1329,12 @@ export const FormOperacaoCheque = () => {
         setDevolvidos(arrayDevolvidos);
     };
 
+    const completaNome = () => {
+        const dadosCliente = ref.current;
+        dadosCliente.nomeCheque.value = dadosCliente.nome.value;
+        dadosCliente.nomeCheque.select();
+    };
+
     useEffect(() => {
         vefificaPermissao();
     }, []);
@@ -1303,7 +1416,7 @@ export const FormOperacaoCheque = () => {
                                 Gravar Alteração
                             </button>
                         )}
-                        {onEdit && (
+                        {onEdit && gravarDoc == '' && (
                             <button id="btnImprimir" onClick={imprimir}>
                                 Imprimir
                             </button>
@@ -1378,6 +1491,7 @@ export const FormOperacaoCheque = () => {
                                 autoComplete="off"
                                 onBlur={formataValorTaxa}
                                 onChange={calculaValorJuros}
+                                onFocus={(e) => e.target.select()}
                             />
                         </div>
                         <div className="boxCol">
@@ -1431,6 +1545,7 @@ export const FormOperacaoCheque = () => {
                                 onKeyDown={(e) => keyDown(e, 'inputBanco')}
                                 autoComplete="off"
                                 onChange={(e) => buscaBancos(e.target.value)}
+                                onFocus={(e) => e.target.select()}
                             />
                         </div>
                         <div className="boxCol">
@@ -1443,6 +1558,7 @@ export const FormOperacaoCheque = () => {
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputNcheque')}
                                 autoComplete="off"
+                                onFocus={(e) => e.target.select()}
                             />
                         </div>
 
@@ -1459,6 +1575,7 @@ export const FormOperacaoCheque = () => {
                                 onKeyUp={(e) =>
                                     handleNumeroCheuque(e.target.value)
                                 }
+                                onFocus={(e) => e.target.select()}
                             />
                         </div>
 
@@ -1475,6 +1592,7 @@ export const FormOperacaoCheque = () => {
                                         keyDown(e, 'inputVencimento')
                                     }
                                     autoComplete="off"
+                                    onFocus={(e) => completaNome()}
                                 />
                             </div>
                         </div>
@@ -1491,6 +1609,7 @@ export const FormOperacaoCheque = () => {
                                 onChange={calculaDias}
                                 onKeyDown={(e) => keyDown(e, 'inputValorC')}
                                 autoComplete="off"
+                                onBlur={calculaDiasUteis}
                             />
                         </div>
                         <div className="boxCol">
@@ -1505,6 +1624,7 @@ export const FormOperacaoCheque = () => {
                                 onKeyDown={(e) => keyDown(e, 'inputDias')}
                                 onBlur={formataValorCheque}
                                 autoComplete="off"
+                                onFocus={(e) => e.target.select()}
                             />
                         </div>
                         <div className="boxCol">
@@ -1533,6 +1653,7 @@ export const FormOperacaoCheque = () => {
                                     }
                                     autoComplete="off"
                                     onChange={calculaValorLiquido}
+                                    onFocus={(e) => e.target.select()}
                                 />
                             </div>
                         </div>
@@ -1682,6 +1803,7 @@ export const FormOperacaoCheque = () => {
                                         {
                                             style: 'decimal',
                                             minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
                                         }
                                     )}
                                 </div>
@@ -1691,6 +1813,7 @@ export const FormOperacaoCheque = () => {
                                         {
                                             style: 'decimal',
                                             minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
                                         }
                                     )}
                                 </div>
@@ -1700,6 +1823,7 @@ export const FormOperacaoCheque = () => {
                                         {
                                             style: 'decimal',
                                             minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
                                         }
                                     )}
                                 </div>
@@ -1709,6 +1833,7 @@ export const FormOperacaoCheque = () => {
                                         {
                                             style: 'decimal',
                                             minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
                                         }
                                     )}
                                 </div>
@@ -1772,6 +1897,7 @@ export const FormOperacaoCheque = () => {
                                         {
                                             style: 'decimal',
                                             minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
                                         }
                                     )}
                                 </div>
@@ -1785,6 +1911,7 @@ export const FormOperacaoCheque = () => {
                                         {
                                             style: 'decimal',
                                             minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
                                         }
                                     )}
                                 </div>
@@ -1852,6 +1979,7 @@ export const FormOperacaoCheque = () => {
                                         {
                                             style: 'decimal',
                                             minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
                                         }
                                     )}
                                 </div>
@@ -1860,6 +1988,7 @@ export const FormOperacaoCheque = () => {
                                     {item.valor_total.toLocaleString('pt-BR', {
                                         style: 'decimal',
                                         minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
                                     })}
                                 </div>
                                 <div className="alignRight">

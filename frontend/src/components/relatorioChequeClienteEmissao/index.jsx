@@ -79,6 +79,7 @@ export const RelatorioChequePorClienteEmissao = () => {
                             valor_cheque: item.valor_cheque,
                             valor_juros: item.valor_juros,
                             idbordero_deducao: '0',
+                            valor_taxa: item.taxa_ted,
                         },
                     ];
                 });
@@ -134,6 +135,11 @@ export const RelatorioChequePorClienteEmissao = () => {
     useEffect(() => {
         buscaClienteCodigo();
     }, [idCliente]);
+
+    useEffect(() => {
+        !checkRel && setCheckRel('GERAL');
+    }, []);
+
     return (
         <>
             <ToastContainer
@@ -282,7 +288,7 @@ export const RelatorioChequePorClienteEmissao = () => {
                         <div id="divBtnRel">
                             <FiSearch
                                 className="icone2"
-                                onClick={checkRel && relatorioPorData}
+                                onClick={relatorioPorData}
                             />
 
                             <FiPrinter

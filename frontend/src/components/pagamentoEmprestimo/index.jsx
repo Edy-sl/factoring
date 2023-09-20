@@ -17,6 +17,7 @@ export const FormPagamentoEmprestimo = ({
     parcelaN,
     setAtualizaParcelas,
     atualizaParcelas,
+    setPagamentoParcela,
 }) => {
     const [idPagamento, setIdPagamento] = useState(0);
 
@@ -110,7 +111,10 @@ export const FormPagamentoEmprestimo = ({
                 <div>
                     <ImExit
                         className="icone"
-                        onClick={(e) => setIdParcela(0)}
+                        onClick={(e) => {
+                            setIdParcela(0);
+                            setPagamentoParcela(false);
+                        }}
                     />
                 </div>
             </div>

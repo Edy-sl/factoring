@@ -73,8 +73,9 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
 
     useEffect(() => {
         listagem.map((somaTotais) => {
-            totalValor = totalValor + parseFloat(somaTotais.valor);
-            totalRecebido = totalRecebido + parseFloat(somaTotais.valor_pago);
+            totalValor = totalValor + parseFloat(somaTotais.valor * 1);
+            totalRecebido =
+                totalRecebido + parseFloat(somaTotais.valor_pago * 1);
             totalReceber = totalValor - totalRecebido;
             totalJuros =
                 totalJuros +

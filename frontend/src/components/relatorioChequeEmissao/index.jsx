@@ -67,6 +67,7 @@ export const RelatorioChequePorEmissao = () => {
                             valor_cheque: item.valor_cheque,
                             valor_juros: item.valor_juros,
                             idbordero_deducao: '0',
+                            valor_taxa: item.taxa_ted,
                         },
                     ];
                 });
@@ -76,6 +77,10 @@ export const RelatorioChequePorEmissao = () => {
                 toast.error(data);
             });
     };
+
+    useEffect(() => {
+        !checkRel && setCheckRel('GERAL');
+    }, []);
 
     return (
         <>
@@ -180,7 +185,9 @@ export const RelatorioChequePorEmissao = () => {
                         <div id="divBtnRel">
                             <FiSearch
                                 className="icone2"
-                                onClick={checkRel && relatorioPorData}
+                                onClick={(e) => {
+                                    relatorioPorData();
+                                }}
                             />
 
                             <FiPrinter

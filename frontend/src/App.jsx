@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 import './App.css';
 import { Menu } from './components/menu/menu';
 import { AuthProvider } from './context/authContext';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from './context/authContext';
 
 function App() {

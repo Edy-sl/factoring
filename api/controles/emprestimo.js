@@ -50,6 +50,21 @@ export const gravarEmprestimo = (req, res) => {
     );
 };
 
+//alterar valores do emprestimos
+export const atualizarEmprestimo = (req, res) => {
+    const { valorJuros } = req.body;
+    const { valorTotal } = req.body;
+    const { idEmprestimo } = req.body;
+
+    const sql =
+        'update emprestimos set valor_juros = ?, valor_total=? where idEmprestimo = ?';
+
+    db.query(sql, [valorJuros, valorTotal, idEmprestimo], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json('Emprestimo Atualizado!');
+    });
+};
+
 export const gravarParcelas = (idemprestimo, arrayParcelas) => {
     arrayParcelas.map((item) => {
         const sql2 =
@@ -840,5 +855,16 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
     db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
+    });
+};
+
+export const alterarValorParcela = (req, res) => {
+    const { parcela } = req.body;
+    const { valor } = req.body;
+
+    const sql = 'update parcelas_emprestimo set valor = ? where idparcela = ?';
+    db.query(sql, [valor, parcela], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json('Valor alterado!');
     });
 };

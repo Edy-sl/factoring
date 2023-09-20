@@ -9,23 +9,27 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
     var totalValorCheques = 0;
     var totalValorLiquido = 0;
     var totalValorJuros = 0;
+    var totalTaxa = 0;
 
     const [totalValCheques, setTotalValorCheques] = useState(0);
     const [totalValLiquido, setTotalValorLiquido] = useState(0);
     const [totalValJuros, setTotalValorJuros] = useState(0);
+    const [totalValTaxa, setTotalValorTaxa] = useState(0);
 
     useEffect(() => {
         listagem.map((somaTotais) => {
             totalValorCheques =
-                totalValorCheques + parseFloat(somaTotais.valor_cheque);
+                totalValorCheques + parseFloat(somaTotais.valor_cheque * 1);
             totalValorLiquido =
-                totalValorLiquido + parseFloat(somaTotais.valor_liquido);
+                totalValorLiquido + parseFloat(somaTotais.valor_liquido * 1);
             totalValorJuros =
-                totalValorJuros + parseFloat(somaTotais.valor_juros);
+                totalValorJuros + parseFloat(somaTotais.valor_juros * 1);
+            totalTaxa = totalTaxa + parseFloat(somaTotais.valor_taxa * 1);
         });
         setTotalValorCheques(totalValorCheques);
         setTotalValorLiquido(totalValorLiquido);
         setTotalValorJuros(totalValorJuros);
+        setTotalValorTaxa(totalTaxa);
     }, [listagem]);
 
     return (
@@ -40,6 +44,7 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
                     <div className="alignCenter">Data Op.</div>
                     <div className="alignCenter">Vencimento</div>
                     <div className="alignRight">Valor</div>
+                    <div className="alignRight">Taxa</div>
                     <div className="alignRight">Juros</div>
                 </div>
 
@@ -75,6 +80,13 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
                                         minimumFractionDigits: 2,
                                     }
                                 )}
+                            </div>
+
+                            <div className="alignRight">
+                                {(item.valor_taxa * 1).toLocaleString('pt-BR', {
+                                    style: 'decimal',
+                                    minimumFractionDigits: 2,
+                                })}
                             </div>
 
                             {item.idbordero_deducao > 0 ? (
@@ -116,7 +128,12 @@ export const GridChequeRelatorio = ({ listagem = [] }) => {
                             minimumFractionDigits: 2,
                         })}
                     </div>
-
+                    <div className="alignRight">
+                        {(totalValTaxa * 1).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        })}
+                    </div>
                     <div className="alignRight">
                         {(totalValJuros * 1).toLocaleString('pt-BR', {
                             style: 'decimal',

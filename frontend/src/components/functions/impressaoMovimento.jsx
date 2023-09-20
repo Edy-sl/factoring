@@ -9,6 +9,7 @@ import {
 export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     let totalValorCheques = 0;
     let totalJurosCheques = 0;
+    let totalValorTaxa = 0;
 
     let totalValorEmprestimo = 0;
     let totalJurosEmprestimo = 0;
@@ -22,6 +23,9 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     win.document.write('<table border="0" width="900">');
 
     win.document.write('<tr>');
+    win.document.write('<td style="text-align : right">');
+    win.document.write('Operação');
+    win.document.write('</td>');
     win.document.write('<td>');
     win.document.write('Banco');
     win.document.write('</td>');
@@ -39,10 +43,6 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     win.document.write('</td>');
 
     win.document.write('<td style="text-align : right">');
-    win.document.write('Operação');
-    win.document.write('</td>');
-
-    win.document.write('<td style="text-align : right">');
     win.document.write('Data Op.');
     win.document.write('</td>');
 
@@ -55,6 +55,10 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     win.document.write('</td>');
 
     win.document.write('<td style="text-align : right">');
+    win.document.write('Vl.Taxa');
+    win.document.write('</td>');
+
+    win.document.write('<td style="text-align : right">');
     win.document.write('Vl.Juros');
     win.document.write('</td>');
 
@@ -62,7 +66,12 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
 
     listagemCheque.map((cheques) => {
         win.document.write('<tr>');
-        win.document.write('<td>');
+
+        win.document.write('<td style="text-align : center">');
+        win.document.write(cheques.idbordero);
+        win.document.write('</td>');
+
+        win.document.write('<td style="text-align : center">');
         win.document.write(cheques.numero_banco);
         win.document.write('</td>');
 
@@ -76,10 +85,6 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
 
         win.document.write('<td style="text-transform: uppercase;  " >');
         win.document.write(tamanhoMaximo(cheques.nome, 15));
-        win.document.write('</td>');
-
-        win.document.write('<td style="text-align : right">');
-        win.document.write(cheques.idbordero);
         win.document.write('</td>');
 
         win.document.write('<td style="text-align : right">&nbsp;&nbsp;');
@@ -101,6 +106,15 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
 
         win.document.write('<td style="text-align : right">&nbsp;&nbsp;');
         win.document.write(
+            (cheques.valor_taxa * 1).toLocaleString('pt-BR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+            })
+        );
+        win.document.write('</td>');
+
+        win.document.write('<td style="text-align : right">&nbsp;&nbsp;');
+        win.document.write(
             (cheques.valor_juros * 1).toLocaleString('pt-BR', {
                 style: 'decimal',
                 minimumFractionDigits: 2,
@@ -111,11 +125,12 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
         win.document.write('</tr>');
         totalJurosCheques = totalJurosCheques + cheques.valor_juros * 1;
         totalValorCheques = totalValorCheques + cheques.valor_cheque * 1;
+        totalValorTaxa = totalValorTaxa + cheques.valor_taxa * 1;
 
         console.log(totalJurosCheques);
     });
     win.document.write('<tr>');
-    win.document.write('<td colspan="9">');
+    win.document.write('<td colspan="10">');
     win.document.write(
         '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------'
     );
@@ -150,6 +165,15 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
 
     win.document.write('<td style="text-align : right">');
     win.document.write(
+        (totalValorTaxa * 1).toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        })
+    );
+    win.document.write('</td>');
+
+    win.document.write('<td style="text-align : right">');
+    win.document.write(
         (totalJurosCheques * 1).toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
@@ -159,7 +183,24 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     win.document.write('</td>');
     win.document.write('</tr>');
 
-    win.document.write('<td colspan="9">');
+    //total
+    win.document.write('<tr>');
+    win.document.write('<td colspan="9"  style="text-align: right">');
+    win.document.write('Total Juros + taxas');
+    win.document.write('</td>');
+
+    win.document.write('<td style="text-align: right">');
+    win.document.write(
+        (totalValorTaxa * 1 + totalJurosCheques * 1).toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+        })
+    );
+
+    win.document.write('</td>');
+    win.document.write('</tr>');
+
+    win.document.write('<td colspan="10">');
     win.document.write(
         '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------'
     );
@@ -311,32 +352,20 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     win.document.write('</tr>');
 
     win.document.write('<tr>');
-    win.document.write('<td>');
-    win.document.write('</td>');
-    win.document.write('<td>');
-    win.document.write('</td>');
-    win.document.write('<td>');
-    win.document.write('</td>');
-    win.document.write('<td>');
-    win.document.write('</td>');
-    win.document.write('<td>');
-    win.document.write('</td>');
-    win.document.write('<td>');
-
-    win.document.write('</td>');
-    win.document.write('<td>');
-    win.document.write('Total de Juros');
+    win.document.write('<td colspan="7" style="text-align : right">');
+    win.document.write('Total Juros + taxas');
     win.document.write('</td>');
     win.document.write('<td style="text-align : right">');
     win.document.write(
-        (totalJurosEmprestimo * 1 + totalJurosCheques * 1).toLocaleString(
-            'pt-BR',
-            {
-                style: 'decimal',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }
-        )
+        (
+            totalJurosEmprestimo * 1 +
+            totalValorTaxa * 1 +
+            totalJurosCheques * 1
+        ).toLocaleString('pt-BR', {
+            style: 'decimal',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        })
     );
     win.document.write('</td>');
     win.document.write('</tr>');

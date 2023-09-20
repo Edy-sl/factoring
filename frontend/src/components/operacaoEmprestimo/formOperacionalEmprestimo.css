@@ -58,7 +58,7 @@
 
 .gridEmprestimo {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
 
     background-color: rgb(185, 185, 188);
 
@@ -72,37 +72,37 @@
 
 .gridLinha {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     background-color: #fff;
 }
 
 .gridLinha:hover {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     background-color: #035ff3e7;
     color: #fff;
 }
 
 .gridLinhaPago {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     background-color: #d7e0f0;
 }
 .gridLinhaPago:hover {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     background-color: #035ff3e7;
     color: #fff;
 }
 
 .gridLinhaPagoParcial {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     background-color: #f2efc5;
 }
 .gridLinhaPagoParcial:hover {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     background-color: #035ff3e7;
     color: #fff;
 }

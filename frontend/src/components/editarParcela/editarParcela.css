@@ -1,0 +1,35 @@
+.divEditarParcela {
+    position: fixed;
+    z-index: 999;
+    top: 25vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(142, 151, 161);
+    padding: 20px;
+
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+#inputParcela {
+    width: 100px;
+}
+
+#inputValor {
+    width: 150px;
+}
+
+#divIconeExit {
+    display: flex;
+    flex-direction: row;
+    width: 80px;
+    justify-content: flex-end;
+    align-items: end;
+}
+
+#divBtnGravar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-top: 10px;
+}

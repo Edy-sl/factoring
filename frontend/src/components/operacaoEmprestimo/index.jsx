@@ -22,6 +22,7 @@ import { BuscaClienteNome } from '../buscaCliente';
 import { BuscaEmprestimo } from '../buscaEmprestimo';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import extenso from 'extenso';
+import { EditarParcela } from '../editarParcela';
 
 export const FormOperacionalEmprestimo = () => {
     const ref = useRef();
@@ -36,6 +37,8 @@ export const FormOperacionalEmprestimo = () => {
 
     const [atualizaParcelas, setAtualizaParcelas] = useState(false);
 
+    const [recarregaParcelas, setRecarregaParcelas] = useState();
+
     const [s_intervalo, setIntervalo] = useState(0);
 
     const [idCliente, setIdCliente] = useState();
@@ -45,9 +48,13 @@ export const FormOperacionalEmprestimo = () => {
     const [idParcela, setIdParcela] = useState(0);
     const [parcelaN, setParcelaN] = useState(0);
 
-    const [dadosCliente, setDadosCliente] = useState([]);
+    const [pagamentoParcela, setPagamentoParcela] = useState();
+    const [editarParcela, setEditarParcela] = useState();
 
+    const [dadosCliente, setDadosCliente] = useState([]);
     const [checkPrestacao, setCheckPrestacao] = useState(true);
+
+    const [valorAtualizado, setValorAtualizado] = useState();
 
     var valorPrestacao = 0;
     var valorTotalJuros = 0;
@@ -119,8 +126,9 @@ export const FormOperacionalEmprestimo = () => {
                 valorPrestacao = converteMoedaFloat(
                     dadosEmprestimo.valorParcela.value
                 );
-                valorTotal = valorPrestacao * parcela;
+                //  valorTotal = valorPrestacao * parcela;
                 var taxaJuros = valorTotal / valorPrestacao;
+                //valor total soma as parcelas
 
                 console.log(taxaJuros);
 
@@ -331,6 +339,37 @@ export const FormOperacionalEmprestimo = () => {
             });
     };
 
+    //atualizar valores emprestimo
+    const atualizarEmprestimo = async () => {
+        const dadosEmprestimo = ref.current;
+
+        await apiFactoring
+            .post(
+                '/atualizar-emprestimo',
+                {
+                    valorJuros: converteMoedaFloat(
+                        dadosEmprestimo.valorTotalJuros.value
+                    ),
+                    valorTotal: converteMoedaFloat(
+                        dadosEmprestimo.valorTotal.value
+                    ),
+                    idEmprestimo: dadosEmprestimo.emprestimo.value,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                toast.success(data);
+                setOnEdit(true);
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+    };
+
     const buscaEmprestimo = async () => {
         const dadosEmprestimo = ref.current;
         await apiFactoring
@@ -410,6 +449,7 @@ export const FormOperacionalEmprestimo = () => {
     const buscaParcelas = async () => {
         somaValorPago = 0;
         valorRestante = 0;
+        valorTotal = 0;
         const dadosEmprestimo = ref.current;
         await apiFactoring
             .post(
@@ -431,6 +471,7 @@ export const FormOperacionalEmprestimo = () => {
                     data.map((item) => {
                         console.log(item.vencimento);
                         somaValorPago = somaValorPago + item.valor_pago * 1;
+                        valorTotal = valorTotal + item.valor * 1;
                         arrayP = [
                             ...arrayP,
                             {
@@ -441,6 +482,25 @@ export const FormOperacionalEmprestimo = () => {
                                 valorPago: item.valor_pago,
                             },
                         ];
+                    });
+
+                    console.log(valorTotal);
+
+                    dadosEmprestimo.valorTotal.value =
+                        valorTotal.toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
+
+                    dadosEmprestimo.valorTotalJuros.value = (
+                        valorTotal * 1 -
+                        converteMoedaFloat(
+                            dadosEmprestimo.valorEmprestimo.value
+                        ) *
+                            1
+                    ).toLocaleString('pt-BR', {
+                        style: 'decimal',
+                        minimumFractionDigits: 2,
                     });
 
                     setArrayParcelas(arrayP);
@@ -548,11 +608,16 @@ export const FormOperacionalEmprestimo = () => {
     useEffect(() => {
         buscaEmprestimo();
         buscaParcelas();
-    }, [idEmprestimo]);
+    }, [idEmprestimo, recarregaParcelas]);
 
     useEffect(() => {
         buscaClienteCodigo();
     }, [idCliente]);
+
+    useEffect(() => {
+        //  atualizarEmprestimo();
+        console.log(valorAtualizado);
+    }, [valorAtualizado]);
 
     useEffect(() => {
         const dadosEmprestimo = ref.current;
@@ -872,14 +937,27 @@ export const FormOperacionalEmprestimo = () => {
                     setIdCliente={setIdCliente}
                 />
             )}
+            {editarParcela == true && (
+                <EditarParcela
+                    setEditarParcela={setEditarParcela}
+                    parcelaN={parcelaN}
+                    idParcela={idParcela}
+                    setRecarregaParcelas={setRecarregaParcelas}
+                    recarregaParcelas={recarregaParcelas}
+                    setValorAtualizado={setValorAtualizado}
+                    valorAtualizado={valorAtualizado}
+                    atualizarEmprestimo={atualizarEmprestimo}
+                />
+            )}
 
-            {idParcela != 0 && (
+            {pagamentoParcela == true && (
                 <FormPagamentoEmprestimo
                     parcelaN={parcelaN}
                     idParcela={idParcela}
                     setIdParcela={setIdParcela}
                     setAtualizaParcelas={setAtualizaParcelas}
                     atualizaParcelas={atualizaParcelas}
+                    setPagamentoParcela={setPagamentoParcela}
                 />
             )}
 
@@ -1168,7 +1246,8 @@ export const FormOperacionalEmprestimo = () => {
                         <div className="alignRight">Vencimento</div>
                         <div className="alignRight">Prestação</div>
                         <div className="alignRight">Valor Pago</div>
-                        <div></div>
+                        <div className="alignCenter">Editar</div>
+                        <div className="alignCenter">Pagar</div>
                     </div>
                     <div id="divResultadoEmprestimo">
                         {arrayParcelas.map((item) => (
@@ -1205,15 +1284,37 @@ export const FormOperacionalEmprestimo = () => {
                                         }
                                     )}
                                 </div>
-                                <div className="alignRight">
+
+                                <div id="divEdit" className="alignCenter">
                                     {onEdit && (
-                                        <FiDollarSign
-                                            id="iconeDollarPagar"
-                                            onClick={(e) => {
-                                                setIdParcela(item.idParcela);
-                                                setParcelaN(item.p);
-                                            }}
-                                        />
+                                        <>
+                                            <FiEdit
+                                                onClick={(e) => {
+                                                    setEditarParcela(true);
+                                                    setIdParcela(
+                                                        item.idParcela
+                                                    );
+                                                    setParcelaN(item.p);
+                                                }}
+                                            />
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className="alignCenter">
+                                    {onEdit && (
+                                        <>
+                                            <FiDollarSign
+                                                id="iconeDollarPagar"
+                                                onClick={(e) => {
+                                                    setIdParcela(
+                                                        item.idParcela
+                                                    );
+                                                    setParcelaN(item.p);
+                                                    setPagamentoParcela(true);
+                                                }}
+                                            />
+                                        </>
                                     )}
                                 </div>
                             </div>

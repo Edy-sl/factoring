@@ -95,7 +95,16 @@ export const FormCliente = () => {
         let vCpfCnpj = dadosCliente.cnpj_cpf.value;
 
         setCpfCnpj(cpfCnpjMask(vCpfCnpj));
-        setVlimpo(cpfCnpj);
+
+        console.log(cpfCnpjMask(vCpfCnpj));
+
+        if (cpfCnpjMask(vCpfCnpj) != undefined) {
+            dadosCliente.cnpj_cpf.value = cpfCnpjMask(vCpfCnpj);
+        }
+
+        // setVlimpo(cpfCnpj);
+
+        buscaCliente();
     };
 
     const gravarCliente = () => {
@@ -317,7 +326,7 @@ export const FormCliente = () => {
                 toast.error(data);
             });
 
-        setVlimpo('');
+        //  setVlimpo('');
     };
 
     const buscaClienteCodigo = async () => {
@@ -339,6 +348,8 @@ export const FormCliente = () => {
                 if (data.length > 0) {
                     data.map((dados) => {
                         setCpfCnpj(dados.cnpj_cpf);
+
+                        dadosCliente.cnpj_cpf.value = dados.cnpj_cpf;
 
                         dadosCliente.ie_rg.value = dados.ie_rg;
                         dadosCliente.nome.value = dados.nome;
@@ -397,9 +408,9 @@ export const FormCliente = () => {
         limpaDadosForm();
     }, [onEdit]);
 
-    useEffect(() => {
+    /* useEffect(() => {
         buscaCliente();
-    }, [cpfCnpj]);
+    }, [cpfCnpj]);*/
 
     useEffect(() => {
         buscaClienteCodigo();
@@ -429,13 +440,15 @@ export const FormCliente = () => {
                             id="inputCnpjCpf"
                             name="cnpj_cpf"
                             type="text"
-                            value={cpfCnpj}
+                            //  value={cpfCnpj}
                             placeholder=""
                             onChange={(e) => {
                                 setCpfCnpj(e.target.value);
                             }}
                             onBlur={formataCpfCnpj}
                             onKeyDown={(e) => keyDown(e, 'inputIeRg')}
+                            autoComplete="off"
+                            onFocus={(e) => e.target.select()}
                         />
                     </div>
                     <div className="boxCol">
@@ -446,6 +459,7 @@ export const FormCliente = () => {
                             name="ie_rg"
                             placeholder=""
                             onKeyDown={(e) => keyDown(e, 'inputDataNascimento')}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -456,6 +470,7 @@ export const FormCliente = () => {
                             name="dataNascimento"
                             placeholder=""
                             onKeyDown={(e) => keyDown(e, 'inputNome')}
+                            autoComplete="off"
                         />
                     </div>
                 </div>
@@ -472,6 +487,7 @@ export const FormCliente = () => {
                             value={idCliente}
                             onKeyDown={(e) => keyDown(e, 'inputNome')}
                             onChange={(e) => setIdCliente(e.target.value)}
+                            autoComplete="off"
                         />
                     </div>
 
@@ -484,6 +500,7 @@ export const FormCliente = () => {
                                 name="nome"
                                 placeholder=""
                                 onKeyDown={(e) => keyDown(e, 'inputCep')}
+                                autoComplete="off"
                             />
                             <FiSearch size="25" onClick={exibeFormBusca} />
                         </div>
@@ -504,6 +521,7 @@ export const FormCliente = () => {
                             placeholder=""
                             onBlur={buscaCep}
                             onKeyDown={(e) => keyDown(e, 'inputRua')}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -514,6 +532,7 @@ export const FormCliente = () => {
                             type="text"
                             placeholder=""
                             onKeyDown={(e) => keyDown(e, 'inputNumero')}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -525,6 +544,7 @@ export const FormCliente = () => {
                             name="numero"
                             placeholder=""
                             onKeyDown={(e) => keyDown(e, 'inputComplemento')}
+                            autoComplete="off"
                         />
                     </div>
                 </div>
@@ -537,6 +557,7 @@ export const FormCliente = () => {
                             name="complemento"
                             placeholder=""
                             onKeyDown={(e) => keyDown(e, 'inputBairro')}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -547,6 +568,7 @@ export const FormCliente = () => {
                             name="bairro"
                             placeholder="Bairro"
                             onKeyDown={(e) => keyDown(e, 'inputCidade')}
+                            autoComplete="off"
                         />
                     </div>
                 </div>
@@ -560,6 +582,7 @@ export const FormCliente = () => {
                             name="cidade"
                             placeholder=""
                             onKeyDown={(e) => keyDown(e, 'selectUf')}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -568,6 +591,7 @@ export const FormCliente = () => {
                             id="selectUf"
                             name="uf"
                             onKeyDown={(e) => keyDown(e, 'inputTelefone')}
+                            autoComplete="off"
                         >
                             {siglas.map((uf) => (
                                 <option key={uf.uf} value={uf.uf}>
@@ -586,6 +610,7 @@ export const FormCliente = () => {
                             name="telefone"
                             placeholder="(000)0000-0000"
                             onKeyDown={(e) => keyDown(e, 'inputTaxaCliente')}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -597,6 +622,7 @@ export const FormCliente = () => {
                                 name="taxaJuros"
                                 placeholder=""
                                 readOnly
+                                autoComplete="off"
                             />
                         )}
                         {!onEdit && (

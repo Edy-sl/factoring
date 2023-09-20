@@ -70,6 +70,7 @@ export const RelatorioMovimentoPorVencimento = () => {
                             valor_cheque: item.valor_cheque,
                             valor_juros: item.valor_juros,
                             idbordero_deducao: '0',
+                            valor_taxa: item.taxa_ted,
                         },
                     ];
                 });
@@ -107,6 +108,7 @@ export const RelatorioMovimentoPorVencimento = () => {
                             valor_cheque: item.valor_cheque,
                             valor_juros: item.juros_devolucao,
                             idbordero_deducao: item.idbordero_deducao,
+                            valor_taxa: item.taxa_ted,
                         },
                     ];
                 });

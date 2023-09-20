@@ -124,6 +124,7 @@ export const calculaParcelaEmprestimo = (
     prestacao = prestacao.toFixed(2);
     let valorTotalJuros = prestacao * parcela - capital;
     valorTotalJuros = valorTotalJuros.toFixed(2);
+
     let valorTotal = prestacao * parcela * '1';
     valorTotal = valorTotal.toFixed(2);
 
