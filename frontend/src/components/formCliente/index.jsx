@@ -23,7 +23,6 @@ export const FormCliente = () => {
 
     const [inputCep, setInputCep] = useState();
 
-    const [cpfCnpj, setCpfCnpj] = useState();
     const [vlimpo, setVlimpo] = useState();
     const [onEdit, setOnEdit] = useState();
 
@@ -93,10 +92,6 @@ export const FormCliente = () => {
     const formataCpfCnpj = () => {
         const dadosCliente = ref.current;
         let vCpfCnpj = dadosCliente.cnpj_cpf.value;
-
-        setCpfCnpj(cpfCnpjMask(vCpfCnpj));
-
-        console.log(cpfCnpjMask(vCpfCnpj));
 
         if (cpfCnpjMask(vCpfCnpj) != undefined) {
             dadosCliente.cnpj_cpf.value = cpfCnpjMask(vCpfCnpj);
@@ -173,7 +168,7 @@ export const FormCliente = () => {
                 )
                 .then(({ data }) => {
                     toast.success('Cliente alterado com sucesso!');
-                    setCpfCnpj('');
+
                     setInputCep('');
                     limpaDadosForm();
 
@@ -186,7 +181,6 @@ export const FormCliente = () => {
 
     const limpaDadosForm = () => {
         if (onEdit == false) {
-            setCpfCnpj('');
             setInputCep('');
 
             setIdCliente(0);
@@ -286,7 +280,7 @@ export const FormCliente = () => {
             .post(
                 '/busca-cliente',
                 {
-                    cnpjCpf: cpfCnpj,
+                    cnpjCpf: dadosCliente.cnpj_cpf.value,
                 },
                 {
                     headers: {
@@ -347,8 +341,6 @@ export const FormCliente = () => {
             .then(({ data }) => {
                 if (data.length > 0) {
                     data.map((dados) => {
-                        setCpfCnpj(dados.cnpj_cpf);
-
                         dadosCliente.cnpj_cpf.value = dados.cnpj_cpf;
 
                         dadosCliente.ie_rg.value = dados.ie_rg;
@@ -442,9 +434,9 @@ export const FormCliente = () => {
                             type="text"
                             //  value={cpfCnpj}
                             placeholder=""
-                            onChange={(e) => {
+                            /*  onChange={(e) => {
                                 setCpfCnpj(e.target.value);
-                            }}
+                            }}*/
                             onBlur={formataCpfCnpj}
                             onKeyDown={(e) => keyDown(e, 'inputIeRg')}
                             autoComplete="off"

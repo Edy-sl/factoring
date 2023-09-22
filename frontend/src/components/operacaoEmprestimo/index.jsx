@@ -18,13 +18,17 @@ import {
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FiSearch, FiEdit, FiDollarSign } from 'react-icons/fi';
+import { ImExit } from 'react-icons/im';
 import { BuscaClienteNome } from '../buscaCliente';
 import { BuscaEmprestimo } from '../buscaEmprestimo';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import extenso from 'extenso';
 import { EditarParcela } from '../editarParcela';
+import { useNavigate } from 'react-router-dom';
 
 export const FormOperacionalEmprestimo = () => {
+    const navigate = useNavigate();
+
     const ref = useRef();
 
     const [arrayParcelas, setArrayParcelas] = useState([]);
@@ -56,9 +60,13 @@ export const FormOperacionalEmprestimo = () => {
 
     const [valorAtualizado, setValorAtualizado] = useState();
 
+    const [valorP, setValorP] = useState();
+
     var valorPrestacao = 0;
     var valorTotalJuros = 0;
     var valorTotal = 0;
+
+    var valorTotalEmprestimo = 0;
 
     var somaValorPago = 0;
     var valorRestante = 0;
@@ -70,6 +78,8 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     const calculaEmprestimo = () => {
+        localStorage.setItem('gravarDoc', true);
+
         const dadosEmprestimo = ref.current;
 
         //guarda valor calculado pelo calculoEmprestimo...
@@ -92,6 +102,8 @@ export const FormOperacionalEmprestimo = () => {
                 console.log(checkPrestacao);
                 valorPrestacao = calculos[0].prestacao;
                 valorTotalJuros = calculos[0].valorTotalJuros;
+
+                console.log(valorTotalJuros);
                 valorTotal = calculos[0].valorTotal;
 
                 dadosEmprestimo.valorParcela.value = (
@@ -109,6 +121,8 @@ export const FormOperacionalEmprestimo = () => {
                             minimumFractionDigits: 2,
                         }
                     );
+
+                console.log(valorTotalJuros);
                 dadosEmprestimo.valorTotalJuros.value = (
                     valorTotalJuros * 1
                 ).toLocaleString('pt-BR', {
@@ -126,11 +140,13 @@ export const FormOperacionalEmprestimo = () => {
                 valorPrestacao = converteMoedaFloat(
                     dadosEmprestimo.valorParcela.value
                 );
-                //  valorTotal = valorPrestacao * parcela;
+
+                console.log(valorPrestacao);
+                valorTotal = valorPrestacao * parcela;
                 var taxaJuros = valorTotal / valorPrestacao;
                 //valor total soma as parcelas
 
-                console.log(taxaJuros);
+                console.log(valorTotal);
 
                 dadosEmprestimo.valorInicial.value =
                     dadosEmprestimo.valorEmprestimo.value.toLocaleString(
@@ -142,6 +158,8 @@ export const FormOperacionalEmprestimo = () => {
                     );
 
                 valorTotalJuros = valorTotal - capital;
+
+                console.log(valorTotal);
                 console.log(valorTotalJuros);
 
                 dadosEmprestimo.valorTotalJuros.value =
@@ -287,6 +305,7 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     const gravarEmprestimo = async () => {
+        localStorage.setItem('gravarDoc', false);
         const dadosEmprestimo = ref.current;
 
         const data = new Date();
@@ -392,12 +411,17 @@ export const FormOperacionalEmprestimo = () => {
 
                         setIdCliente(dados.idcliente);
 
+                        valorTotalEmprestimo = dados.valor_emprestimo * 1;
+
+                        console.log(valorTotalEmprestimo);
+
                         dadosEmprestimo.nomeClienteEmprestimo.value =
                             dados.nome;
                         setCnpjCpfCredor(dados.cnpj_cpf_credor);
                         dadosEmprestimo.nomeCredor.value = dados.nome_credor;
 
                         dadosEmprestimo.jurosMensal.value = dados.juros_mensal;
+
                         dadosEmprestimo.valorEmprestimo.value = (
                             dados.valor_emprestimo * 1
                         ).toLocaleString('pt-BR', {
@@ -444,12 +468,15 @@ export const FormOperacionalEmprestimo = () => {
             .catch(({ data }) => {
                 toast.error(data);
             });
+
+        buscaParcelas();
     };
 
     const buscaParcelas = async () => {
         somaValorPago = 0;
         valorRestante = 0;
         valorTotal = 0;
+
         const dadosEmprestimo = ref.current;
         await apiFactoring
             .post(
@@ -465,11 +492,9 @@ export const FormOperacionalEmprestimo = () => {
             )
             .then(({ data }) => {
                 if (data.length > 0) {
-                    console.log(data);
                     let arrayP = [];
 
                     data.map((item) => {
-                        console.log(item.vencimento);
                         somaValorPago = somaValorPago + item.valor_pago * 1;
                         valorTotal = valorTotal + item.valor * 1;
                         arrayP = [
@@ -485,6 +510,7 @@ export const FormOperacionalEmprestimo = () => {
                     });
 
                     console.log(valorTotal);
+                    console.log(valorTotalEmprestimo);
 
                     dadosEmprestimo.valorTotal.value =
                         valorTotal.toLocaleString('pt-BR', {
@@ -494,10 +520,7 @@ export const FormOperacionalEmprestimo = () => {
 
                     dadosEmprestimo.valorTotalJuros.value = (
                         valorTotal * 1 -
-                        converteMoedaFloat(
-                            dadosEmprestimo.valorEmprestimo.value
-                        ) *
-                            1
+                        valorTotalEmprestimo
                     ).toLocaleString('pt-BR', {
                         style: 'decimal',
                         minimumFractionDigits: 2,
@@ -601,13 +624,18 @@ export const FormOperacionalEmprestimo = () => {
         dadosEmprestimo.valorTotal.value = '';
     };
 
+    const sair = () => {
+        console.log('sair');
+        localStorage.setItem('gravarDoc', false);
+        navigate('/');
+    };
+
     useEffect(() => {
         buscaParcelas();
     }, [atualizaParcelas]);
 
     useEffect(() => {
         buscaEmprestimo();
-        buscaParcelas();
     }, [idEmprestimo, recarregaParcelas]);
 
     useEffect(() => {
@@ -940,6 +968,7 @@ export const FormOperacionalEmprestimo = () => {
             {editarParcela == true && (
                 <EditarParcela
                     setEditarParcela={setEditarParcela}
+                    setParcelaN={setParcelaN}
                     parcelaN={parcelaN}
                     idParcela={idParcela}
                     setRecarregaParcelas={setRecarregaParcelas}
@@ -947,6 +976,8 @@ export const FormOperacionalEmprestimo = () => {
                     setValorAtualizado={setValorAtualizado}
                     valorAtualizado={valorAtualizado}
                     atualizarEmprestimo={atualizarEmprestimo}
+                    valorP={valorP}
+                    setValorP={setValorP}
                 />
             )}
 
@@ -968,7 +999,7 @@ export const FormOperacionalEmprestimo = () => {
             >
                 <ToastContainer
                     autoClose={3000}
-                    position={toast.POSITION.BOTTOM_LEFT}
+                    position={toast.POSITION.BOTTOM_CENTER}
                 />
                 <h1>Empréstimo</h1>
 
@@ -1004,6 +1035,7 @@ export const FormOperacionalEmprestimo = () => {
                                     Imprimir
                                 </button>
                             )}
+                            <ImExit id="iconeExit" onClick={(e) => sair()} />
                         </div>
 
                         <div className="boxRow">
@@ -1295,6 +1327,11 @@ export const FormOperacionalEmprestimo = () => {
                                                         item.idParcela
                                                     );
                                                     setParcelaN(item.p);
+                                                    setValorP(
+                                                        converteFloatMoeda(
+                                                            item.valorPrestacao
+                                                        )
+                                                    );
                                                 }}
                                             />
                                         </>

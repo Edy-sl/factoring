@@ -861,9 +861,13 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
 export const alterarValorParcela = (req, res) => {
     const { parcela } = req.body;
     const { valor } = req.body;
+    const { numeroParcela } = req.body;
 
-    const sql = 'update parcelas_emprestimo set valor = ? where idparcela = ?';
-    db.query(sql, [valor, parcela], (err, data) => {
+    console.log(parcela + ' / ' + numeroParcela);
+
+    const sql =
+        'update parcelas_emprestimo set parcela = ? , valor = ? where idparcela = ?';
+    db.query(sql, [numeroParcela, valor, parcela], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json('Valor alterado!');
     });

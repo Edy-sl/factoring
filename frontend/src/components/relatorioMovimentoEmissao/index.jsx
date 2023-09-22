@@ -139,7 +139,7 @@ export const RelatorioMovimentoPorEmissao = () => {
             });
 
         setListagemCheque(newArray);
-        console.log(newArray);
+        console.log(listagemEmprestimo);
     };
 
     const handleOnChangeDeducao = () => {

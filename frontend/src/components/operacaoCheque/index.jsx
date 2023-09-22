@@ -20,9 +20,12 @@ import {
 import { BuscaOperacao } from '../buscaOperacaoCheque';
 import { AuthProvider } from '../../context/authContext';
 import axios from 'axios';
-import { ImBin } from 'react-icons/im';
+import { ImBin, ImExit } from 'react-icons/im';
+import { useNavigate } from 'react-router-dom';
 
 export const FormOperacaoCheque = () => {
+    const navigate = useNavigate();
+
     const [gravarDoc, setGravarDoc] = useState(false);
 
     const [onEdit, setOnEdit] = useState(false);
@@ -208,6 +211,7 @@ export const FormOperacaoCheque = () => {
 
     const alterarBorderdo = async () => {
         setGravarDoc(false);
+        localStorage.setItem('gravarDoc', false);
 
         const dadosBordero = ref.current;
 
@@ -244,6 +248,7 @@ export const FormOperacaoCheque = () => {
 
     const gravarBorderdo = async () => {
         setGravarDoc(false);
+        localStorage.setItem('gravarDoc', false);
         const dadosBordero = ref.current;
 
         await apiFactoring
@@ -329,6 +334,7 @@ export const FormOperacaoCheque = () => {
 
         const dadosLancamento = ref.current;
         setGravarDoc(true);
+        localStorage.setItem('gravarDoc', true);
 
         if (varIncluirCheque === true) {
             let checado = true;
@@ -413,6 +419,7 @@ export const FormOperacaoCheque = () => {
             }
         } else {
             console.log('aqui..**************' + varIncluirCheque);
+            localStorage.setItem('gravarDoc', true);
 
             dadosLancamento.btnIncluirLancamento.innerText = 'Incluir';
             gravarAlteracaoCheque(idIndexCheque);
@@ -421,6 +428,9 @@ export const FormOperacaoCheque = () => {
 
     const gravarAlteracaoCheque = (idIndexCheque) => {
         console.log('gravar alteração');
+
+        setGravarDoc(true);
+        localStorage.setItem('gravarDoc', true);
 
         console.log(idIndexCheque);
 
@@ -580,6 +590,7 @@ export const FormOperacaoCheque = () => {
 
     const limpa = () => {
         setGravarDoc(false);
+        localStorage.setItem('gravarDoc', false);
         const dadosOperacao = ref.current;
 
         setIdBordero('0');
@@ -779,6 +790,9 @@ export const FormOperacaoCheque = () => {
         //varIncluirCheque = false;
         setVarIncluirCheque(false);
 
+        setGravarDoc(true);
+        localStorage.setItem('gravarDoc', true);
+
         console.log(id);
 
         const dadosLancamento = ref.current;
@@ -847,6 +861,9 @@ export const FormOperacaoCheque = () => {
     const excluirCheque = async (id) => {
         //varIncluirCheque = false;
         setVarIncluirCheque(true);
+
+        setGravarDoc(true);
+        localStorage.setItem('gravarDoc', true);
 
         const dadosLancamento = ref.current;
         if (onEdit) {
@@ -1335,6 +1352,12 @@ export const FormOperacaoCheque = () => {
         dadosCliente.nomeCheque.select();
     };
 
+    const sair = () => {
+        console.log('sair');
+        localStorage.setItem('gravarDoc', false);
+        navigate('/');
+    };
+
     useEffect(() => {
         vefificaPermissao();
     }, []);
@@ -1394,8 +1417,8 @@ export const FormOperacaoCheque = () => {
             >
                 {' '}
                 <ToastContainer
-                    autoClose={3000}
-                    position={toast.POSITION.BOTTOM_LEFT}
+                    autoClose={5000}
+                    position={toast.POSITION.BOTTOM_CENTER}
                 />
                 <div className="boxOpChequeLeft">
                     <h1>Cheques</h1>
@@ -1421,6 +1444,7 @@ export const FormOperacaoCheque = () => {
                                 Imprimir
                             </button>
                         )}
+                        <ImExit id="iconeExit" onClick={(e) => sair()} />
                     </div>
 
                     <div className="boxRow">

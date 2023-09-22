@@ -5,6 +5,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { FiMonitor } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { FormLogin } from '../formLogin';
+import { toast } from 'react-toastify';
 
 export const Menu = () => {
     const navigate = useNavigate();
@@ -31,94 +32,238 @@ export const Menu = () => {
         fullScreen();
     }, [telaCheia]);
 
+    const vefificarPendencia = (pagina) => {
+        console.log(pagina);
+
+        if (pagina == 'sair' && localStorage.getItem('gravarDoc') != 'true') {
+            signOut();
+        } else {
+            if (localStorage.getItem('gravarDoc') != 'true') {
+                navigate(pagina);
+            } else {
+                // alert('Grave ou Feche a operação!');
+                toast.error('Grave ou Feche a operação!');
+            }
+        }
+    };
+
     return (
         <div className="">
             <ul id="nav">
                 <li>
-                    <a href="#">Clientes</a>
+                    <a>Clientes</a>
                     <ul>
-                        <Link to="/cadastro-cliente">Cadastro</Link>
-                        <Link to="/taxa-cliente">Taxas</Link>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia('/cadastro-cliente')
+                            }
+                        >
+                            Cadastro
+                        </Link>
+                        <Link
+                            to="#"
+                            onClick={(e) => vefificarPendencia('/taxa-cliente')}
+                        >
+                            Taxas
+                        </Link>
                         <label>-------------------</label>
-                        <Link to="/relatorio-clientes">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia('/relatorio-clientes')
+                            }
+                        >
                             Relatório de Clientes
                         </Link>
                     </ul>
                 </li>
 
                 <li>
-                    <a href="#">Empréstimos</a>
+                    <a>Empréstimos</a>
                     <ul>
-                        <Link to="/emprestimo">Lançamento</Link>
+                        <Link
+                            to="#"
+                            onClick={(e) => vefificarPendencia('/emprestimo')}
+                        >
+                            Lançamento
+                        </Link>
                         <label>-------------------</label>
-                        <Link to="/relatorio-emprestimo-vencimento">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-emprestimo-vencimento'
+                                )
+                            }
+                        >
                             Relatório por Vencimento
                         </Link>
 
-                        <Link to="/relatorio-emprestimo-emissao">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-emprestimo-emissao'
+                                )
+                            }
+                        >
                             Relatório por Emissão
                         </Link>
                         <label>-------------------</label>
-                        <Link to="/relatorio-emprestimo-cliente-vencimento">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-emprestimo-cliente-vencimento'
+                                )
+                            }
+                        >
                             Relatório por Cliente / Vencimento
                         </Link>
-                        <Link to="/relatorio-emprestimo-cliente-emissao">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-emprestimo-cliente-emissao'
+                                )
+                            }
+                        >
                             Relatório por Cliente / Emissão
                         </Link>
                     </ul>
                 </li>
 
                 <li>
-                    <a href="#">Cheques</a>
+                    <a>Cheques</a>
                     <ul>
-                        <Link to="/bordero">Lançamento</Link>
-                        <Link to="/devolucao">Devolução</Link>
-                        <Link to="/pagamento">Pagamento</Link>
+                        <Link
+                            to="#"
+                            onClick={(e) => vefificarPendencia('/bordero')}
+                        >
+                            Lançamento
+                        </Link>
+                        <Link
+                            to="#"
+                            onClick={(e) => vefificarPendencia('/devolucao')}
+                        >
+                            Devolução
+                        </Link>
+                        <Link
+                            to="#"
+                            onClick={(e) => vefificarPendencia('/pagamento')}
+                        >
+                            Pagamento
+                        </Link>
                         <label>-------------------</label>
-                        <Link to="/relatorio-cheque-vencimento">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-cheque-vencimento'
+                                )
+                            }
+                        >
                             Relatório por Vencimento
                         </Link>
-                        <Link to="/relatorio-cheque-emissao">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia('/relatorio-cheque-emissao')
+                            }
+                        >
                             Relatório por Emissao Op.
                         </Link>
                         <label>-------------------</label>
-                        <Link to="/relatorio-cheque-cliente-vencimento">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-cheque-cliente-vencimento'
+                                )
+                            }
+                        >
                             Relatório por Cliente / Vencimento
                         </Link>
-                        <Link to="/relatorio-cheque-cliente-emissao">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-cheque-cliente-emissao'
+                                )
+                            }
+                        >
                             Relatório por Cliente / Emissão op.
                         </Link>
                     </ul>
                 </li>
                 <li>
                     {' '}
-                    <a href="#">Movimentação</a>
+                    <a>Movimentação</a>
                     <ul>
-                        <Link to="/relatorio-movimento-vencimento">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-movimento-vencimento'
+                                )
+                            }
+                        >
                             Relatório por Vencimento
                         </Link>
-                        <Link to="/relatorio-movimento-emissao">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-movimento-emissao'
+                                )
+                            }
+                        >
                             Relatório por Emissao
                         </Link>
-                        <Link to="/relatorio-movimento-pagamento">
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-movimento-pagamento'
+                                )
+                            }
+                        >
                             Relatório por Pagamento
                         </Link>
                     </ul>
                 </li>
 
                 <li>
-                    <a href="#">Empresa</a>
+                    <a>Empresa</a>
                     <ul>
-                        <Link to="/empresa">Cadastro da Empresa</Link>
-                        <Link to="/permissoes">Permissões</Link>
-                        <Link to="/cadastro-usuario-secundario">
+                        <Link
+                            to="#"
+                            onClick={(e) => vefificarPendencia('/empresa')}
+                        >
+                            Cadastro da Empresa
+                        </Link>
+                        <Link
+                            to="#"
+                            onClick={(e) => vefificarPendencia('/permissoes')}
+                        >
+                            Permissões
+                        </Link>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/cadastro-usuario-secundario'
+                                )
+                            }
+                        >
                             Cadastro de Usuários
                         </Link>
                     </ul>
                 </li>
 
                 <li>
-                    <a id="sair" onClick={signOut}>
+                    <a id="sair" onClick={(e) => vefificarPendencia('sair')}>
                         Sair
                     </a>
                 </li>

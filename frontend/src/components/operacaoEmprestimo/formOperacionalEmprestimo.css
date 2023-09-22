@@ -18,7 +18,7 @@
 }
 
 #inputCliente {
-    width: 300px;
+    width: 340px;
 }
 
 .boxRight {
@@ -171,4 +171,10 @@
         background-color: rgb(185, 185, 188);
         padding: 0px 0px 0px 12px;
     }
+}
+
+#iconeExit {
+    margin: 20px;
+    font-size: 35px;
+    align-self: flex-end;
 }
