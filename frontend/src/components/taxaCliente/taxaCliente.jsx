@@ -17,6 +17,7 @@ export const TaxaCliente = () => {
     const [idCliente, setIdCliente] = useState(0);
     const [formBusca, setFormBusca] = useState();
     const [checkEspecial, setCheckEspecial] = useState('NAO');
+    const [limite, setLimite] = useState();
 
     const ref = useRef();
 
@@ -33,6 +34,7 @@ export const TaxaCliente = () => {
         const idCliente = dadosTaxa.idCliente.value;
         const taxaJuros = converteMoedaFloat(dadosTaxa.taxaJuros.value);
         const especial = dadosTaxa.especial.value;
+        const limite = converteMoedaFloat(dadosTaxa.limite.value);
         await apiFactoring
             .post(
                 '/atualiza-taxa-cliente',
@@ -40,6 +42,7 @@ export const TaxaCliente = () => {
                     idCliente: idCliente,
                     taxaJuros: taxaJuros,
                     especial: especial,
+                    limite: limite,
                 },
                 {
                     headers: {
@@ -57,6 +60,9 @@ export const TaxaCliente = () => {
 
     const buscaClienteCodigo = async () => {
         const dadosCliente = ref.current;
+
+        dadosCliente.limite.value = '0';
+        dadosCliente.taxaJuros.value = '';
 
         await apiFactoring
             .post(
@@ -80,6 +86,10 @@ export const TaxaCliente = () => {
                         ).toLocaleString('pt-BR');
 
                         setCheckEspecial(dados.especial);
+
+                        dadosCliente.limite.value = converteFloatMoeda(
+                            dados.limite
+                        );
                     });
                 }
             });
@@ -101,6 +111,11 @@ export const TaxaCliente = () => {
         dadosTaxa.taxaJuros.value = converteFloatMoeda(
             dadosTaxa.taxaJuros.value
         );
+    };
+
+    const formataLimite = () => {
+        const dadosLimite = ref.current;
+        dadosLimite.limite.value = converteFloatMoeda(dadosLimite.limite.value);
     };
 
     useEffect(() => {
@@ -147,7 +162,7 @@ export const TaxaCliente = () => {
                             <div className="boxRow">
                                 <input
                                     type="text"
-                                    id="inputNomeCliTaxa"
+                                    id="inputNome"
                                     name="nome"
                                     placeholder=""
                                 />
@@ -155,6 +170,8 @@ export const TaxaCliente = () => {
                             </div>
                         </div>
                     </div>
+                </div>
+                <div className="boxRow">
                     <div className="boxRow">
                         <div className="boxCol">
                             <label>Taxa Mensal</label>
@@ -189,6 +206,16 @@ export const TaxaCliente = () => {
                                     readOnly
                                 />
                             </div>
+                        </div>
+                        <div className="boxCol">
+                            <label>Limite</label>
+                            <input
+                                id="inputLimite"
+                                type="text"
+                                name="limite"
+                                placeholder=""
+                                onBlur={formataLimite}
+                            />
                         </div>
                     </div>
                     <button onClick={gravarTaxa}>Gravar</button>

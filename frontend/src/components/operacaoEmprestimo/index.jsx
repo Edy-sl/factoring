@@ -1109,14 +1109,6 @@ export const FormOperacionalEmprestimo = () => {
                                 </button>
                             )}
                             {onEdit && (
-                                <button
-                                    id="btnImprimir"
-                                    onClick={imprimirPromissoria}
-                                >
-                                    Promissória
-                                </button>
-                            )}
-                            {onEdit && (
                                 <button id="btnImprimir" onClick={imprimir}>
                                     Imprimir
                                 </button>

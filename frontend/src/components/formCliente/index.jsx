@@ -32,6 +32,8 @@ export const FormCliente = () => {
 
     const [vTaxaJuros, setTaxaJuros] = useState();
 
+    const [limite, setLimite] = useState();
+
     const ref = useRef();
 
     const handleSubmit = (e) => {
@@ -222,6 +224,7 @@ export const FormCliente = () => {
         const observacao = dadosCliente.observacao.value;
         const taxaJuros = converteMoedaFloat(dadosCliente.taxaJuros.value);
         const especial = dadosCliente.especial.value;
+        const limite = converteMoedaFloat(dadosCliente.limite.value);
         const idFactoring = localStorage.getItem('factoring');
 
         if (
@@ -255,6 +258,7 @@ export const FormCliente = () => {
                         observacao: observacao,
                         taxaJuros: taxaJuros,
                         especial: especial,
+                        limite: limite,
                         idFactoring: idFactoring,
                     },
                     {
@@ -313,6 +317,7 @@ export const FormCliente = () => {
                         console.log(vTaxaJuros);
                         setIdCliente(dados.idcliente);
                         setCheckEspecial(dados.especial);
+                        setLimite(converteFloatMoeda(dados.limite));
 
                         setOnEdit(true);
                     });
@@ -366,6 +371,7 @@ export const FormCliente = () => {
                         console.log(vTaxaJuros);
 
                         setCheckEspecial(dados.especial);
+                        setLimite(converteFloatMoeda(dados.limite));
 
                         setOnEdit(true);
                     });
@@ -387,6 +393,11 @@ export const FormCliente = () => {
         dadosTaxa.taxaJuros.value = converteFloatMoeda(
             dadosTaxa.taxaJuros.value
         );
+    };
+
+    const formataLimite = () => {
+        const dadosLimite = ref.current;
+        dadosLimite.limite.value = converteFloatMoeda(dadosLimite.limite.value);
     };
 
     const toogle = () => {
@@ -600,8 +611,6 @@ export const FormCliente = () => {
                             ))}
                         </select>
                     </div>
-                </div>
-                <div className="boxRow">
                     <div className="boxCol">
                         <label>Telefone</label>
                         <input
@@ -613,6 +622,8 @@ export const FormCliente = () => {
                             autoComplete="off"
                         />
                     </div>
+                </div>
+                <div className="boxRow">
                     <div className="boxCol">
                         <label>Taxa Mensal</label>
                         {onEdit && (
@@ -656,6 +667,31 @@ export const FormCliente = () => {
                                 readOnly
                             />
                         </div>
+                    </div>
+
+                    <div className="boxCol">
+                        <label>Limite</label>
+                        {onEdit && (
+                            <input
+                                id="inputLimite"
+                                type="text"
+                                name="limite"
+                                placeholder=""
+                                autoComplete="off"
+                                readOnly
+                                value={limite}
+                            />
+                        )}
+                        {!onEdit && (
+                            <input
+                                id="inputLimite"
+                                type="text"
+                                name="limite"
+                                placeholder=""
+                                onKeyDown={(e) => keyDown(e, 'textObservacao')}
+                                onBlur={formataLimite}
+                            />
+                        )}
                     </div>
                 </div>
                 <textarea

@@ -65,7 +65,7 @@ export const Menu = () => {
                             to="#"
                             onClick={(e) => vefificarPendencia('/taxa-cliente')}
                         >
-                            Taxas
+                            Taxa e Limite
                         </Link>
                         <label>-------------------</label>
                         <Link

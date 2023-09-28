@@ -26,6 +26,8 @@ import { useNavigate } from 'react-router-dom';
 export const FormOperacaoCheque = () => {
     const navigate = useNavigate();
 
+    const [formatarCheque, setFormatarCheque] = useState(true);
+
     const [gravarDoc, setGravarDoc] = useState(false);
 
     const [onEdit, setOnEdit] = useState(false);
@@ -707,11 +709,27 @@ export const FormOperacaoCheque = () => {
     const buscaBancos = (codigo) => {
         const dadosBanco = ref.current;
 
+        console.log(codigo);
+
         const bancoFiltrado = arrayBancos.filter((b) => b.code === codigo * 1);
         dadosBanco.banco.value = '';
         bancoFiltrado.map((banco) => {
             dadosBanco.banco.value = banco.name;
+            setFormatarCheque(true);
         });
+
+        if (codigo == 'np' || codigo == 'NP') {
+            dadosBanco.banco.value = 'NOTA PROMISSÓRIA';
+            setFormatarCheque(false);
+        }
+        if (codigo == 'dp' || codigo == 'DP') {
+            dadosBanco.banco.value = 'DUPLICATA';
+            setFormatarCheque(false);
+        }
+        if (codigo == 'cc' || codigo == 'CC') {
+            dadosBanco.banco.value = 'CARTÃO DE CRÉDITO';
+            setFormatarCheque(false);
+        }
     };
 
     const handleNumeroCheuque = (e) => {
@@ -943,7 +961,7 @@ export const FormOperacaoCheque = () => {
         win.document.write('</head>');
         win.document.write('<body>');
         win.document.write(
-            '<table border="01" style="width: 300px; font-size: 10px">'
+            '<table border="0" style="width: 300px; font-size: 10px">'
         );
         win.document.write('<tr><td colspan="5" style="text-align : right">');
         win.document.write(dataHoraAtual());
@@ -1593,19 +1611,46 @@ export const FormOperacaoCheque = () => {
 
                         <div className="boxCol">
                             <label>Nº Cheque</label>
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    checked={formatarCheque}
+                                    onClick={(e) =>
+                                        setFormatarCheque(!formatarCheque)
+                                    }
+                                />
 
-                            <input
-                                id="inputNcheque"
-                                type="text"
-                                name="numeroCheque"
-                                placeholder=""
-                                onKeyDown={(e) => keyDown(e, 'inputNomeC')}
-                                autoComplete="off"
-                                onKeyUp={(e) =>
-                                    handleNumeroCheuque(e.target.value)
-                                }
-                                onFocus={(e) => e.target.select()}
-                            />
+                                {formatarCheque && (
+                                    <input
+                                        id="inputNcheque"
+                                        type="text"
+                                        name="numeroCheque"
+                                        placeholder=""
+                                        onKeyDown={(e) =>
+                                            keyDown(e, 'inputNomeC')
+                                        }
+                                        autoComplete="off"
+                                        onFocus={(e) => e.target.select()}
+                                        onKeyUp={(e) =>
+                                            handleNumeroCheuque(e.target.value)
+                                        }
+                                    />
+                                )}
+
+                                {!formatarCheque && (
+                                    <input
+                                        id="inputNcheque"
+                                        type="text"
+                                        name="numeroCheque"
+                                        placeholder=""
+                                        onKeyDown={(e) =>
+                                            keyDown(e, 'inputNomeC')
+                                        }
+                                        autoComplete="off"
+                                        onFocus={(e) => e.target.select()}
+                                    />
+                                )}
+                            </div>
                         </div>
 
                         <div className="boxRow">
