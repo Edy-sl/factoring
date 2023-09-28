@@ -50,6 +50,33 @@ export const gravarEmprestimo = (req, res) => {
     );
 };
 
+//excluir emprestimo
+export const excluirEmprestimo = (req, res) => {
+    const { idEmprestimo } = req.body;
+    console.log(idEmprestimo);
+    const sql1 = `SET FOREIGN_KEY_CHECKS = 0 `;
+
+    const sql2 =
+        `delete pagamentos_parcelas, parcelas_emprestimo, emprestimos ` +
+        `from emprestimos ` +
+        `left join parcelas_emprestimo ` +
+        `on parcelas_emprestimo.idemprestimo = emprestimos.idemprestimo ` +
+        `left join pagamentos_parcelas on ` +
+        `pagamentos_parcelas.idparcela = parcelas_emprestimo.idparcela ` +
+        `where emprestimos.idemprestimo = ? `;
+
+    const sql3 = `SET FOREIGN_KEY_CHECKS = 1 `;
+
+    db.query(sql1, [idEmprestimo], (err, data) => {});
+
+    db.query(sql2, [idEmprestimo], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json('Empréstimo excluido!');
+    });
+
+    db.query(sql3, [idEmprestimo], (err, data) => {});
+};
+
 //alterar valores do emprestimos
 export const atualizarEmprestimo = (req, res) => {
     const { valorJuros } = req.body;

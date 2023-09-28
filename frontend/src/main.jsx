@@ -40,6 +40,7 @@ import { RelatorioClientes } from './components/relatorioClientes/index.jsx';
 import { Devolucao } from './components/devolucao/index.jsx';
 import { PagamentoCheque } from './components/pagamentoCheque/index.jsx';
 import { RelatorioMovimentoPorPagamento } from './components/relatorioMovimentoPagamento/index.jsx';
+import { Conta } from './components/conta/index.jsx';
 
 const router = createHashRouter([
     {
@@ -233,6 +234,14 @@ const router = createHashRouter([
                 element: (
                     <PrivateRouter>
                         <RelatorioMovimentoPorPagamento />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/conta',
+                element: (
+                    <PrivateRouter>
+                        <Conta />
                     </PrivateRouter>
                 ),
             },

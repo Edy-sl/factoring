@@ -30,6 +30,8 @@ export const FormCliente = () => {
 
     const [checkEspecial, setCheckEspecial] = useState('NAO');
 
+    const [vTaxaJuros, setTaxaJuros] = useState();
+
     const ref = useRef();
 
     const handleSubmit = (e) => {
@@ -304,9 +306,11 @@ export const FormCliente = () => {
                         dadosCliente.dataNascimento.value =
                             dados.data_nascimento;
                         dadosCliente.observacao.value = dados.observacao;
-                        dadosCliente.taxaJuros.value = (
-                            dados.taxa_juros * 1
-                        ).toLocaleString('pt-BR');
+
+                        setTaxaJuros(
+                            (dados.taxa_juros * 1).toLocaleString('pt-BR')
+                        );
+                        console.log(vTaxaJuros);
                         setIdCliente(dados.idcliente);
                         setCheckEspecial(dados.especial);
 
@@ -355,7 +359,11 @@ export const FormCliente = () => {
                         dadosCliente.dataNascimento.value =
                             dados.data_nascimento;
                         dadosCliente.observacao.value = dados.observacao;
-                        dadosCliente.taxaJuros.value = dados.taxa_juros;
+
+                        setTaxaJuros(
+                            (dados.taxa_juros * 1).toLocaleString('pt-BR')
+                        );
+                        console.log(vTaxaJuros);
 
                         setCheckEspecial(dados.especial);
 
@@ -476,7 +484,7 @@ export const FormCliente = () => {
                             id="inputIdCliente"
                             name="idCliente"
                             placeholder=""
-                            value={idCliente}
+                            value={idCliente || ''}
                             onKeyDown={(e) => keyDown(e, 'inputNome')}
                             onChange={(e) => setIdCliente(e.target.value)}
                             autoComplete="off"
@@ -506,7 +514,7 @@ export const FormCliente = () => {
                             id="inputCep"
                             type="text"
                             name="cep"
-                            value={inputCep}
+                            value={inputCep || ''}
                             onChange={(e) => {
                                 setInputCep(e.target.value);
                             }}
@@ -613,8 +621,9 @@ export const FormCliente = () => {
                                 type="text"
                                 name="taxaJuros"
                                 placeholder=""
-                                readOnly
                                 autoComplete="off"
+                                readOnly
+                                value={vTaxaJuros}
                             />
                         )}
                         {!onEdit && (

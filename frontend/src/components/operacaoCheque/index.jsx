@@ -131,7 +131,7 @@ export const FormOperacaoCheque = () => {
 
                         dadosCliente.idCliente.value = dados.idcliente;
                         dadosCliente.jurosMensal.value = dados.taxa_juros;
-                        document.getElementById('inputTxTed').focus();
+                        document.getElementById('inputIdCliente').focus();
                         setEspecial(dados.especial);
                         listaChequesDevolvidos(dados.idcliente);
                     });
@@ -942,20 +942,25 @@ export const FormOperacaoCheque = () => {
         win.document.write('<title></title>');
         win.document.write('</head>');
         win.document.write('<body>');
-        win.document.write('<table border="0" style="width: 500px">');
+        win.document.write(
+            '<table border="01" style="width: 300px; font-size: 10px">'
+        );
         win.document.write('<tr><td colspan="5" style="text-align : right">');
         win.document.write(dataHoraAtual());
         win.document.write('</td></tr>');
         win.document.write('<tr ><td colspan="5" style="text-align : center">');
         win.document.write(
-            '--------------------------------------------------------------------------------------------'
+            '----------------------------------------------------------------------------------------'
         );
 
         win.document.write('<tr>');
         win.document.write(
             '<td colspan="3" style="text-transform: uppercase">'
         );
-        win.document.write(dadosOperacao.nome.value);
+        var nome = dadosOperacao.nome.value;
+        var nome2 = nome.slice(0, 25);
+        win.document.write(nome2);
+
         win.document.write('</td>');
 
         win.document.write('<td>');
@@ -968,16 +973,16 @@ export const FormOperacaoCheque = () => {
 
         win.document.write('<tr><td colspan="5" style="text-align : center">');
         win.document.write(
-            '--------------------------------------------------------------------------------------------'
+            '----------------------------------------------------------------------------------------'
         );
         win.document.write('</td ></tr >');
 
         win.document.write('<tr>');
-        win.document.write('<td>');
+        win.document.write('<td width="45">');
         win.document.write('Nº Cheque');
         win.document.write('</td>');
 
-        win.document.write('<td style="text-align: right">');
+        win.document.write('<td width="30" style="text-align: right">');
         win.document.write('Vencimento');
         win.document.write('</td>');
 
@@ -1039,7 +1044,7 @@ export const FormOperacaoCheque = () => {
 
         win.document.write('<tr><td colspan="5" style="text-align : center">');
         win.document.write(
-            '--------------------------------------------------------------------------------------------'
+            '----------------------------------------------------------------------------------------'
         );
         win.document.write('</td ></tr >');
         ////Deduções
@@ -1115,7 +1120,7 @@ export const FormOperacaoCheque = () => {
 
         win.document.write('<tr><td colspan="5" style="text-align : center">');
         win.document.write(
-            '--------------------------------------------------------------------------------------------'
+            '----------------------------------------------------------------------------------------'
         );
         win.document.write('</td ></tr >');
 
@@ -1477,8 +1482,8 @@ export const FormOperacaoCheque = () => {
                                 id="inputIdCliente"
                                 name="idCliente"
                                 autoComplete="off"
-                                onChange={(e) => setIdCliente(e.target.value)}
                                 onKeyDown={(e) => keyDown(e, 'inputCliente')}
+                                onChange={(e) => setIdCliente(e.target.value)}
                             />
                             <input
                                 id="inputCliente"

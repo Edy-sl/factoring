@@ -32,6 +32,7 @@ import {
     pagamentoVariasParcelasEmprestimo,
     alterarValorParcela,
     atualizarEmprestimo,
+    excluirEmprestimo,
 } from '../controles/emprestimo.js';
 import {
     gravarBordero,
@@ -72,6 +73,12 @@ import {
     relatorioMovimentoChequesPorEmissao,
     relatorioMovimentoEmprestimoEmissao,
 } from '../controles/movimento.js';
+import {
+    alterarLancamentoConta,
+    excluirLancamentoConta,
+    gravarLancamentoConta,
+    listaLancamentoConta,
+} from '../controles/conta.js';
 
 const SECRET = process.env.SECRET;
 
@@ -153,7 +160,14 @@ rotaFactoring.post('/busca-bordero', verifyJWT, buscaBordero);
 rotaFactoring.post('/busca-bordero-id', verifyJWT, buscaBorderoId);
 rotaFactoring.post('/gravar-lancamento', verifyJWT, gravarCheques);
 rotaFactoring.post('/listar-lancamento', verifyJWT, listarCheques);
+
 rotaFactoring.post('/gravar-emprestimo', verifyJWT, gravarEmprestimo);
+rotaFactoring.post(
+    '/excluir-emprestimo',
+    verifyJWT,
+    verificaPermissao,
+    excluirEmprestimo
+);
 rotaFactoring.post('/busca-emprestimo', verifyJWT, buscaEmprestimo);
 rotaFactoring.post('/busca-emprestimo-id', verifyJWT, buscaEmprestimoId);
 rotaFactoring.post(
@@ -346,6 +360,26 @@ rotaFactoring.post(
     '/relatorio-movimento-deducao-vencimento',
     verifyJWT,
     relatorioMovimentoChequesDeducaoPorVencimento
+);
+
+rotaFactoring.post(
+    '/gravar-lancamento-conta',
+    verifyJWT,
+    gravarLancamentoConta
+);
+
+rotaFactoring.post('/lista-lancamento-conta', verifyJWT, listaLancamentoConta);
+
+rotaFactoring.post(
+    '/alterar-lancamento-conta',
+    verifyJWT,
+    alterarLancamentoConta
+);
+
+rotaFactoring.post(
+    '/excluir-lancamento-conta',
+    verifyJWT,
+    excluirLancamentoConta
 );
 
 export default rotaFactoring;

@@ -592,6 +592,7 @@ export const FormOperacionalEmprestimo = () => {
         let vCpfCnpj = dadosCredor.cnpjCpfCredor.value;
 
         setCnpjCpfCredor(cpfCnpjMask(vCpfCnpj));
+        buscaCliente();
     };
 
     const limpar = () => {
@@ -628,6 +629,37 @@ export const FormOperacionalEmprestimo = () => {
         console.log('sair');
         localStorage.setItem('gravarDoc', false);
         navigate('/');
+    };
+
+    const buscaCliente = async () => {
+        const dadosCredor = ref.current;
+
+        await apiFactoring
+            .post(
+                '/busca-cliente',
+                {
+                    cnpjCpf: dadosCredor.cnpjCpfCredor.value,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                if (data.length > 0) {
+                    data.map((dados) => {
+                        dadosCredor.nomeCredor.value = dados.nome;
+                    });
+                } else {
+                    dadosCredor.nomeCredor.value = '';
+                }
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+
+        //  setVlimpo('');
     };
 
     useEffect(() => {
@@ -834,20 +866,26 @@ export const FormOperacionalEmprestimo = () => {
         win.document.write('<title></title>');
         win.document.write('</head>');
         win.document.write('<body>');
-        win.document.write('<table border="0" style="width: 400px">');
+        win.document.write(
+            '<table border="0" style="width: 300px; font-size: 10">'
+        );
         win.document.write('<tr><td colspan="4" style="text-align : right">');
         win.document.write(dataHoraAtual());
         win.document.write('</tr></td>');
         win.document.write('<tr ><td colspan="4" style="text-align : center">');
         win.document.write(
-            '--------------------------------------------------------------------------'
+            '----------------------------------------------------------------------------------------'
         );
-        win.document.write('</tr ><td>');
+
+        win.document.write('</td ></tr>');
+
         win.document.write('<tr>');
         win.document.write(
-            '<td colspan="2" style="text-transform: uppercase">'
+            '<td colspan="2"  style="text-transform: uppercase">'
         );
-        win.document.write(dadosEmprestimo.nomeClienteEmprestimo.value);
+        var nome = dadosEmprestimo.nomeClienteEmprestimo.value;
+        var nome2 = nome.slice(0, 25);
+        win.document.write(nome2);
         win.document.write('</td>');
         win.document.write('<td style="text-align: right">');
         win.document.write(inverteData(dadosEmprestimo.dataCadastro.value));
@@ -858,13 +896,17 @@ export const FormOperacionalEmprestimo = () => {
         win.document.write('</tr>');
         win.document.write('<tr ><td colspan="4" style="text-align : center">');
         win.document.write(
-            '--------------------------------------------------------------------------'
+            '----------------------------------------------------------------------------------------'
         );
         win.document.write('</tr ><td>');
         win.document.write('<tr>');
-        win.document.write('<td>Parcela');
+        win.document.write(
+            '<td width="80" style="text-align: center;">Parcela'
+        );
         win.document.write('</td>');
-        win.document.write('<td style="text-align: right;">Vencimento');
+        win.document.write(
+            '<td width="80" style="text-align: center;">Vencimento'
+        );
         win.document.write('</td>');
         win.document.write('<td style="text-align: right;">Valor');
         win.document.write('</td>');
@@ -873,10 +915,10 @@ export const FormOperacionalEmprestimo = () => {
         win.document.write('</tr>');
         arrayParcelas.map((item) => {
             win.document.write('<tr>');
-            win.document.write('<td>');
+            win.document.write('<td style="text-align: center;">');
             win.document.write(item.p + '/' + dadosEmprestimo.parcelas.value);
             win.document.write('</td>');
-            win.document.write('<td style="text-align: right;">');
+            win.document.write('<td style="text-align: center;">');
             win.document.write(inverteData(item.data_vencimento));
             win.document.write('<td style="text-align: right;">');
             win.document.write(
@@ -904,7 +946,7 @@ export const FormOperacionalEmprestimo = () => {
         valorRestante = valorRestante - somaValorPago;
         win.document.write('<tr><td colspan="4" style="text-align : center">');
         win.document.write(
-            '--------------------------------------------------------------------------'
+            '----------------------------------------------------------------------------------------'
         );
         win.document.write('</td ></tr >');
         win.document.write('<tr><td colspan="2" style="text-align: right;">');
@@ -942,6 +984,42 @@ export const FormOperacionalEmprestimo = () => {
         win.document.write('</html>');
         win.print();
         //  win.close();
+    };
+
+    const excluirEmprestimos = () => {
+        const dadosEmprestimo = ref.current;
+        var emprestimo = dadosEmprestimo.emprestimo.value;
+
+        var excluir = confirm('Deseja excluir o Empréstimo nº ' + emprestimo);
+
+        if (excluir == true) {
+            confirmaExclusaoEmprestimo(emprestimo);
+        } else {
+            console.log('nao excluir');
+        }
+    };
+
+    const confirmaExclusaoEmprestimo = async (emprestimo) => {
+        console.log(emprestimo);
+        await apiFactoring
+            .post(
+                '/excluir-emprestimo',
+                {
+                    idEmprestimo: emprestimo,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                toast.success(data);
+                limpar();
+            })
+            .catch((error) => {
+                toast.error(error.response.data);
+            });
     };
 
     const toogle = () => {
@@ -1031,8 +1109,24 @@ export const FormOperacionalEmprestimo = () => {
                                 </button>
                             )}
                             {onEdit && (
+                                <button
+                                    id="btnImprimir"
+                                    onClick={imprimirPromissoria}
+                                >
+                                    Promissória
+                                </button>
+                            )}
+                            {onEdit && (
                                 <button id="btnImprimir" onClick={imprimir}>
                                     Imprimir
+                                </button>
+                            )}
+                            {onEdit && (
+                                <button
+                                    id="btnImprimir"
+                                    onClick={(e) => excluirEmprestimos()}
+                                >
+                                    Excluir
                                 </button>
                             )}
                             <ImExit id="iconeExit" onClick={(e) => sair()} />
