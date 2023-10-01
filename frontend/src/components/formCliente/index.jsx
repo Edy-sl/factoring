@@ -107,6 +107,7 @@ export const FormCliente = () => {
     };
 
     const gravarCliente = () => {
+        console.log(onEdit);
         onEdit == true ? atualizarDadosCliente() : gravarDadosCliente();
     };
 
@@ -314,12 +315,11 @@ export const FormCliente = () => {
                         setTaxaJuros(
                             (dados.taxa_juros * 1).toLocaleString('pt-BR')
                         );
-                        console.log(vTaxaJuros);
+
+                        setOnEdit(true);
                         setIdCliente(dados.idcliente);
                         setCheckEspecial(dados.especial);
                         setLimite(converteFloatMoeda(dados.limite));
-
-                        setOnEdit(true);
                     });
                 } else {
                     setOnEdit(false);
@@ -368,12 +368,12 @@ export const FormCliente = () => {
                         setTaxaJuros(
                             (dados.taxa_juros * 1).toLocaleString('pt-BR')
                         );
+                        setOnEdit(true);
+
                         console.log(vTaxaJuros);
 
                         setCheckEspecial(dados.especial);
                         setLimite(converteFloatMoeda(dados.limite));
-
-                        setOnEdit(true);
                     });
                 } else {
                     setOnEdit(false);
