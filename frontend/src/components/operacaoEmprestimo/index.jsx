@@ -730,7 +730,10 @@ export const FormOperacionalEmprestimo = () => {
 
         arrayParcelas.map((item) => {
             win.document.write(
-                '<table style="border: solid; padding: 10px; font: 15px Calibri; min-height:340px; max-height:340px;">'
+                '<label>----------------------------------------------</label>'
+            );
+            win.document.write(
+                '<table style="border: solid; padding: 10px; font: 13px Calibri; min-height:325px; max-height:325px;">'
             );
             win.document.write('<tr>');
             win.document.write('<td>');
@@ -790,8 +793,8 @@ export const FormOperacionalEmprestimo = () => {
                 '<td> Local de pagamento: GUARULHOS SP <br><br></td>'
             );
             win.document.write(
-                '<td colspan="2">Data da Emissão: ' +
-                    inverteData(item.data_vencimento) +
+                '<td colspan="2">Data de Emissão: ' +
+                    inverteData(dadosEmprestimo.dataCadastro.value) +
                     '<br><br></td>'
             );
             win.document.write('</tr>');
@@ -843,9 +846,6 @@ export const FormOperacionalEmprestimo = () => {
             win.document.write('</td>');
             win.document.write('</tr>');
             win.document.write('</table>');
-            win.document.write(
-                '<label>----------------------------------------------</label>'
-            );
         });
 
         win.document.write('</body>');

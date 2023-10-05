@@ -197,7 +197,7 @@ export const formatarDataExtenso = (data) => {
         'Sexta-feira',
         'Sábado',
     ][data.getDay()];
-    var date = data.getDate();
+    var date = data.getDate() + 1;
     date = extenso(date);
 
     var month = [
