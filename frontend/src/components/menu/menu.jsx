@@ -88,16 +88,6 @@ export const Menu = () => {
                         >
                             Lançamento
                         </Link>
-
-                        <label>-------------------</label>
-                        <Link
-                            to="#"
-                            onClick={(e) =>
-                                vefificarPendencia('/relatorio-lancamento')
-                            }
-                        >
-                            Relatório por Cliente
-                        </Link>
                     </ul>
                 </li>
 

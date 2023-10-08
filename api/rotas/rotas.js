@@ -78,6 +78,7 @@ import {
     excluirLancamentoConta,
     gravarLancamentoConta,
     listaLancamentoConta,
+    somaMovimentoConta,
 } from '../controles/conta.js';
 
 const SECRET = process.env.SECRET;
@@ -381,5 +382,7 @@ rotaFactoring.post(
     verifyJWT,
     excluirLancamentoConta
 );
+
+rotaFactoring.post('/soma-movimento-conta', verifyJWT, somaMovimentoConta);
 
 export default rotaFactoring;

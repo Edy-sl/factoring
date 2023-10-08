@@ -1138,7 +1138,7 @@ export const FormOperacionalEmprestimo = () => {
                                 }
                             />
                             <FiSearch
-                                size="25"
+                                className="icone2"
                                 onClick={exibirBuscaEmprestimo}
                             />
                             <input type="date" name="dataCadastro" readOnly />
@@ -1167,7 +1167,10 @@ export const FormOperacionalEmprestimo = () => {
                                 }
                             />
                             {!onEdit == true && (
-                                <FiSearch size="25" onClick={exibeFormBusca} />
+                                <FiSearch
+                                    className="icone2"
+                                    onClick={exibeFormBusca}
+                                />
                             )}
                         </div>
                         <div className="boxRow">

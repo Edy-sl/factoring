@@ -30,10 +30,47 @@ export const listaLancamentoConta = (req, res) => {
     const { idCliente } = req.body;
     const { tipo } = req.body;
 
-    const sql =
-        'select * from lancamento_conta where data between ? and ? and tipo = ? and idcliente = ? ';
+    if (tipo != 'movimento') {
+        const sql =
+            'select * from lancamento_conta where data between ? and ? and tipo = ? and idcliente = ? ' +
+            'order by data, idlancamento desc';
 
-    db.query(sql, [dataI, dataF, tipo, idCliente], (err, data) => {
+        db.query(sql, [dataI, dataF, tipo, idCliente], (err, data) => {
+            if (err) return res.json(err);
+            return res.status(200).json(data);
+        });
+    } else {
+        const sql =
+            'select * from lancamento_conta where data between ? and ? and idcliente = ? ' +
+            'order by data, idlancamento desc';
+
+        db.query(sql, [dataI, dataF, idCliente], (err, data) => {
+            if (err) return res.json(err);
+            return res.status(200).json(data);
+        });
+    }
+};
+
+export const somaMovimentoConta = (req, res) => {
+    const { dataI } = req.body;
+    const { dataF } = req.body;
+    const { idCliente } = req.body;
+    const { tipo } = req.body;
+
+    const sql =
+        'select sum(soma.valorSaida) as saida, ' +
+        'sum(soma.valorEntrada) as entrada ' +
+        'from(select lancamento_conta.idcliente, lancamento_conta.tipo,  ' +
+        'case when tipo = "entrada" then sum(valor) ' +
+        'end as valorEntrada, ' +
+        'case when tipo="saida" then sum(valor) ' +
+        'end as valorSaida ' +
+        'from lancamento_conta ' +
+        'where data between ? and ? ' +
+        'and idcliente = ? ' +
+        'group by tipo )as soma ';
+
+    db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });
@@ -74,6 +111,6 @@ export const excluirLancamentoConta = (req, res) => {
 
     db.query(sql, [idLancamento], (err, data) => {
         if (err) return res.json(err);
-        return res.status(200).json('Lançamento Alterado!');
+        return res.status(200).json('Lançamento Excluido!');
     });
 };

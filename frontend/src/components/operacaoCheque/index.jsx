@@ -1482,7 +1482,7 @@ export const FormOperacaoCheque = () => {
                                 onKeyDown={(e) => keyDown(e, 'inputIdCliente')}
                             />
                             <FiSearch
-                                size="25"
+                                className="icone2"
                                 onClick={exibeFormBuscaOperacao}
                             />
                             <input
@@ -1511,7 +1511,10 @@ export const FormOperacaoCheque = () => {
                                 onKeyDown={(e) => keyDown(e, 'inputDataBase')}
                                 autoComplete="off"
                             />
-                            <FiSearch size="25" onClick={exibeFormBusca} />
+                            <FiSearch
+                                className="icone2"
+                                onClick={exibeFormBusca}
+                            />
                         </div>
                     </div>
                     <div className="boxRow">

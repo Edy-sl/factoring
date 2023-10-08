@@ -1,23 +1,38 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
+    converteFloatMoeda,
+    converteMoedaFloat,
     dataHoraAtual,
     inverteData,
     keyDown,
     retornaDataAtual,
 } from '../../biblitoteca';
 
+import { apiFactoring } from '../../services/api';
+import { FiDelete, FiEdit, FiTrash, FiTrash2 } from 'react-icons/fi';
+import { ImBin } from 'react-icons/im';
+
 export const Saida = ({
     data,
     setData,
+    setDataF,
     documento,
     setDocumento,
     numero,
     setNumero,
     valor,
     setValor,
-    tipo,
     setTipo,
     gravarLancamento,
+    alterarLancamento,
+    excluirLancamento,
+    idCliente,
+    listaLancamentoConta,
+    lancamentoConta,
+    setIdLancamentoEdit,
+    idLancamentoEdit,
+    onEdit,
+    setOnEdit,
 }) => {
     const ref = useRef();
 
@@ -25,29 +40,36 @@ export const Saida = ({
         e.preventDefault();
     };
 
-    const arrayLancamento = [
-        {
-            documeto: 'venda',
-            numero_documento: '123456',
-            valor_documento: '250.00',
-            data_documento: '2023-09-26',
-            tipo: 'entrada',
-        },
-        {
-            documeto: 'venda',
-            numero_documento: '32152',
-            valor_documento: '1550.00',
-            data_documento: '2023-09-26',
-            tipo: 'entrada',
-        },
-    ];
+    const editarLancamento = (id) => {
+        const lancamentoFiltrado = lancamentoConta.filter(
+            (l) => l.idlancamento === id * 1
+        );
+
+        const dadosLancamento = ref.current;
+
+        lancamentoFiltrado.map((lancamentoF) => {
+            setData(lancamentoF.data_documento);
+            setDocumento(lancamentoF.documento);
+            setNumero(lancamentoF.numero_documento);
+            setValor(converteFloatMoeda(lancamentoF.valor_documento));
+            setTipo(lancamentoF.tipo);
+        });
+    };
+
+    const gravarAlteracao = () => {
+        alterarLancamento(idLancamentoEdit);
+
+        document.getElementById('inputData').focus();
+    };
 
     useEffect(() => {
-        const dadosEntrada = ref.current;
-        dadosEntrada.data.value = retornaDataAtual();
-
         setTipo('saida');
-    }, []);
+        listaLancamentoConta();
+    }, [data, idCliente]);
+
+    useEffect(() => {
+        editarLancamento(idLancamentoEdit);
+    }, [idLancamentoEdit]);
 
     return (
         <>
@@ -62,8 +84,13 @@ export const Saida = ({
                             type="date"
                             id="inputData"
                             name="data"
+                            value={data}
                             onKeyDown={(e) => keyDown(e, 'inputDocumento')}
-                            onChange={(e) => setData(e.target.value)}
+                            onChange={(e) => {
+                                setData(e.target.value);
+                                setDataF(e.target.value);
+                            }}
+                            autoFocus
                         />
                     </div>
                     <div className="boxCol">
@@ -72,8 +99,11 @@ export const Saida = ({
                             type="text"
                             id="inputDocumento"
                             name="documento"
+                            value={documento}
                             onKeyDown={(e) => keyDown(e, 'inputNumeroDoc')}
                             onChange={(e) => setDocumento(e.target.value)}
+                            onFocus={(e) => e.target.select()}
+                            autoComplete="off"
                         />
                     </div>
 
@@ -83,8 +113,11 @@ export const Saida = ({
                             type="text"
                             id="inputNumeroDoc"
                             name="numeroDoc"
+                            value={numero}
                             onKeyDown={(e) => keyDown(e, 'inputValorEntrada')}
                             onChange={(e) => setNumero(e.target.value)}
+                            onFocus={(e) => e.target.select()}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -93,8 +126,17 @@ export const Saida = ({
                             type="text"
                             id="inputValorEntrada"
                             name="valor"
-                            onKeyDown={(e) => keyDown(e, 'inputEntrada')}
+                            value={valor}
                             onChange={(e) => setValor(e.target.value)}
+                            onKeyDown={(e) => keyDown(e, 'inputEntrada')}
+                            onBlur={(e) => {
+                                e.target.value = converteFloatMoeda(
+                                    e.target.value
+                                );
+                                setValor(e.target.value);
+                            }}
+                            onFocus={(e) => e.target.select()}
+                            autoComplete="off"
                         />
                     </div>
                     <div className="boxCol">
@@ -102,40 +144,85 @@ export const Saida = ({
                         <input
                             type="text"
                             id="inputEntrada"
-                            name="entrada"
+                            name="tipo"
                             value="saida"
                             readOnly
+                            onKeyDown={(e) => keyDown(e, 'btnGravar')}
+                            onFocus={(e) => e.target.select()}
+                            autoComplete="off"
                         />
                     </div>
-                    <button onClick={(e) => gravarLancamento()}>Gravar</button>
+                    {!onEdit && (
+                        <button
+                            id="btnGravar"
+                            onClick={(e) => {
+                                document.getElementById('inputData').focus();
+                                gravarLancamento();
+                            }}
+                        >
+                            Gravar
+                        </button>
+                    )}
+                    {onEdit && (
+                        <button
+                            id="btnGravar"
+                            onClick={(e) => {
+                                gravarAlteracao();
+                            }}
+                        >
+                            Alterar
+                        </button>
+                    )}
                 </div>
-                <div className="gridContaTitulo">
-                    <div>Data</div>
-                    <div>Documento</div>
-                    <div className="alignCenter">Nº Documento</div>
-                    <div className="alignRight">Valor</div>
-                    <div className="alignRight">Tipo</div>
-                </div>
-                {arrayLancamento.map((lancamento, index) => (
-                    <div className="gridContaLancamento" key={index}>
-                        <div>{inverteData(lancamento.data_documento)}</div>
-                        <div>{lancamento.documeto}</div>
-                        <div className="alignCenter">
-                            {lancamento.numero_documento}
-                        </div>
-                        <div className="alignRight">
-                            {(lancamento.valor_documento * 1).toLocaleString(
-                                'pt-BR',
-                                {
+                <div id="divContainerConta">
+                    <div className="gridContaTitulo">
+                        <div>Data</div>
+                        <div>Documento</div>
+                        <div className="alignCenter">Nº Documento</div>
+                        <div className="alignRight">Valor</div>
+                        <div className="alignCenter">Tipo</div>
+                        <div className="alignCenter">Editar</div>
+                        <div className="alignCenter">Excluir</div>
+                    </div>
+                    {lancamentoConta.map((lancamento, index) => (
+                        <div className="gridContaLancamentoSaida" key={index}>
+                            <div>{inverteData(lancamento.data_documento)}</div>
+                            <div>{lancamento.documento}</div>
+                            <div className="alignCenter">
+                                {lancamento.numero_documento}
+                            </div>
+                            <div className="alignRight">
+                                {(
+                                    lancamento.valor_documento * 1
+                                ).toLocaleString('pt-BR', {
                                     style: 'decimal',
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2,
-                                }
-                            )}
+                                })}
+                            </div>
+                            <div className="alignRight">{lancamento.tipo}</div>
+                            <div className="alignCenter">
+                                <FiEdit
+                                    onClick={(e) => {
+                                        setIdLancamentoEdit(
+                                            lancamento.idlancamento
+                                        );
+                                        setOnEdit(true);
+                                    }}
+                                />
+                            </div>
+                            <div className="alignCenter">
+                                <ImBin
+                                    onClick={(e) =>
+                                        excluirLancamento(
+                                            lancamento.idlancamento
+                                        )
+                                    }
+                                />
+                            </div>
                         </div>
-                        <div className="alignRight">{lancamento.tipo}</div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </form>{' '}
         </>
     );

@@ -7,25 +7,35 @@ import { AuthProvider } from '../../context/authContext';
 import { apiFactoring } from '../../services/api';
 import {
     converteMoedaFloat,
+    dataHoraAtual,
     keyDown,
     retornaDataAtual,
 } from '../../biblitoteca';
 import './conta.css';
 import { Entrada } from '../contaEntrada';
 import { Saida } from '../contaSaida';
-import { ContaGeral } from '../contaGeral';
+import { ContaMovimento } from '../contaGeral';
 
 export const Conta = () => {
     const [idCliente, setIdCliente] = useState();
     const [formBusca, setFormBusca] = useState();
+    const [nomeCliente, setNomeCliente] = useState();
 
     const [data, setData] = useState();
+    const [dataF, setDataF] = useState();
     const [documento, setDocumento] = useState();
     const [numero, setNumero] = useState();
     const [valor, setValor] = useState();
     const [tipo, setTipo] = useState();
 
+    const [somaEntrada, setSomaEntrada] = useState();
+    const [somaSaida, setSomaSaida] = useState();
+
+    const [idLancamentoEdit, setIdLancamentoEdit] = useState();
+
     const [lancamentoConta, setLancamentoConta] = useState([]);
+
+    const [onEdit, setOnEdit] = useState(false);
 
     let arrayLancamento = [];
 
@@ -58,7 +68,7 @@ export const Conta = () => {
             )
             .then(({ data }) => {
                 data.map((dados) => {
-                    dadosCliente.nome.value = dados.nome;
+                    setNomeCliente(dados.nome);
                 });
             })
             .catch(({ data }) => {
@@ -96,6 +106,7 @@ export const Conta = () => {
                 )
                 .then(({ data }) => {
                     toast.success(data);
+                    listaLancamentoConta();
                 })
                 .catch();
 
@@ -107,10 +118,6 @@ export const Conta = () => {
 
     const alterarLancamento = async (lancamento) => {
         let idLancamento = lancamento;
-        console.log(data);
-        console.log(documento);
-        console.log(numero);
-        console.log(valor);
 
         await apiFactoring
             .post(
@@ -134,40 +141,44 @@ export const Conta = () => {
                 setNumero('');
                 setValor('');
                 idLancamento = '';
+                setIdLancamentoEdit('');
             })
             .catch();
+
+        listaLancamentoConta();
     };
 
     const excluirLancamento = async (idLancamento) => {
-        console.log(idLancamento);
-
-        await apiFactoring
-            .post(
-                'excluir-lancamento-conta',
-                {
-                    idLancamento: idLancamento,
-                },
-                {
-                    headers: {
-                        'x-access-token': localStorage.getItem('user'),
+        const confirma = confirm('Deseja excluir o Lançamento?');
+        if (confirma) {
+            await apiFactoring
+                .post(
+                    'excluir-lancamento-conta',
+                    {
+                        idLancamento: idLancamento,
                     },
-                }
-            )
-            .then(({ data }) => {
-                toast.success(data);
-                listaLancamentoConta();
-            })
-            .catch();
+                    {
+                        headers: {
+                            'x-access-token': localStorage.getItem('user'),
+                        },
+                    }
+                )
+                .then(({ data }) => {
+                    toast.success(data);
+                    listaLancamentoConta();
+                })
+                .catch();
+        }
     };
 
-    const listaLancamentoConta = async () => {
+    const somaMovimento = async () => {
         await apiFactoring
             .post(
-                '/lista-lancamento-conta',
+                '/soma-movimento-conta',
                 {
                     idCliente: idCliente,
                     dataI: data,
-                    dataF: data,
+                    dataF: dataF,
                     tipo: tipo,
                 },
                 {
@@ -177,7 +188,34 @@ export const Conta = () => {
                 }
             )
             .then(({ data }) => {
-                console.log(data);
+                data.map((movimento) => {
+                    setSomaEntrada(movimento.entrada);
+                    setSomaSaida(movimento.saida);
+                });
+            })
+            .catch();
+    };
+
+    const listaLancamentoConta = async () => {
+        setOnEdit(false);
+
+        arrayLancamento = [];
+        await apiFactoring
+            .post(
+                '/lista-lancamento-conta',
+                {
+                    idCliente: idCliente,
+                    dataI: data,
+                    dataF: dataF,
+                    tipo: tipo,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
                 data.map((lancamento) => {
                     arrayLancamento = [
                         ...arrayLancamento,
@@ -191,16 +229,19 @@ export const Conta = () => {
                         },
                     ];
                 });
-
-                console.log(arrayLancamento);
             })
             .catch();
         setLancamentoConta(arrayLancamento);
+        somaMovimento();
     };
 
     useEffect(() => {
         buscaClienteCodigo();
     }, [idCliente]);
+
+    useEffect(() => {
+        listaLancamentoConta();
+    }, [idCliente, tipo]);
 
     return (
         <>
@@ -241,10 +282,14 @@ export const Conta = () => {
                                 type="text"
                                 id="inputNome"
                                 name="nome"
+                                value={nomeCliente}
                                 placeholder=""
                                 autoComplete="off"
                             />
-                            <FiSearch size="25" onClick={exibeFormBusca} />
+                            <FiSearch
+                                className="icone2"
+                                onClick={exibeFormBusca}
+                            />
                         </div>
                     </div>
                 </div>
@@ -252,15 +297,35 @@ export const Conta = () => {
                     <button
                         id="buttonConta"
                         onClick={(e) => {
+                            setIdLancamentoEdit('');
+                            setDocumento('');
+                            setNumero('');
+                            setValor('');
+                            setTipo('');
                             setTab('entrada');
                         }}
                     >
                         Entrada
                     </button>
-                    <button id="buttonConta" onClick={(e) => setTab('saida')}>
-                        Saida
+                    <button
+                        id="buttonConta"
+                        onClick={(e) => {
+                            setIdLancamentoEdit('');
+                            setDocumento('');
+                            setNumero('');
+                            setValor('');
+                            setTipo('');
+                            setTab('saida');
+                        }}
+                    >
+                        Saída
                     </button>
-                    <button id="buttonConta" onClick={(e) => setTab('geral')}>
+                    <button
+                        id="buttonConta"
+                        onClick={(e) => {
+                            setTab('geral');
+                        }}
+                    >
                         Movimento
                     </button>
                 </div>
@@ -269,6 +334,7 @@ export const Conta = () => {
                 <Entrada
                     data={data}
                     setData={setData}
+                    setDataF={setDataF}
                     documento={documento}
                     setDocumento={setDocumento}
                     numero={numero}
@@ -283,12 +349,17 @@ export const Conta = () => {
                     excluirLancamento={excluirLancamento}
                     listaLancamentoConta={listaLancamentoConta}
                     lancamentoConta={lancamentoConta}
+                    setIdLancamentoEdit={setIdLancamentoEdit}
+                    idLancamentoEdit={idLancamentoEdit}
+                    onEdit={onEdit}
+                    setOnEdit={setOnEdit}
                 />
             )}
             {tab === 'saida' && (
                 <Saida
                     data={data}
                     setData={setData}
+                    setDataF={setDataF}
                     documento={documento}
                     setDocumento={setDocumento}
                     numero={numero}
@@ -298,12 +369,23 @@ export const Conta = () => {
                     tipo={tipo}
                     setTipo={setTipo}
                     gravarLancamento={gravarLancamento}
+                    idCliente={idCliente}
+                    alterarLancamento={alterarLancamento}
+                    excluirLancamento={excluirLancamento}
+                    listaLancamentoConta={listaLancamentoConta}
+                    lancamentoConta={lancamentoConta}
+                    setIdLancamentoEdit={setIdLancamentoEdit}
+                    idLancamentoEdit={idLancamentoEdit}
+                    onEdit={onEdit}
+                    setOnEdit={setOnEdit}
                 />
             )}
             {tab === 'geral' && (
-                <ContaGeral
+                <ContaMovimento
                     data={data}
                     setData={setData}
+                    setDataF={setDataF}
+                    dataF={dataF}
                     documento={documento}
                     setDocumento={setDocumento}
                     numero={numero}
@@ -312,6 +394,20 @@ export const Conta = () => {
                     setValor={setValor}
                     tipo={tipo}
                     setTipo={setTipo}
+                    gravarLancamento={gravarLancamento}
+                    idCliente={idCliente}
+                    alterarLancamento={alterarLancamento}
+                    excluirLancamento={excluirLancamento}
+                    listaLancamentoConta={listaLancamentoConta}
+                    lancamentoConta={lancamentoConta}
+                    setTab={setTab}
+                    setIdLancamentoEdit={setIdLancamentoEdit}
+                    idLancamentoEdit={idLancamentoEdit}
+                    setOnEdit={setOnEdit}
+                    onEdit={onEdit}
+                    somaEntrada={somaEntrada}
+                    somaSaida={somaSaida}
+                    nomeCliente={nomeCliente}
                 />
             )}
         </>

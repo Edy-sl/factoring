@@ -15,13 +15,13 @@ import { ImBin } from 'react-icons/im';
 export const Entrada = ({
     data,
     setData,
+    setDataF,
     documento,
     setDocumento,
     numero,
     setNumero,
     valor,
     setValor,
-    tipo,
     setTipo,
     gravarLancamento,
     alterarLancamento,
@@ -29,14 +29,12 @@ export const Entrada = ({
     idCliente,
     listaLancamentoConta,
     lancamentoConta,
+    setIdLancamentoEdit,
+    idLancamentoEdit,
+    onEdit,
+    setOnEdit,
 }) => {
     const ref = useRef();
-
-    const [dataI, setDataI] = useState();
-
-    const [onEdtit, setOnEdit] = useState();
-
-    const [idLancamento, setIdLancamento] = useState();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -47,32 +45,33 @@ export const Entrada = ({
             (l) => l.idlancamento === id * 1
         );
 
-        setIdLancamento(id);
-
         const dadosLancamento = ref.current;
 
         lancamentoFiltrado.map((lancamentoF) => {
             setData(lancamentoF.data_documento);
+            setDataF(lancamentoF.data_documento);
+
             setDocumento(lancamentoF.documento);
             setNumero(lancamentoF.numero_documento);
             setValor(converteFloatMoeda(lancamentoF.valor_documento));
             setTipo(lancamentoF.tipo);
-
-            console.log(lancamentoF.data_documento);
         });
+    };
 
-        setOnEdit(true);
+    const gravarAlteracao = () => {
+        alterarLancamento(idLancamentoEdit);
+
+        document.getElementById('inputData').focus();
     };
 
     useEffect(() => {
-        const dadosEntrada = ref.current;
-
         setTipo('entrada');
-    }, []);
+        listaLancamentoConta();
+    }, [data, idCliente]);
 
     useEffect(() => {
-        listaLancamentoConta();
-    }, [dataI, data, idCliente]);
+        editarLancamento(idLancamentoEdit);
+    }, [idLancamentoEdit]);
 
     return (
         <>
@@ -91,7 +90,7 @@ export const Entrada = ({
                             onKeyDown={(e) => keyDown(e, 'inputDocumento')}
                             onChange={(e) => {
                                 setData(e.target.value);
-                                setDataI(e.target.value);
+                                setDataF(e.target.value);
                             }}
                             autoFocus
                         />
@@ -155,25 +154,22 @@ export const Entrada = ({
                             autoComplete="off"
                         />
                     </div>
-                    {!onEdtit && (
+                    {!onEdit && (
                         <button
                             id="btnGravar"
                             onClick={(e) => {
                                 gravarLancamento();
-                                listaLancamentoConta();
+                                document.getElementById('inputData').focus();
                             }}
                         >
                             Gravar
                         </button>
                     )}
-                    {onEdtit == true && (
+                    {onEdit && (
                         <button
                             id="btnGravar"
                             onClick={(e) => {
-                                alterarLancamento(idLancamento);
-                                listaLancamentoConta();
-                                setOnEdit(false);
-                                document.getElementById('inputData').focus();
+                                gravarAlteracao();
                             }}
                         >
                             Alterar
@@ -209,11 +205,12 @@ export const Entrada = ({
                             <div className="alignRight">{lancamento.tipo}</div>
                             <div className="alignCenter">
                                 <FiEdit
-                                    onClick={(e) =>
-                                        editarLancamento(
+                                    onClick={(e) => {
+                                        setIdLancamentoEdit(
                                             lancamento.idlancamento
-                                        )
-                                    }
+                                        );
+                                        setOnEdit(true);
+                                    }}
                                 />
                             </div>
                             <div className="alignCenter">
