@@ -114,6 +114,10 @@ export const FormOperacaoCheque = () => {
     const buscaCliente = async () => {
         const dadosCliente = ref.current;
 
+        dadosCliente.nome.value = '';
+
+        dadosCliente.jurosMensal.value = '0.00';
+
         await apiFactoring
             .post(
                 '/busca-cliente-id',

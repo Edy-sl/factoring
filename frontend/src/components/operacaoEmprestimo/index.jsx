@@ -555,6 +555,10 @@ export const FormOperacionalEmprestimo = () => {
         const dadosCliente = ref.current;
         const idCliente = dadosCliente.idClienteEmprestimo.value;
 
+        dadosCliente.nomeClienteEmprestimo.value = '';
+        dadosCliente.jurosMensal.value = '0.00';
+        setDadosCliente('');
+
         await apiFactoring
             .post(
                 '/busca-cliente-id',

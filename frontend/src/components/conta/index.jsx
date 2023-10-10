@@ -52,7 +52,7 @@ export const Conta = () => {
     };
 
     const buscaClienteCodigo = async () => {
-        const dadosCliente = ref.current;
+        setNomeCliente('');
 
         await apiFactoring
             .post(

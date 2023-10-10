@@ -83,12 +83,6 @@ export const alterarLancamentoConta = (req, res) => {
     const { numero } = req.body;
     const { valor } = req.body;
 
-    console.log(idLancamento);
-    console.log(data);
-    console.log(documento);
-    console.log(numero);
-    console.log(valor);
-
     const sql =
         'update lancamento_conta set data = ?, ' +
         'documento = ?, numero = ?, valor = ? ' +

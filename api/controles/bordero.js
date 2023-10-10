@@ -334,8 +334,6 @@ export const relatorioPorClienteEmissao = (req, res) => {
     const { status } = req.body;
     const { idCliente } = req.body;
 
-    console.log(status);
-
     let sql = '';
 
     if (status === 'GERAL') {
@@ -402,9 +400,6 @@ export const gravarDataDevolucao = (req, res) => {
         if (err) return res.json(err);
         return res.status(200).json('Devolução gravada!');
     });
-
-    console.log(sql);
-    console.log(idlancamento + ' / ' + dataDev);
 };
 
 export const gravarDataPagamento = (req, res) => {
@@ -418,9 +413,6 @@ export const gravarDataPagamento = (req, res) => {
         if (err) return res.json(err);
         return res.status(200).json('Pagamento gravado!');
     });
-
-    console.log(sql);
-    console.log(idlancamento + ' / ' + dataPag);
 };
 
 export const listaChequesDevolvidos = (req, res) => {
@@ -444,7 +436,6 @@ export const listaChequesDevolvidos = (req, res) => {
 export const listaChequesDeduzidos = (req, res) => {
     const { idBordero } = req.body;
 
-    console.log(idBordero);
     const sql =
         `SELECT * FROM borderos_lancamentos as ch inner join ` +
         `borderos as op on ` +

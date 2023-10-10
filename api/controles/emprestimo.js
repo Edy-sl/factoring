@@ -53,7 +53,7 @@ export const gravarEmprestimo = (req, res) => {
 //excluir emprestimo
 export const excluirEmprestimo = (req, res) => {
     const { idEmprestimo } = req.body;
-    console.log(idEmprestimo);
+
     const sql1 = `SET FOREIGN_KEY_CHECKS = 0 `;
 
     const sql2 =
@@ -160,8 +160,6 @@ export const pagamentoVariasParcelasEmprestimo = (req, res) => {
     const ano = data.getFullYear();
 
     const dataPagamento = ano + '-' + mes + '-' + dia;
-
-    console.log(arrayParcela);
 
     arrayParcela.map((P) => {
         const sql =
@@ -889,8 +887,6 @@ export const alterarValorParcela = (req, res) => {
     const { parcela } = req.body;
     const { valor } = req.body;
     const { numeroParcela } = req.body;
-
-    console.log(parcela + ' / ' + numeroParcela);
 
     const sql =
         'update parcelas_emprestimo set parcela = ? , valor = ? where idparcela = ?';

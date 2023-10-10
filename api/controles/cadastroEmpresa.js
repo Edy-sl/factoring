@@ -51,7 +51,7 @@ export const postFactoring = (req, res) => {
                     idRetorno: data.insertId,
                     mensagem: 'Cadastrado com sucesso!',
                 };
-                console.log(resposta);
+
                 return res.status(200).json(resposta);
             }
         );
