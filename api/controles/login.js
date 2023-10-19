@@ -43,3 +43,34 @@ export const loginFactoring = async (req, res) => {
         }
     });
 };
+
+//implementar refrash token
+export const loginSemSenha = async (idUsuario) => {
+    const sql =
+        'Select * from usuarios, permissoes_usuarios, grupos_permissoes where usuarios.idusuario = ? and permissoes_usuarios.idusuario = usuarios.idusuario AND grupos_permissoes.idgrupo = permissoes_usuarios.idgrupo';
+
+    db.query(sql, [nome], (err, data) => {
+        if (err) return res.json(err);
+
+        if (data.length > 0) {
+            data.map(async (user) => {
+                const token = jwt.sign(
+                    {
+                        userID: user.idusuario,
+                        nome: user.nome,
+                        grupo: user.grupo,
+                    },
+                    SECRET,
+                    { expiresIn: 20 }
+                ); //300 segundos 5min.
+                return res.json({
+                    auth: true,
+                    token,
+                    factoring: user.idfactoring,
+                });
+            });
+        } else {
+            if (err) return res.status(401).json('Token invalido!').end();
+        }
+    });
+};

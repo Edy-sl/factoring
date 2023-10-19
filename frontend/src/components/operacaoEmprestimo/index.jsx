@@ -31,6 +31,8 @@ export const FormOperacionalEmprestimo = () => {
 
     const ref = useRef();
 
+    const [buscaCredor, setBuscaCredor] = useState();
+
     const [arrayParcelas, setArrayParcelas] = useState([]);
 
     const [formBusca, setFormBusca] = useState(false);
@@ -594,9 +596,8 @@ export const FormOperacionalEmprestimo = () => {
     const formataCpfCnpj = () => {
         const dadosCredor = ref.current;
         let vCpfCnpj = dadosCredor.cnpjCpfCredor.value;
-
         setCnpjCpfCredor(cpfCnpjMask(vCpfCnpj));
-        buscaCliente();
+        setBuscaCredor(!buscaCredor);
     };
 
     const limpar = () => {
@@ -690,6 +691,10 @@ export const FormOperacionalEmprestimo = () => {
         setIntervalo('0');
         setIdEmprestimo('0');
     }, []);
+
+    useEffect(() => {
+        buscaCliente();
+    }, [buscaCredor]);
 
     const imprimirPromissoria = () => {
         const dadosEmprestimo = ref.current;
@@ -1179,7 +1184,7 @@ export const FormOperacionalEmprestimo = () => {
                         </div>
                         <div className="boxRow">
                             <div className="boxCol">
-                                <label>Cnpj Creddor</label>
+                                <label>Cnpj Credor</label>
                                 <input
                                     id="inputCnpjCpfCredor"
                                     name="cnpjCpfCredor"

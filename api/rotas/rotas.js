@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import {} from 'dotenv/config';
-import { loginFactoring } from '../controles/login.js';
+import { loginFactoring, loginSemSenha } from '../controles/login.js';
 import {
     postCadUsuario,
     postCadUsuarioSecundario,
