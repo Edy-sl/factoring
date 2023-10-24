@@ -378,6 +378,33 @@ export const impressaoMovimento = (listagemCheque, listagemEmprestimo) => {
     win.document.write('</td>');
     win.document.write('</tr>');
 
+    win.document.write('<tr>');
+    win.document.write('<td colspan="8">');
+    win.document.write(
+        '--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+    );
+
+    win.document.write('</td>');
+    win.document.write('</tr>');
+
+    win.document.write('<tr>');
+    win.document.write('<td colspan="7" style="text-align : right  ">');
+    win.document.write('Total Cheques + Emprestimos');
+    win.document.write('</td>');
+    win.document.write('<td style="text-align : right ">');
+    win.document.write(
+        (totalValorEmprestimo * 1 + totalValorCheques * 1).toLocaleString(
+            'pt-BR',
+            {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }
+        )
+    );
+    win.document.write('</td>');
+    win.document.write('</tr>');
+
     win.document.write('</table>');
     win.document.write('</body>');
     win.document.write('</html>');
