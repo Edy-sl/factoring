@@ -1,0 +1,87 @@
+#divListagemMovimento {
+    max-height: 80vh;
+}
+
+.divRelatorioChequeData {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(223, 224, 225);
+}
+
+.divListaRcheques {
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
+}
+
+.gridChequeRelatorio {
+    display: grid;
+    grid-template-columns: 50px 100px 220px 220px 100px 100px 100px 100px 100px 100px;
+    background-color: rgb(223, 224, 225);
+    margin-top: 20px;
+    gap: 15px;
+    padding-left: 5px;
+    padding-right: 20px;
+}
+
+.gridLinhaChequeRelatorio {
+    display: grid;
+    grid-template-columns: 50px 100px 220px 220px 100px 100px 100px 100px 100px 100px;
+    text-transform: uppercase;
+    gap: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: #ffffff;
+}
+
+.gridLinhaChequeRelatorio:hover {
+    display: grid;
+    grid-template-columns: 50px 100px 220px 220px 100px 100px 100px 100px 100px 100px;
+    text-transform: uppercase;
+
+    background-color: rgb(223, 224, 225);
+    gap: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.divListaRContainerCheque {
+    display: flex;
+    flex-direction: column;
+
+    max-height: 480px;
+}
+
+.divTotaisRcheques {
+    display: grid;
+    grid-template-columns: 50px 100px 220px 220px 100px 100px 100px 100px 100px 100px;
+    text-transform: uppercase;
+    gap: 15px;
+    background-color: rgb(223, 224, 225);
+    padding-left: 5px;
+    padding-right: 20px;
+}
+
+#divFiltroMovimentoEmissao {
+    padding-bottom: 20px;
+}
+
+.jurosDeducao {
+    color: brown;
+    text-align: right;
+}
+
+@media only screen and (max-width: 700px) {
+    .formOperacaoChequeRelatorio {
+        flex-direction: column;
+    }
+    .boxResumo {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        max-width: 300px;
+    }
+    .boxOpChequeRelatorioRight {
+        align-self: flex-start;
+    }
+}

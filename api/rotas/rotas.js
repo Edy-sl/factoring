@@ -51,6 +51,8 @@ import {
     listaChequesDevolvidos,
     listaChequesDeduzidos,
     gravarDataPagamento,
+    listaEmitentes,
+    relatorioChequePorEmitenteVencimento,
 } from '../controles/bordero.js';
 
 import {
@@ -64,10 +66,13 @@ import {
 } from '../controles/cadastroCliente.js';
 
 import {
+    movimentoChequesPorClienteVencimento,
     movimentoChequesPorPagamento,
     movimentoChequesPorVencimento,
+    movimentoEmprestimoClienteVencimento,
     movimentoEmprestimoPagamento,
     movimentoEmprestimoVencimento,
+    relatorioMovimentoChequesDeducaoPorClienteVencimento,
     relatorioMovimentoChequesDeducaoPorEmissao,
     relatorioMovimentoChequesDeducaoPorVencimento,
     relatorioMovimentoChequesPorEmissao,
@@ -326,6 +331,19 @@ rotaFactoring.post(
     movimentoEmprestimoVencimento
 );
 
+//relatorio de cheques/emprestimos por cliente e dt de vencimento
+rotaFactoring.post(
+    '/relatorio-movimento-cheque-cliente-vencimento',
+    verifyJWT,
+    movimentoChequesPorClienteVencimento
+);
+
+rotaFactoring.post(
+    '/relatorio-movimento-emprestimo-cliente-vencimento',
+    verifyJWT,
+    movimentoEmprestimoClienteVencimento
+);
+
 //relatorio de cheques/dedução/emprestimos por dt de Emissao
 rotaFactoring.post(
     '/relatorio-movimento-cheque-emissao',
@@ -364,6 +382,12 @@ rotaFactoring.post(
 );
 
 rotaFactoring.post(
+    '/relatorio-movimento-deducao-cliente-vencimento',
+    verifyJWT,
+    relatorioMovimentoChequesDeducaoPorClienteVencimento
+);
+
+rotaFactoring.post(
     '/gravar-lancamento-conta',
     verifyJWT,
     gravarLancamentoConta
@@ -384,5 +408,15 @@ rotaFactoring.post(
 );
 
 rotaFactoring.post('/soma-movimento-conta', verifyJWT, somaMovimentoConta);
+
+//lista emitentes de cheques
+rotaFactoring.post('/lista-emitentes', verifyJWT, listaEmitentes);
+
+//relatorio cheque por Emitente e data de vencimento
+rotaFactoring.post(
+    '/relatorio-cheque-emitente-vencimento',
+    verifyJWT,
+    relatorioChequePorEmitenteVencimento
+);
 
 export default rotaFactoring;

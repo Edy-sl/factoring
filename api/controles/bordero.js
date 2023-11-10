@@ -1,3 +1,4 @@
+import e, { json } from 'express';
 import { db } from '../db.js';
 import {} from 'dotenv/config';
 
@@ -57,7 +58,6 @@ const gravarDeducao = (idBordero, arrayDeducao, dataDeducao) => {
                 ],
                 (err, data) => {
                     if (err) console.log(err);
-                    console.log(data);
                 }
             );
         });
@@ -322,7 +322,7 @@ export const relatorioPorClienteVencimento = (req, res) => {
 
     db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
-        console.log(data);
+
         return res.status(200).json(data);
     });
 };
@@ -368,7 +368,7 @@ export const relatorioPorClienteEmissao = (req, res) => {
 
     db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
-        console.log(data);
+
         return res.status(200).json(data);
     });
 };
@@ -448,7 +448,69 @@ export const listaChequesDeduzidos = (req, res) => {
 
     db.query(sql, [idBordero], (err, data) => {
         if (err) return res.json(err);
-        console.log(data);
+
+        return res.status(200).json(data);
+    });
+};
+
+//busca emitentes
+export const listaEmitentes = (req, res) => {
+    let { emitente } = req.body;
+    emitente = '%' + emitente + '%';
+
+    const sql =
+        'SELECT nome_cheque FROM borderos_lancamentos ' +
+        'where nome_cheque like ? ' +
+        'group by nome_cheque order by nome_cheque';
+    db.query(sql, [emitente], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};
+
+/////relatorios de cheque por EMITENTE e data de vencimento
+export const relatorioChequePorEmitenteVencimento = (req, res) => {
+    const { dataI } = req.body;
+    const { dataF } = req.body;
+    const { status } = req.body;
+    const { emitente } = req.body;
+
+    let sql = '';
+
+    if (status === 'GERAL') {
+        sql =
+            'SELECT * FROM dbfactoring.borderos_lancamentos ' +
+            'as cheques inner join dbfactoring.borderos as operacao ' +
+            'on cheques.idbordero = operacao.idbordero ' +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            'where cheques.data_vencimento between  ? and ? ' +
+            `and cheques.nome_cheque = ? ` +
+            'order by cheques.data_vencimento';
+    }
+    if (status === 'DEVOLVIDO') {
+        sql =
+            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
+            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where cheques.data_vencimento between  ? and ? ` +
+            `and cheques.nome_cheque = ? ` +
+            `cheques.status = 'DEVOLVIDO' order by cheques.data_vencimento`;
+    }
+    if (status === 'PAGO') {
+        sql =
+            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
+            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `on cheques.idbordero = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where cheques.data_vencimento between  ? and ? ` +
+            `and cheques.nome_cheque = ? ` +
+            `cheques.status = 'PAGO' order by cheques.data_vencimento`;
+    }
+
+    db.query(sql, [dataI, dataF, emitente], (err, data) => {
+        if (err) return res.json(err);
+
         return res.status(200).json(data);
     });
 };

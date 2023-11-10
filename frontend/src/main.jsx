@@ -41,6 +41,8 @@ import { Devolucao } from './components/devolucao/index.jsx';
 import { PagamentoCheque } from './components/pagamentoCheque/index.jsx';
 import { RelatorioMovimentoPorPagamento } from './components/relatorioMovimentoPagamento/index.jsx';
 import { Conta } from './components/conta/index.jsx';
+import { RelatorioMovimentoPorClienteVencimento } from './components/relatorioMovimentoClienteVencimento/index.jsx';
+import { RelatorioChequePorEmitenteVencimento } from './components/relatorioChequeEmitenteVencimento/index.jsx';
 
 const router = createHashRouter([
     {
@@ -188,6 +190,14 @@ const router = createHashRouter([
                 ),
             },
             {
+                path: '/relatorio-cheque-emitente-vencimento',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioChequePorEmitenteVencimento />
+                    </PrivateRouter>
+                ),
+            },
+            {
                 path: '/relatorio-emprestimo-emissao',
                 element: (
                     <PrivateRouter>
@@ -217,6 +227,14 @@ const router = createHashRouter([
                 element: (
                     <PrivateRouter>
                         <RelatorioMovimentoPorVencimento />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/relatorio-movimento-cliente-vencimento',
+                element: (
+                    <PrivateRouter>
+                        <RelatorioMovimentoPorClienteVencimento />
                     </PrivateRouter>
                 ),
             },

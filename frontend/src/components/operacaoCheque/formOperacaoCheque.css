@@ -165,6 +165,17 @@
     color: black;
 }
 
+#divConcentracao {
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(180, 207, 231);
+    align-items: center;
+    margin-top: 10px;
+    width: 300px;
+    height: 40px;
+    padding-bottom: 15px;
+}
+
 @media only screen and (max-width: 700px) {
     .formOperacaoCheque {
         flex-direction: column;

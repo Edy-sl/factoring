@@ -3,8 +3,8 @@ import {} from 'dotenv/config';
 
 ////movimento remprestimo por data de vencimento
 export const movimentoEmprestimoVencimento = (req, res) => {
-    var { dataI } = req.body;
-    var { dataF } = req.body;
+    const { dataI } = req.body;
+    const { dataF } = req.body;
 
     var sql =
         'select ' +
@@ -86,8 +86,8 @@ export const movimentoChequesPorVencimento = (req, res) => {
 /****** */
 ////Movimento emprestimos por data de emissao
 export const relatorioMovimentoEmprestimoEmissao = (req, res) => {
-    var { dataI } = req.body;
-    var { dataF } = req.body;
+    const { dataI } = req.body;
+    const { dataF } = req.body;
 
     /*por data de Emissao - Geral*/
 
@@ -280,7 +280,6 @@ export const movimentoChequesPorPagamento = (req, res) => {
     const { status } = req.body;
 
     let sql = '';
-
     sql =
         `SELECT * FROM borderos_lancamentos ` +
         `as cheques inner join borderos as operacao ` +
@@ -289,6 +288,117 @@ export const movimentoChequesPorPagamento = (req, res) => {
         `where cheques.data_pagamento between  ? and ? order by cheques.data_vencimento`;
 
     db.query(sql, [dataI, dataF], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};
+
+////movimento remprestimo por data de vencimento
+export const movimentoEmprestimoClienteVencimento = (req, res) => {
+    const { dataI } = req.body;
+    const { dataF } = req.body;
+    const { idCliente } = req.body;
+
+    var sql =
+        'select ' +
+        'tmp_emp.idemprestimo, ' +
+        'tmp_emp.valor_pago, ' +
+        'tmp_emp.vencimento, ' +
+        'tmp_emp.parcela, ' +
+        'tmp_emp.idparcela, ' +
+        'tmp_emp.idcliente, ' +
+        'tmp_emp.data_cadastro, ' +
+        'tmp_emp.quantidade_parcelas, ' +
+        'tmp_emp.valor, ' +
+        'tmp_emp.valor_juros, ' +
+        'tmp_emp.valor_total, ' +
+        'cli.nome ' +
+        'from ' +
+        '(select tmp_parcelas.idemprestimo, ' +
+        'tmp_parcelas.valor_pago, ' +
+        'tmp_parcelas.vencimento, ' +
+        'tmp_parcelas.parcela, ' +
+        'tmp_parcelas.idparcela, ' +
+        'tmp_parcelas.valor, ' +
+        'emp.idcliente, ' +
+        'emp.valor_total, ' +
+        'emp.valor_juros, ' +
+        'emp.quantidade_parcelas, ' +
+        'data_cadastro ' +
+        'from ' +
+        '(select ' +
+        'pe.idemprestimo, ' +
+        'pe.idparcela, ' +
+        'pe.parcela, ' +
+        'pe.valor, ' +
+        'pe.vencimento, ' +
+        'ifnull(pp.data_pagamento,0) as data_pagamento, ' +
+        'ifnull(sum(pp.valor_pago),0) as valor_pago ' +
+        'from ' +
+        'parcelas_emprestimo as pe ' +
+        'left join pagamentos_parcelas as pp ' +
+        'on pp.idparcela = pe.idparcela ' +
+        'where pe.vencimento ' +
+        'between ? and ? ' +
+        'group by  pp.idparcela, pp.data_pagamento, ' +
+        'pe.idemprestimo, pe.vencimento, ' +
+        'pe.parcela, pe.valor, pe.idparcela) as tmp_parcelas ' +
+        'left join emprestimos as emp  ' +
+        'on emp.idemprestimo = tmp_parcelas.idemprestimo) as tmp_emp ' +
+        'left join clientes as cli ' +
+        'on cli.idcliente = tmp_emp.idcliente ' +
+        'where cli.idcliente = ? ' +
+        'order by idemprestimo, parcela ';
+
+    db.query(sql, [dataI, dataF, idCliente], (err, data) => {
+        if (err) return res.json(err);
+
+        return res.status(200).json(data);
+    });
+};
+
+/////relatorios moviemto de cheque por data de vencimento
+export const movimentoChequesPorClienteVencimento = (req, res) => {
+    const { dataI } = req.body;
+    const { dataF } = req.body;
+    const { idCliente } = req.body;
+
+    let sql = '';
+
+    sql =
+        `SELECT * FROM borderos_lancamentos ` +
+        `as cheques inner join borderos as operacao ` +
+        `on cheques.idbordero = operacao.idbordero ` +
+        `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+        `where cheques.data_vencimento between  ? and ? and operacao.idcliente = ? order by cheques.data_vencimento`;
+
+    db.query(sql, [dataI, dataF, idCliente], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};
+
+//movimento de cheque dedeução por data de vencimento
+export const relatorioMovimentoChequesDeducaoPorClienteVencimento = (
+    req,
+    res
+) => {
+    const { dataI } = req.body;
+    const { dataF } = req.body;
+    const { status } = req.body;
+    const { idCliente } = req.body;
+
+    let sql = '';
+    if (status === false) {
+        sql =
+            `SELECT * FROM borderos_lancamentos ` +
+            `as cheques inner join borderos as operacao ` +
+            `on cheques.idbordero_deducao = operacao.idbordero ` +
+            `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
+            `where cheques.data_vencimento between  ? and ? and operacao.idcliente = ? order by cheques.data_vencimento`;
+    }
+
+    db.query(sql, [dataI, dataF, idCliente], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });

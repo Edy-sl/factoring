@@ -22,6 +22,7 @@ import { AuthProvider } from '../../context/authContext';
 import axios from 'axios';
 import { ImBin, ImExit } from 'react-icons/im';
 import { useNavigate } from 'react-router-dom';
+import { BuscaEmitente } from '../buscaEmitente';
 
 export const FormOperacaoCheque = () => {
     const navigate = useNavigate();
@@ -44,6 +45,11 @@ export const FormOperacaoCheque = () => {
     let arrayCheques = [];
 
     const [formBusca, setFormBusca] = useState(false);
+
+    const [formBuscaEmitente, setFormBuscaEmitente] = useState(false);
+    const [nomeEmitente, setNomeEmitente] = useState('');
+    const [valorTotalChequeEmitente, setValorTotalChequeEmitente] = useState(0);
+    const [quantidadeChequeEmitente, setQuantidadeChequeEmitente] = useState(0);
 
     const [idBordero, setIdBordero] = useState('0');
 
@@ -79,6 +85,10 @@ export const FormOperacaoCheque = () => {
 
     const exibeFormBusca = () => {
         setFormBusca(!formBusca);
+    };
+
+    const exibeFormBuscaEmitente = () => {
+        setFormBuscaEmitente(!formBuscaEmitente);
     };
 
     const exibeFormBuscaOperacao = () => {
@@ -1379,6 +1389,42 @@ export const FormOperacaoCheque = () => {
         dadosCliente.nomeCheque.select();
     };
 
+    //consulta cheques a vencer do emitente a partir da data atual
+    const buscaConcentracaoEmitente = async () => {
+        const dadosRelatorio = ref.current;
+        var dataI = dadosRelatorio.data.value;
+        var dataF = '3000-01-01';
+
+        await apiFactoring
+            .post(
+                '/relatorio-cheque-emitente-vencimento',
+                {
+                    dataI: dataI,
+                    dataF: dataF,
+                    status: 'GERAL',
+                    emitente: nomeEmitente,
+                },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                let valorChequeEmitente = 0;
+                setQuantidadeChequeEmitente(data.length);
+                console.log(data);
+                data.map((item) => {
+                    valorChequeEmitente =
+                        valorChequeEmitente + item.valor_cheque * 1;
+                });
+                setValorTotalChequeEmitente(valorChequeEmitente);
+            })
+            .catch(({ data }) => {
+                toast.error(data);
+            });
+    };
+
     const sair = () => {
         console.log('sair');
         localStorage.setItem('gravarDoc', false);
@@ -1388,6 +1434,10 @@ export const FormOperacaoCheque = () => {
     useEffect(() => {
         vefificaPermissao();
     }, []);
+
+    useEffect(() => {
+        buscaConcentracaoEmitente();
+    }, [nomeEmitente]);
 
     useEffect(() => {
         atualizaResumo();
@@ -1435,6 +1485,13 @@ export const FormOperacaoCheque = () => {
                         setIdOperacao={setIdBordero}
                     />
                 </AuthProvider>
+            )}
+
+            {formBuscaEmitente == true && (
+                <BuscaEmitente
+                    setFormBusca={setFormBuscaEmitente}
+                    setNomeEmitente={setNomeEmitente}
+                />
             )}
 
             <form
@@ -1663,18 +1720,27 @@ export const FormOperacaoCheque = () => {
                         <div className="boxRow">
                             <div className="boxCol">
                                 <label>Nome do Emitente</label>
-
-                                <input
-                                    id="inputNomeC"
-                                    type="text"
-                                    name="nomeCheque"
-                                    placeholder="Nome"
-                                    onKeyDown={(e) =>
-                                        keyDown(e, 'inputVencimento')
-                                    }
-                                    autoComplete="off"
-                                    onFocus={(e) => completaNome()}
-                                />
+                                <div className="boxRow">
+                                    <input
+                                        id="inputNomeC"
+                                        type="text"
+                                        name="nomeCheque"
+                                        value={nomeEmitente}
+                                        placeholder="Nome"
+                                        onKeyDown={(e) =>
+                                            keyDown(e, 'inputVencimento')
+                                        }
+                                        autoComplete="off"
+                                        onChange={(e) =>
+                                            setNomeEmitente(e.target.value)
+                                        }
+                                        onFocus={(e) => completaNome()}
+                                    />
+                                    <FiSearch
+                                        className="icone2"
+                                        onClick={exibeFormBuscaEmitente}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1761,7 +1827,7 @@ export const FormOperacaoCheque = () => {
                             Incluir
                         </button>
                     </div>
-                    <div>
+                    <div className="boxRow">
                         <button
                             className="buttonTab"
                             onClick={(e) => setTab('cheques')}
@@ -1780,6 +1846,16 @@ export const FormOperacaoCheque = () => {
                         >
                             Devolvidos
                         </button>
+                        <div id="divConcentracao">
+                            <label>Cheques a vencer do Emitente</label>
+                            {quantidadeChequeEmitente}
+                            &nbsp;&nbsp;/&nbsp;&nbsp;R$&nbsp;
+                            {valorTotalChequeEmitente.toLocaleString('pt-BR', {
+                                style: 'decimal',
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            })}
+                        </div>
                     </div>
                 </div>
                 <div className="boxOpChequeRight">

@@ -207,6 +207,17 @@ export const Menu = () => {
                         >
                             Relatório por Cliente / Emissão op.
                         </Link>
+                        <label>-------------------</label>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-cheque-emitente-vencimento'
+                                )
+                            }
+                        >
+                            Relatório por Emitente
+                        </Link>
                     </ul>
                 </li>
                 <li>
@@ -242,6 +253,17 @@ export const Menu = () => {
                             }
                         >
                             Relatório por Pagamento
+                        </Link>
+                        <label>-------------------</label>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                vefificarPendencia(
+                                    '/relatorio-movimento-cliente-vencimento'
+                                )
+                            }
+                        >
+                            Relatório por Cliente / Vencimento
                         </Link>
                     </ul>
                 </li>
