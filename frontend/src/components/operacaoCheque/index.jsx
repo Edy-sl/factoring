@@ -144,6 +144,7 @@ export const FormOperacaoCheque = () => {
                 if (data.length > 0) {
                     data.map((dados) => {
                         dadosCliente.nome.value = dados.nome;
+                        setNomeEmitente(dados.nome);
 
                         dadosCliente.idCliente.value = dados.idcliente;
                         dadosCliente.jurosMensal.value = dados.taxa_juros;
@@ -1734,7 +1735,6 @@ export const FormOperacaoCheque = () => {
                                         onChange={(e) =>
                                             setNomeEmitente(e.target.value)
                                         }
-                                        onFocus={(e) => completaNome()}
                                     />
                                     <FiSearch
                                         className="icone2"
