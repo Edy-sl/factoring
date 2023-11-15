@@ -18,13 +18,22 @@ export const gravarBordero = (req, res) => {
     const { idFactoring } = req.body;
     const { arrayCheques } = req.body;
     const { arrayDeducao } = req.body;
+    const { observacao_operacao } = req.body;
 
     const sql =
-        'insert into borderos (data, idcliente, data_base, juros, Juros_diario, idfactoring) values (?,?,?,?,?,?)';
+        'insert into borderos (data, idcliente, data_base, juros, Juros_diario, idfactoring, observacao_operacao) values (?,?,?,?,?,?,?)';
 
     db.query(
         sql,
-        [dataCadastro, idcliente, dataBase, juros, jurosDiario, idFactoring],
+        [
+            dataCadastro,
+            idcliente,
+            dataBase,
+            juros,
+            jurosDiario,
+            idFactoring,
+            observacao_operacao,
+        ],
         (err, data) => {
             if (err) return res.json(err);
             gravarCheques(data.insertId, arrayCheques);
@@ -73,11 +82,12 @@ export const alterarBordero = (req, res) => {
     const { idFactoring } = req.body;
     const { arrayCheques } = req.body;
     const { idBordero } = req.body;
+    const { observacao_operacao } = req.body;
 
     const { arrayDeducao } = req.body;
 
     const sql =
-        'update borderos set data = ?, idcliente = ?, data_base = ?, juros = ?, Juros_diario = ?, idfactoring = ? where idbordero = ?';
+        'update borderos set data = ?, idcliente = ?, data_base = ?, juros = ?, Juros_diario = ?, idfactoring = ?, observacao_operacao = ? where idbordero = ?';
 
     db.query(
         sql,
@@ -88,6 +98,7 @@ export const alterarBordero = (req, res) => {
             juros,
             jurosDiario,
             idFactoring,
+            observacao_operacao,
             idBordero,
         ],
         (err, data) => {

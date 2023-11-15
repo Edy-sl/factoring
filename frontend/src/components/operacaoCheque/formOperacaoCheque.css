@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: row;
     background-color: rgb(223, 224, 225);
-    padding: 20px;
+    padding: 10px;
 }
 
 .formOperacaoCheque label {
@@ -170,10 +170,21 @@
     flex-direction: column;
     background-color: rgb(180, 207, 231);
     align-items: center;
-    margin-top: 10px;
     width: 300px;
     height: 40px;
     padding-bottom: 15px;
+    margin-top: 5px;
+}
+#divObs {
+    display: flex;
+    flex-direction: column;
+
+    padding-top: 5px;
+}
+
+#textAreaObs {
+    width: 350px;
+    height: 45px;
 }
 
 @media only screen and (max-width: 700px) {

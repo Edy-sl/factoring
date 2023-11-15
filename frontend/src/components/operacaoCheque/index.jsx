@@ -179,6 +179,7 @@ export const FormOperacaoCheque = () => {
                 )
                 .then(({ data }) => {
                     if (data.length > 0) {
+                        console.log(data);
                         data.map((dados) => {
                             dadosOperacao.nome.value = dados.nome;
                             dadosOperacao.idCliente.value = dados.idcliente;
@@ -189,6 +190,9 @@ export const FormOperacaoCheque = () => {
                             dadosOperacao.jurosMensal.value = dados.juros;
                             dadosOperacao.jurosDiario.value =
                                 dados.juros_diario;
+                            dadosOperacao.txtObs.value =
+                                dados.observacao_operacao;
+
                             console.log(dados.idcliente);
                             listaChequesDevolvidos(dados.idcliente);
                             listaChequesDeduzidos(dados.idbordero);
@@ -203,6 +207,7 @@ export const FormOperacaoCheque = () => {
                         dadosOperacao.txTed.value = '';
                         dadosOperacao.jurosMensal.value = '';
                         dadosOperacao.jurosDiario.value = '';
+                        dadosOperacao.txtObs.value = '';
                     }
                 })
                 .catch(({ data }) => {
@@ -246,6 +251,7 @@ export const FormOperacaoCheque = () => {
                     idFactoring: localStorage.getItem('factoring'),
                     arrayCheques: lancamentos,
                     arrayDeducao: deducao,
+                    observacao_operacao: dadosBordero.txtObs.value,
                 },
                 {
                     headers: {
@@ -280,6 +286,7 @@ export const FormOperacaoCheque = () => {
                     idFactoring: localStorage.getItem('factoring'),
                     arrayCheques: lancamentos,
                     arrayDeducao: deducao,
+                    observacao_operacao: dadosBordero.txtObs.value,
                 },
                 {
                     headers: {
@@ -628,6 +635,7 @@ export const FormOperacaoCheque = () => {
         dadosOperacao.dataBase.value = retornaDataAtual();
         dadosOperacao.dataVencimento.value = retornaDataAtual();
         dadosOperacao.dias.value = '0';
+        dadosOperacao.txtObs.value = '';
     };
 
     const formataValorCheque = () => {
@@ -1001,6 +1009,18 @@ export const FormOperacaoCheque = () => {
         win.document.write('</td>');
         win.document.write('<td>');
         win.document.write('Op: ' + dadosOperacao.operacao.value);
+        win.document.write('</td>');
+        win.document.write('</tr>');
+
+        win.document.write('<tr><td colspan="5" style="text-align : center">');
+        win.document.write(
+            '----------------------------------------------------------------------------------------'
+        );
+        win.document.write('</td ></tr >');
+
+        win.document.write('<tr>');
+        win.document.write('<td colspan="5">');
+        win.document.write('Observação: ' + dadosOperacao.txtObs.value);
         win.document.write('</td>');
         win.document.write('</tr>');
 
@@ -1385,8 +1405,8 @@ export const FormOperacaoCheque = () => {
     };
 
     const completaNome = () => {
-        const dadosCliente = ref.current;
-        dadosCliente.nomeCheque.value = dadosCliente.nome.value;
+        //  const dadosCliente = ref.current;
+        //dadosCliente.nomeCheque.value = dadosCliente.nome.value;
         dadosCliente.nomeCheque.select();
     };
 
@@ -1735,6 +1755,7 @@ export const FormOperacaoCheque = () => {
                                         onChange={(e) =>
                                             setNomeEmitente(e.target.value)
                                         }
+                                        onFocus={(e) => e.target.select()}
                                     />
                                     <FiSearch
                                         className="icone2"
@@ -1827,6 +1848,27 @@ export const FormOperacaoCheque = () => {
                             Incluir
                         </button>
                     </div>
+
+                    <div className="boxRow">
+                        <div id="divObs">
+                            <textarea
+                                name="txtObs"
+                                id="textAreaObs"
+                                placeholder="Observação"
+                            />
+                        </div>
+                        <div id="divConcentracao">
+                            <label>Cheques a vencer do Emitente</label>
+                            {quantidadeChequeEmitente}
+                            &nbsp;&nbsp;/&nbsp;&nbsp;R$&nbsp;
+                            {valorTotalChequeEmitente.toLocaleString('pt-BR', {
+                                style: 'decimal',
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            })}
+                        </div>
+                    </div>
+
                     <div className="boxRow">
                         <button
                             className="buttonTab"
@@ -1846,16 +1888,6 @@ export const FormOperacaoCheque = () => {
                         >
                             Devolvidos
                         </button>
-                        <div id="divConcentracao">
-                            <label>Cheques a vencer do Emitente</label>
-                            {quantidadeChequeEmitente}
-                            &nbsp;&nbsp;/&nbsp;&nbsp;R$&nbsp;
-                            {valorTotalChequeEmitente.toLocaleString('pt-BR', {
-                                style: 'decimal',
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            })}
-                        </div>
                     </div>
                 </div>
                 <div className="boxOpChequeRight">
