@@ -9,6 +9,7 @@ function compara() {}
 export const loginFactoring = async (req, res) => {
     const { nome } = req.body;
     const { senha } = req.body;
+
     const sql =
         'Select * from usuarios, permissoes_usuarios, grupos_permissoes where usuarios.nome= ? and permissoes_usuarios.idusuario = usuarios.idusuario AND grupos_permissoes.idgrupo = permissoes_usuarios.idgrupo';
 
@@ -27,8 +28,8 @@ export const loginFactoring = async (req, res) => {
                             grupo: user.grupo,
                         },
                         SECRET,
-                        { expiresIn: 36000 }
-                    ); //300 segundos 5min.
+                        { expiresIn: 1800 }
+                    ); //1800 segundos 30min.
                     return res.json({
                         auth: true,
                         token,
@@ -44,33 +45,44 @@ export const loginFactoring = async (req, res) => {
     });
 };
 
-//implementar refrash token
-export const loginSemSenha = async (idUsuario) => {
-    const sql =
-        'Select * from usuarios, permissoes_usuarios, grupos_permissoes where usuarios.idusuario = ? and permissoes_usuarios.idusuario = usuarios.idusuario AND grupos_permissoes.idgrupo = permissoes_usuarios.idgrupo';
+export const loginSemSenha = async (req, res) => {
+    const tokenReq = req.headers['x-access-token'];
+    let idUsuario = 0;
+    if (tokenReq) {
+        jwt.verify(tokenReq, SECRET, (err, decoded) => {
+            idUsuario = decoded.userID;
+        });
 
-    db.query(sql, [nome], (err, data) => {
-        if (err) return res.json(err);
+        const sql =
+            'Select * from usuarios, ' +
+            'permissoes_usuarios, grupos_permissoes ' +
+            'where usuarios.idusuario = ? ' +
+            'and permissoes_usuarios.idusuario = usuarios.idusuario ' +
+            'and grupos_permissoes.idgrupo = permissoes_usuarios.idgrupo';
 
-        if (data.length > 0) {
-            data.map(async (user) => {
-                const token = jwt.sign(
-                    {
-                        userID: user.idusuario,
-                        nome: user.nome,
-                        grupo: user.grupo,
-                    },
-                    SECRET,
-                    { expiresIn: 20 }
-                ); //300 segundos 5min.
-                return res.json({
-                    auth: true,
-                    token,
-                    factoring: user.idfactoring,
+        db.query(sql, [idUsuario], (err, data) => {
+            if (err) return res.json(err);
+
+            if (data.length > 0) {
+                data.map(async (user) => {
+                    const token = jwt.sign(
+                        {
+                            userID: user.idusuario,
+                            nome: user.nome,
+                            grupo: user.grupo,
+                        },
+                        SECRET,
+                        { expiresIn: 1800 }
+                    ); //1800 segundos 30 minutos
+                    return res.json({
+                        auth: true,
+                        token,
+                        factoring: user.idfactoring,
+                    });
                 });
-            });
-        } else {
-            if (err) return res.status(401).json('Token invalido!').end();
-        }
-    });
+            } else {
+                return res.status(301).json('Token invalido!');
+            }
+        });
+    }
 };

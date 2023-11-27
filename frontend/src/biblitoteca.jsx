@@ -26,11 +26,49 @@ export const cpfCnpjMask = (value) => {
     }
 };
 
-export const keyDown = (e, elemento) => {
+export const keyDown = (e, elemento, target, elemento2, elemento3) => {
+    if (target == 'emitente' && e.key == 'ArrowDown') {
+        if (document.getElementById(elemento2)) {
+            document.getElementById(elemento2).focus();
+        }
+    }
+
+    if (target == 'emitente' && e.key == 'ArrowUp') {
+        if (document.getElementById(elemento3)) {
+            document.getElementById(elemento3).focus();
+        }
+    }
+
+    if (target == 'cliente' && e.key == 'ArrowDown') {
+        if (document.getElementById(elemento2)) {
+            document.getElementById(elemento2).focus();
+        }
+    }
+
+    if (target == 'cliente' && e.key == 'ArrowUp') {
+        if (document.getElementById(elemento3)) {
+            document.getElementById(elemento3).focus();
+        }
+    }
+
+    if (target == 'credor' && e.key == 'ArrowDown') {
+        if (document.getElementById(elemento2)) {
+            document.getElementById(elemento2).focus();
+        }
+    }
+
+    if (target == 'credor' && e.key == 'ArrowUp') {
+        if (document.getElementById(elemento3)) {
+            document.getElementById(elemento3).focus();
+        }
+    }
+
     if (e.key === 'Enter') {
         e.preventDefault();
-
         document.getElementById(elemento).focus();
+        if (document.getElementById(elemento).select) {
+            document.getElementById(elemento).select();
+        }
     }
 };
 

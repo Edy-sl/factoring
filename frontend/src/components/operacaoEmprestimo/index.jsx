@@ -25,13 +25,25 @@ import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import extenso from 'extenso';
 import { EditarParcela } from '../editarParcela';
 import { useNavigate } from 'react-router-dom';
+import { BuscaClienteNomeDireto } from '../buscaClienteNome';
+import { BuscaCredorNome } from '../buscaCredorNome';
 
 export const FormOperacionalEmprestimo = () => {
     const navigate = useNavigate();
 
     const ref = useRef();
 
-    const [buscaCredor, setBuscaCredor] = useState();
+    const [clientes, setClientes] = useState([]);
+
+    const [formBuscaDireto, setFormBuscaDireto] = useState(false);
+
+    const [clienteFiltrado, setClienteFiltrado] = useState([]);
+
+    const [credorFiltrado, setCredorFiltrado] = useState([]);
+
+    const [buscaCredor, setBuscaCredor] = useState(false);
+
+    const [credor, setCredor] = useState([]);
 
     const [arrayParcelas, setArrayParcelas] = useState([]);
 
@@ -101,11 +113,9 @@ export const FormOperacionalEmprestimo = () => {
 
         calculoPrestacao.map((calculos) => {
             if (checkPrestacao) {
-                console.log(checkPrestacao);
                 valorPrestacao = calculos[0].prestacao;
                 valorTotalJuros = calculos[0].valorTotalJuros;
 
-                console.log(valorTotalJuros);
                 valorTotal = calculos[0].valorTotal;
 
                 dadosEmprestimo.valorParcela.value = (
@@ -124,7 +134,6 @@ export const FormOperacionalEmprestimo = () => {
                         }
                     );
 
-                console.log(valorTotalJuros);
                 dadosEmprestimo.valorTotalJuros.value = (
                     valorTotalJuros * 1
                 ).toLocaleString('pt-BR', {
@@ -143,12 +152,8 @@ export const FormOperacionalEmprestimo = () => {
                     dadosEmprestimo.valorParcela.value
                 );
 
-                console.log(valorPrestacao);
                 valorTotal = valorPrestacao * parcela;
                 var taxaJuros = valorTotal / valorPrestacao;
-                //valor total soma as parcelas
-
-                console.log(valorTotal);
 
                 dadosEmprestimo.valorInicial.value =
                     dadosEmprestimo.valorEmprestimo.value.toLocaleString(
@@ -160,9 +165,6 @@ export const FormOperacionalEmprestimo = () => {
                     );
 
                 valorTotalJuros = valorTotal - capital;
-
-                console.log(valorTotal);
-                console.log(valorTotalJuros);
 
                 dadosEmprestimo.valorTotalJuros.value =
                     valorTotalJuros.toLocaleString('pt-BR', {
@@ -415,8 +417,6 @@ export const FormOperacionalEmprestimo = () => {
 
                         valorTotalEmprestimo = dados.valor_emprestimo * 1;
 
-                        console.log(valorTotalEmprestimo);
-
                         dadosEmprestimo.nomeClienteEmprestimo.value =
                             dados.nome;
                         setCnpjCpfCredor(dados.cnpj_cpf_credor);
@@ -511,9 +511,6 @@ export const FormOperacionalEmprestimo = () => {
                         ];
                     });
 
-                    console.log(valorTotal);
-                    console.log(valorTotalEmprestimo);
-
                     dadosEmprestimo.valorTotal.value =
                         valorTotal.toLocaleString('pt-BR', {
                             style: 'decimal',
@@ -597,7 +594,6 @@ export const FormOperacionalEmprestimo = () => {
         const dadosCredor = ref.current;
         let vCpfCnpj = dadosCredor.cnpjCpfCredor.value;
         setCnpjCpfCredor(cpfCnpjMask(vCpfCnpj));
-        setBuscaCredor(!buscaCredor);
     };
 
     const limpar = () => {
@@ -631,7 +627,6 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     const sair = () => {
-        console.log('sair');
         localStorage.setItem('gravarDoc', false);
         navigate('/');
     };
@@ -667,6 +662,40 @@ export const FormOperacionalEmprestimo = () => {
         //  setVlimpo('');
     };
 
+    const listaClientes = async () => {
+        await apiFactoring
+            .post(
+                '/lista-clientes',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setClientes(data);
+                setCredor(data);
+            })
+            .catch((error) => {});
+    };
+
+    const FiltraCliente = (busca) => {
+        setClienteFiltrado(
+            clientes.filter((C) =>
+                C.nome.toUpperCase().includes(busca.toUpperCase())
+            )
+        );
+    };
+
+    const FiltraCredor = (busca) => {
+        setCredorFiltrado(
+            credor.filter((C) =>
+                C.nome.toUpperCase().includes(busca.toUpperCase())
+            )
+        );
+    };
+
     useEffect(() => {
         buscaParcelas();
     }, [atualizaParcelas]);
@@ -681,7 +710,6 @@ export const FormOperacionalEmprestimo = () => {
 
     useEffect(() => {
         //  atualizarEmprestimo();
-        console.log(valorAtualizado);
     }, [valorAtualizado]);
 
     useEffect(() => {
@@ -690,11 +718,12 @@ export const FormOperacionalEmprestimo = () => {
         dadosEmprestimo.dataBase.value = retornaDataAtual();
         setIntervalo('0');
         setIdEmprestimo('0');
+        listaClientes();
     }, []);
 
     useEffect(() => {
         buscaCliente();
-    }, [buscaCredor]);
+    }, [cnpjCpfCredor]);
 
     const imprimirPromissoria = () => {
         const dadosEmprestimo = ref.current;
@@ -707,7 +736,6 @@ export const FormOperacionalEmprestimo = () => {
         const valorParcela = extenso(dadosEmprestimo.valorParcela.value, {
             mode: 'currency',
         });
-        console.log(dadosEmprestimo.valorParcela.value);
 
         const cnpj_cpf = dadosCliente.cnpj_cpf;
         const rua = dadosCliente.rua;
@@ -761,7 +789,7 @@ export const FormOperacionalEmprestimo = () => {
             win.document.write(
                 'Vencimento: ' + inverteData(item.data_vencimento)
             );
-            console.log(item.data_vencimento);
+
             win.document.write('</td>');
             win.document.write('</tr>');
             ///
@@ -907,7 +935,23 @@ export const FormOperacionalEmprestimo = () => {
         win.document.write(
             '----------------------------------------------------------------------------------------'
         );
-        win.document.write('</tr ><td>');
+        win.document.write('</td></tr >');
+
+        win.document.write('<tr>');
+        win.document.write('<td colspan="3">');
+
+        win.document.write(
+            'Observação: ' + dadosEmprestimo.obsEmprestimo.value.toLowerCase()
+        );
+        win.document.write('</td>');
+        win.document.write('</tr>');
+
+        win.document.write('<tr ><td colspan="4" style="text-align : center">');
+        win.document.write(
+            '----------------------------------------------------------------------------------------'
+        );
+        win.document.write('</td></tr >');
+
         win.document.write('<tr>');
         win.document.write(
             '<td width="80" style="text-align: center;">Parcela'
@@ -1009,7 +1053,6 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     const confirmaExclusaoEmprestimo = async (emprestimo) => {
-        console.log(emprestimo);
         await apiFactoring
             .post(
                 '/excluir-emprestimo',
@@ -1033,8 +1076,6 @@ export const FormOperacionalEmprestimo = () => {
 
     const toogle = () => {
         setCheckPrestacao(!checkPrestacao);
-
-        console.log(checkPrestacao);
     };
 
     return (
@@ -1145,42 +1186,73 @@ export const FormOperacionalEmprestimo = () => {
                                 onKeyDown={(e) =>
                                     keyDown(e, 'inputIdClienteEmprestimo')
                                 }
+                                onFocus={(e) => e.target.select()}
+                                autoCapitalize="off"
                             />
                             <FiSearch
                                 className="icone2"
                                 onClick={exibirBuscaEmprestimo}
                             />
-                            <input type="date" name="dataCadastro" readOnly />
+                            <input
+                                type="date"
+                                name="dataCadastro"
+                                readOnly
+                                onKeyDown={(e) =>
+                                    keyDown(e, 'inputIdClienteEmprestimo')
+                                }
+                            />
                         </div>
                         <label className="labelOperacionalEmprestimo">
                             Cliente
                         </label>
                         <div className="boxRow">
-                            <input
-                                id="inputIdClienteEmprestimo"
-                                name="idClienteEmprestimo"
-                                type="text"
-                                value={idCliente || ''}
-                                onChange={(e) => setIdCliente(e.target.value)}
-                                placeholder=""
-                                onKeyDown={(e) => keyDown(e, 'inputCliente')}
-                                onBlur={buscaClienteCodigo}
-                            />
-                            <input
-                                id="inputCliente"
-                                name="nomeClienteEmprestimo"
-                                type="text"
-                                placeholder=""
-                                onKeyDown={(e) =>
-                                    keyDown(e, 'inputCnpjCpfCredor')
-                                }
-                            />
-                            {!onEdit == true && (
-                                <FiSearch
-                                    className="icone2"
-                                    onClick={exibeFormBusca}
+                            <div className="boxRow">
+                                <input
+                                    id="inputIdClienteEmprestimo"
+                                    name="idClienteEmprestimo"
+                                    type="text"
+                                    value={idCliente || ''}
+                                    onChange={(e) =>
+                                        setIdCliente(e.target.value)
+                                    }
+                                    placeholder=""
+                                    onKeyDown={(e) =>
+                                        keyDown(e, 'inputCliente')
+                                    }
+                                    onBlur={buscaClienteCodigo}
                                 />
-                            )}
+                            </div>
+                            <div className="boxCol">
+                                <input
+                                    id="inputCliente"
+                                    name="nomeClienteEmprestimo"
+                                    type="text"
+                                    placeholder=""
+                                    autoComplete="off"
+                                    spellCheck="false"
+                                    onKeyDown={(e) =>
+                                        keyDown(
+                                            e,
+                                            'inputCnpjCpfCredor',
+                                            'cliente',
+                                            'inputCliente0'
+                                        )
+                                    }
+                                    onChange={(e) => {
+                                        FiltraCliente(e.target.value);
+                                        setFormBuscaDireto(true);
+                                    }}
+                                    onFocus={(e) => e.target.select()}
+                                />
+                                {formBuscaDireto == true && (
+                                    <BuscaClienteNomeDireto
+                                        clienteFiltrado={clienteFiltrado}
+                                        setIdCliente={setIdCliente}
+                                        setFormBuscaDireto={setFormBuscaDireto}
+                                        setClienteFiltrado={setClienteFiltrado}
+                                    />
+                                )}
+                            </div>
                         </div>
                         <div className="boxRow">
                             <div className="boxCol">
@@ -1191,11 +1263,15 @@ export const FormOperacionalEmprestimo = () => {
                                     type="text"
                                     value={cnpjCpfCredor || ''}
                                     placeholder=""
+                                    autoComplete="off"
                                     onChange={(e) => {
                                         setCnpjCpfCredor(e.target.value);
                                     }}
                                     onBlur={formataCpfCnpj}
                                     onKeyDown={(e) => keyDown(e, 'inputCredor')}
+                                    onFocus={(e) => {
+                                        setFormBuscaDireto(false);
+                                    }}
                                 />
                             </div>
                             <div className="boxCol">
@@ -1204,10 +1280,31 @@ export const FormOperacionalEmprestimo = () => {
                                     type="text"
                                     id="inputCredor"
                                     name="nomeCredor"
-                                    onKeyDown={(e) =>
-                                        keyDown(e, 'inputValorEmprestimo')
-                                    }
+                                    autoComplete="off"
+                                    spellCheck="false"
+                                    onKeyDown={(e) => {
+                                        keyDown(
+                                            e,
+                                            'inputValorEmprestimo',
+                                            'credor',
+                                            'inputCredor0'
+                                        );
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.select();
+                                    }}
+                                    onChange={(e) => {
+                                        FiltraCredor(e.target.value);
+                                        setBuscaCredor(true);
+                                    }}
                                 />
+                                {buscaCredor == true && (
+                                    <BuscaCredorNome
+                                        credorFiltrado={credorFiltrado}
+                                        setCnpjCpfCredor={setCnpjCpfCredor}
+                                        setBuscaCredor={setBuscaCredor}
+                                    />
+                                )}
                             </div>
                         </div>
                         <div className="boxRow">
@@ -1247,6 +1344,9 @@ export const FormOperacionalEmprestimo = () => {
                                     onKeyDown={(e) =>
                                         keyDown(e, 'inputQtdParcelas')
                                     }
+                                    onFocus={(e) => {
+                                        setFormBuscaDireto(false);
+                                    }}
                                 />
                             </div>
                             <div className="boxCol">
@@ -1259,6 +1359,9 @@ export const FormOperacionalEmprestimo = () => {
                                     onKeyDown={(e) =>
                                         keyDown(e, 'inputDataBase')
                                     }
+                                    onFocus={(e) => {
+                                        setFormBuscaDireto(false);
+                                    }}
                                 />
                             </div>
                         </div>
@@ -1328,7 +1431,7 @@ export const FormOperacionalEmprestimo = () => {
                                 </button>
                             )}
                         </div>
-                        <textarea id="obsEmprestimo" />
+                        <textarea id="obsEmprestimo" spellCheck="false" />
                     </div>
                     <div className="boxRight">
                         <div className="boxResumoOpE">

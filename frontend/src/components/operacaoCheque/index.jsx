@@ -23,9 +23,14 @@ import axios from 'axios';
 import { ImBin, ImExit } from 'react-icons/im';
 import { useNavigate } from 'react-router-dom';
 import { BuscaEmitente } from '../buscaEmitente';
+import { BuscaClienteNomeDireto } from '../buscaClienteNome';
 
 export const FormOperacaoCheque = () => {
     const navigate = useNavigate();
+
+    const [clienteFiltrado, setClienteFiltrado] = useState([]);
+
+    const [emitenteFiltrado, setEmitenteFiltrado] = useState([]);
 
     const [formatarCheque, setFormatarCheque] = useState(true);
 
@@ -80,6 +85,12 @@ export const FormOperacaoCheque = () => {
     const [idCliente, setIdCliente] = useState();
 
     const [tab, setTab] = useState('cheques');
+
+    const [clientes, setClientes] = useState([]);
+
+    const [emitente, setEmitente] = useState([]);
+
+    const [formBuscaDireto, setFormBuscaDireto] = useState(false);
 
     const ref = useRef();
 
@@ -148,7 +159,7 @@ export const FormOperacaoCheque = () => {
 
                         dadosCliente.idCliente.value = dados.idcliente;
                         dadosCliente.jurosMensal.value = dados.taxa_juros;
-                        document.getElementById('inputIdCliente').focus();
+                        // document.getElementById('inputIdCliente').focus();
                         setEspecial(dados.especial);
                         listaChequesDevolvidos(dados.idcliente);
                     });
@@ -179,7 +190,6 @@ export const FormOperacaoCheque = () => {
                 )
                 .then(({ data }) => {
                     if (data.length > 0) {
-                        console.log(data);
                         data.map((dados) => {
                             dadosOperacao.nome.value = dados.nome;
                             dadosOperacao.idCliente.value = dados.idcliente;
@@ -193,7 +203,6 @@ export const FormOperacaoCheque = () => {
                             dadosOperacao.txtObs.value =
                                 dados.observacao_operacao;
 
-                            console.log(dados.idcliente);
                             listaChequesDevolvidos(dados.idcliente);
                             listaChequesDeduzidos(dados.idbordero);
                         });
@@ -221,13 +230,10 @@ export const FormOperacaoCheque = () => {
             gravarBorderdo();
 
             BuscaCheques();
-            console.log('gravar novo...');
         }
 
         if (onEdit == true) {
             alterarBorderdo();
-
-            console.log('gravar alteracao');
         }
     };
 
@@ -265,8 +271,6 @@ export const FormOperacaoCheque = () => {
             .catch((error) => {
                 toast.error(error.response.data);
             });
-
-        console.log(lancamentos);
     };
 
     const gravarBorderdo = async () => {
@@ -349,13 +353,9 @@ export const FormOperacaoCheque = () => {
                 }
             })
             .catch();
-
-        console.log(lancamentos);
     };
 
     const incluirCheque = () => {
-        console.log('aqui..' + varIncluirCheque);
-
         const dadosLancamento = ref.current;
         setGravarDoc(true);
         localStorage.setItem('gravarDoc', true);
@@ -391,10 +391,6 @@ export const FormOperacaoCheque = () => {
                 checado = false;
             }
             if (checado == true) {
-                console.log(lancamentos);
-
-                console.log(arrayCheques);
-
                 arrayCheques = [
                     ...lancamentos,
                     {
@@ -442,7 +438,6 @@ export const FormOperacaoCheque = () => {
                 document.getElementById('inputTxTed').focus();
             }
         } else {
-            console.log('aqui..**************' + varIncluirCheque);
             localStorage.setItem('gravarDoc', true);
 
             dadosLancamento.btnIncluirLancamento.innerText = 'Incluir';
@@ -451,12 +446,8 @@ export const FormOperacaoCheque = () => {
     };
 
     const gravarAlteracaoCheque = (idIndexCheque) => {
-        console.log('gravar alteração');
-
         setGravarDoc(true);
         localStorage.setItem('gravarDoc', true);
-
-        console.log(idIndexCheque);
 
         const dadosLancamento = ref.current;
 
@@ -484,8 +475,6 @@ export const FormOperacaoCheque = () => {
                 );
             }
         }
-
-        console.log(lancamentos);
 
         arrayCheques = [...lancamentos];
         setLancamentos(arrayCheques);
@@ -558,11 +547,9 @@ export const FormOperacaoCheque = () => {
 
         //calcula juros
         const valorJurosCliente = (dias * jurosDiario * valorCheque) / 100;
-        console.log(valorJurosCliente + ' cliente');
 
         //calcula juros minimo pela taxa da factoring
         const valorJurosMinimo = (taxaMinima * valorCheque) / 100;
-        console.log(valorJurosMinimo + ' empresa');
 
         if (especial != 'SIM' && valorJurosMinimo > valorJurosCliente) {
             valorJuros = valorJurosMinimo;
@@ -694,7 +681,6 @@ export const FormOperacaoCheque = () => {
         const jurosDiario = dadosJuros.jurosDiario.value;
 
         let valorJuros = 0;
-        console.log(dias);
 
         //calcula juros
         const valorJurosCliente = (dias * jurosDiario * valorCheque) / 100;
@@ -704,17 +690,14 @@ export const FormOperacaoCheque = () => {
 
         if (especial != 'SIM' && valorJurosMinimo > valorJurosCliente) {
             valorJuros = valorJurosMinimo;
-            console.log('especial - nao . jm > jc ' + valorJuros);
         }
 
         if (especial != 'SIM' && valorJurosMinimo < valorJurosCliente) {
             valorJuros = valorJurosCliente;
-            console.log('especial - nao . jm < jc ' + valorJuros);
         }
 
         if (especial == 'SIM') {
             valorJuros = valorJurosCliente;
-            console.log('especial - sim . jm = jc ' + valorJuros);
         }
 
         return valorJuros;
@@ -731,8 +714,6 @@ export const FormOperacaoCheque = () => {
 
     const buscaBancos = (codigo) => {
         const dadosBanco = ref.current;
-
-        console.log(codigo);
 
         const bancoFiltrado = arrayBancos.filter((b) => b.code === codigo * 1);
         dadosBanco.banco.value = '';
@@ -834,8 +815,6 @@ export const FormOperacaoCheque = () => {
         setGravarDoc(true);
         localStorage.setItem('gravarDoc', true);
 
-        console.log(id);
-
         const dadosLancamento = ref.current;
         dadosLancamento.btnIncluirLancamento.innerText = 'Alterar';
 
@@ -847,7 +826,8 @@ export const FormOperacaoCheque = () => {
             dadosLancamento.numeroBanco.value = lanc.numero_banco;
             dadosLancamento.banco.value = lanc.nome_banco;
             dadosLancamento.numeroCheque.value = lanc.numero_cheque;
-            dadosLancamento.nomeCheque.value = lanc.nome_cheque;
+            setNomeEmitente(lanc.nome_cheque);
+            // dadosLancamento.nomeCheque.value = lanc.nome_cheque;
             dadosLancamento.dataVencimento.value = lanc.data_vencimento;
             dadosLancamento.valorCheque.value = (
                 lanc.valor_cheque * 1
@@ -900,74 +880,70 @@ export const FormOperacaoCheque = () => {
     };
 
     const excluirCheque = async (id) => {
-        //varIncluirCheque = false;
-        setVarIncluirCheque(true);
+        if (confirm('Confirmar exclusão do Cheque?')) {
+            //varIncluirCheque = false;
+            setVarIncluirCheque(true);
 
-        setGravarDoc(true);
-        localStorage.setItem('gravarDoc', true);
+            setGravarDoc(true);
+            localStorage.setItem('gravarDoc', true);
 
-        const dadosLancamento = ref.current;
-        if (onEdit) {
-            await apiFactoring
-                .post(
-                    '/excluir-cheque',
-                    { idlancamento: lancamentos[id].idlancamento },
-                    {
-                        headers: {
-                            'x-access-token': localStorage.getItem('user'),
+            const dadosLancamento = ref.current;
+            if (onEdit) {
+                await apiFactoring
+                    .post(
+                        '/excluir-cheque',
+                        { idlancamento: lancamentos[id].idlancamento },
+                        {
+                            headers: {
+                                'x-access-token': localStorage.getItem('user'),
+                            },
+                        }
+                    )
+                    .then(({ data }) => {
+                        toast.success(data);
+
+                        const lancamentoFiltrado = lancamentos.filter(
+                            (l) => l.index != id * 1
+                        );
+
+                        arrayCheques = [...lancamentoFiltrado];
+                        setLancamentos(arrayCheques);
+                        //  BuscaCheques();
+                    })
+                    .catch((err) => {
+                        toast.error(err.response.data);
+                    });
+            }
+            if (!onEdit) {
+                const lancamentoFiltrado = lancamentos.filter(
+                    (l) => l.index != id * 1
+                );
+
+                arrayCheques = [];
+                lancamentoFiltrado.map((lanc, index) => {
+                    arrayCheques = [
+                        ...arrayCheques,
+                        {
+                            index: index,
+                            idlancamento: lanc.idlancamento,
+                            numero_banco: lanc.numero_banco,
+                            nome_banco: lanc.nome_banco,
+                            numero_cheque: lanc.numero_cheque,
+                            nome_cheque: lanc.nome_cheque,
+                            data_vencimento: lanc.data_vencimento,
+                            status: lanc.status,
+                            taxa_ted: lanc.taxa_ted,
+                            valor_cheque: lanc.valor_cheque,
+                            dias: lanc.dias,
+                            valor_juros: lanc.valor_juros,
+                            valor_liquido: lanc.valor_liquido,
+                            idBordero: lanc.idBordero,
                         },
-                    }
-                )
-                .then(({ data }) => {
-                    toast.success(data);
-
-                    const lancamentoFiltrado = lancamentos.filter(
-                        (l) => l.index != id * 1
-                    );
-
-                    arrayCheques = [...lancamentoFiltrado];
-                    setLancamentos(arrayCheques);
-                    //  BuscaCheques();
-                })
-                .catch((err) => {
-                    toast.error(err.response.data);
+                    ];
                 });
-        }
-        if (!onEdit) {
-            console.log(id);
 
-            const lancamentoFiltrado = lancamentos.filter(
-                (l) => l.index != id * 1
-            );
-
-            console.log(lancamentoFiltrado);
-
-            arrayCheques = [];
-            lancamentoFiltrado.map((lanc, index) => {
-                arrayCheques = [
-                    ...arrayCheques,
-                    {
-                        index: index,
-                        idlancamento: lanc.idlancamento,
-                        numero_banco: lanc.numero_banco,
-                        nome_banco: lanc.nome_banco,
-                        numero_cheque: lanc.numero_cheque,
-                        nome_cheque: lanc.nome_cheque,
-                        data_vencimento: lanc.data_vencimento,
-                        status: lanc.status,
-                        taxa_ted: lanc.taxa_ted,
-                        valor_cheque: lanc.valor_cheque,
-                        dias: lanc.dias,
-                        valor_juros: lanc.valor_juros,
-                        valor_liquido: lanc.valor_liquido,
-                        idBordero: lanc.idBordero,
-                    },
-                ];
-            });
-
-            console.log(arrayCheques);
-
-            setLancamentos(arrayCheques);
+                setLancamentos(arrayCheques);
+            }
         }
     };
 
@@ -975,7 +951,6 @@ export const FormOperacaoCheque = () => {
         const dadosOperacao = ref.current;
 
         let jurosTotal = converteMoedaFloat(dadosOperacao.totalJuros.value);
-        console.log(jurosTotal);
 
         const win = window.open('', '', 'heigth=700, width=700');
         win.document.write('<html>');
@@ -1129,7 +1104,7 @@ export const FormOperacaoCheque = () => {
         let jurosDevolucao = 0;
         deducao.map((ded, index) => {
             jurosDevolucao = jurosDevolucao * 1 + ded.juros_devolucao * 1;
-            console.log(jurosDevolucao);
+
             win.document.write('<tr>');
             win.document.write('<td>');
             win.document.write(ded.numero_cheque);
@@ -1284,15 +1259,13 @@ export const FormOperacaoCheque = () => {
                 });
 
                 setDevolvidos(arrayDevolvidos);
-
-                console.log(arrayDevolvidos);
             })
             .catch();
     };
 
     const listaChequesDeduzidos = async (idBordero) => {
         let arrayDeduzidos = [];
-        console.log(idBordero);
+
         await apiFactoring
             .post(
                 '/lista-cheques-deduzidos',
@@ -1304,7 +1277,6 @@ export const FormOperacaoCheque = () => {
                 }
             )
             .then(({ data }) => {
-                console.log(data);
                 data.map((item) => {
                     let dias = calculaDiasDevolucao(item.data_devolucao);
                     let juros_devolucao = calculaValorJurosDevolucao(
@@ -1331,8 +1303,6 @@ export const FormOperacaoCheque = () => {
                 });
 
                 setDeducao(arrayDeduzidos);
-
-                console.log(arrayDeduzidos);
             })
             .catch();
     };
@@ -1341,8 +1311,6 @@ export const FormOperacaoCheque = () => {
         const filtradoDevolvidos = devolvidos.filter(
             (l) => l.idlancamento === id * 1
         );
-
-        console.log(filtradoDevolvidos);
 
         arrayDeducao = [
             ...deducao,
@@ -1365,16 +1333,12 @@ export const FormOperacaoCheque = () => {
             (arrayDev) => arrayDev.idlancamento !== id
         );
 
-        console.log(newArray);
-
         setDevolvidos(newArray);
 
         setDeducao(arrayDeducao);
     };
 
     const removeDeducao = (id, index) => {
-        console.log(id);
-
         const filtradoDevolvidos = deducao.filter(
             (l) => l.idlancamento === id * 1
         );
@@ -1434,7 +1398,7 @@ export const FormOperacaoCheque = () => {
             .then(({ data }) => {
                 let valorChequeEmitente = 0;
                 setQuantidadeChequeEmitente(data.length);
-                console.log(data);
+
                 data.map((item) => {
                     valorChequeEmitente =
                         valorChequeEmitente + item.valor_cheque * 1;
@@ -1447,13 +1411,68 @@ export const FormOperacaoCheque = () => {
     };
 
     const sair = () => {
-        console.log('sair');
         localStorage.setItem('gravarDoc', false);
         navigate('/');
     };
 
+    const listaClientes = async () => {
+        await apiFactoring
+            .post(
+                '/lista-clientes',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setClientes(data);
+            })
+            .catch((error) => {});
+    };
+
+    const buscaEmitente = async () => {
+        await apiFactoring
+            .post(
+                '/lista-emitentes',
+                { emitente: '' },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setEmitente(data);
+            })
+            .catch((error) => {
+                toast.error(error.response.status);
+
+                signOut();
+            });
+    };
+
+    const FiltraCliente = (busca) => {
+        setClienteFiltrado(
+            clientes.filter((C) =>
+                C.nome.toUpperCase().includes(busca.toUpperCase())
+            )
+        );
+    };
+
+    const FiltraEmitente = (busca) => {
+        setEmitenteFiltrado(
+            emitente.filter((E) =>
+                E.nome_cheque.toUpperCase().includes(busca.toUpperCase())
+            )
+        );
+    };
+
     useEffect(() => {
         vefificaPermissao();
+        listaClientes();
+        buscaEmitente();
     }, []);
 
     useEffect(() => {
@@ -1506,13 +1525,6 @@ export const FormOperacaoCheque = () => {
                         setIdOperacao={setIdBordero}
                     />
                 </AuthProvider>
-            )}
-
-            {formBuscaEmitente == true && (
-                <BuscaEmitente
-                    setFormBusca={setFormBuscaEmitente}
-                    setNomeEmitente={setNomeEmitente}
-                />
             )}
 
             <form
@@ -1574,8 +1586,11 @@ export const FormOperacaoCheque = () => {
                                 readOnly
                             />
                         </div>
+                        <div className="boxRow">
+                            {' '}
+                            <label>Cliente</label>
+                        </div>
 
-                        <label>Cliente</label>
                         <div className="boxRow">
                             <input
                                 type="text"
@@ -1585,18 +1600,37 @@ export const FormOperacaoCheque = () => {
                                 onKeyDown={(e) => keyDown(e, 'inputCliente')}
                                 onChange={(e) => setIdCliente(e.target.value)}
                             />
+                        </div>
+                        <div className="boxCol">
                             <input
                                 id="inputCliente"
                                 type="text"
                                 name="nome"
                                 placeholder=""
-                                onKeyDown={(e) => keyDown(e, 'inputDataBase')}
+                                spellCheck="false"
                                 autoComplete="off"
+                                onKeyDown={(e) =>
+                                    keyDown(
+                                        e,
+                                        'inputDataBase',
+                                        'cliente',
+                                        'inputCliente0'
+                                    )
+                                }
+                                onChange={(e) => {
+                                    setFormBuscaDireto(true);
+                                    FiltraCliente(e.target.value);
+                                }}
+                                onFocus={(e) => e.target.select()}
                             />
-                            <FiSearch
-                                className="icone2"
-                                onClick={exibeFormBusca}
-                            />
+                            {formBuscaDireto == true && (
+                                <BuscaClienteNomeDireto
+                                    clienteFiltrado={clienteFiltrado}
+                                    setIdCliente={setIdCliente}
+                                    setFormBuscaDireto={setFormBuscaDireto}
+                                    setClienteFiltrado={setClienteFiltrado}
+                                />
+                            )}
                         </div>
                     </div>
                     <div className="boxRow">
@@ -1610,6 +1644,9 @@ export const FormOperacaoCheque = () => {
                                 onChange={calculaDias}
                                 onKeyDown={(e) => keyDown(e, 'inputTxTed')}
                                 autoComplete="off"
+                                onFocus={(e) => {
+                                    setFormBuscaDireto(false);
+                                }}
                             />
                         </div>
                         <div className="boxCol">
@@ -1623,7 +1660,10 @@ export const FormOperacaoCheque = () => {
                                 autoComplete="off"
                                 onBlur={formataValorTaxa}
                                 onChange={calculaValorJuros}
-                                onFocus={(e) => e.target.select()}
+                                onFocus={(e) => {
+                                    e.target.select();
+                                    setFormBuscaDireto(false);
+                                }}
                             />
                         </div>
                         <div className="boxCol">
@@ -1637,7 +1677,10 @@ export const FormOperacaoCheque = () => {
                                 onChange={calculaJurosDiario}
                                 onKeyDown={(e) => keyDown(e, 'inputJurosD')}
                                 onBlur={formataJurosMensal}
-                                onFocus={formataJurosMensalOnFocus}
+                                onFocus={(e) => {
+                                    formataJurosMensalOnFocus();
+                                    setFormBuscaDireto(false);
+                                }}
                                 readOnly
                                 autoComplete="off"
                             />
@@ -1650,7 +1693,10 @@ export const FormOperacaoCheque = () => {
                                 type="text"
                                 name="jurosDiario"
                                 placeholder=""
-                                onFocus={calculaJurosDiario}
+                                onFocus={(e) => {
+                                    calculaJurosDiario();
+                                    setFormBuscaDireto(false);
+                                }}
                                 onKeyDown={(e) => keyDown(e, 'inputNbco')}
                                 readOnly
                                 autoComplete="off"
@@ -1677,7 +1723,10 @@ export const FormOperacaoCheque = () => {
                                 onKeyDown={(e) => keyDown(e, 'inputBanco')}
                                 autoComplete="off"
                                 onChange={(e) => buscaBancos(e.target.value)}
-                                onFocus={(e) => e.target.select()}
+                                onFocus={(e) => {
+                                    e.target.select();
+                                    setFormBuscaDireto(false);
+                                }}
                             />
                         </div>
                         <div className="boxCol">
@@ -1700,6 +1749,9 @@ export const FormOperacaoCheque = () => {
                                 <input
                                     type="checkbox"
                                     checked={formatarCheque}
+                                    onChange={(e) =>
+                                        e.target.checked(formatarCheque)
+                                    }
                                     onClick={(e) =>
                                         setFormatarCheque(!formatarCheque)
                                     }
@@ -1749,18 +1801,29 @@ export const FormOperacaoCheque = () => {
                                         value={nomeEmitente}
                                         placeholder="Nome"
                                         onKeyDown={(e) =>
-                                            keyDown(e, 'inputVencimento')
+                                            keyDown(
+                                                e,
+                                                'inputVencimento',
+                                                'emitente',
+                                                'inputEmitente0'
+                                            )
                                         }
                                         autoComplete="off"
-                                        onChange={(e) =>
-                                            setNomeEmitente(e.target.value)
-                                        }
+                                        spellCheck="false"
+                                        onChange={(e) => {
+                                            FiltraEmitente(e.target.value);
+                                            setNomeEmitente(e.target.value);
+                                            setFormBuscaEmitente(true);
+                                        }}
                                         onFocus={(e) => e.target.select()}
                                     />
-                                    <FiSearch
-                                        className="icone2"
-                                        onClick={exibeFormBuscaEmitente}
-                                    />
+                                    {formBuscaEmitente == true && (
+                                        <BuscaEmitente
+                                            setFormBusca={setFormBuscaEmitente}
+                                            setNomeEmitente={setNomeEmitente}
+                                            emitenteFiltrado={emitenteFiltrado}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -1855,6 +1918,8 @@ export const FormOperacaoCheque = () => {
                                 name="txtObs"
                                 id="textAreaObs"
                                 placeholder="Observação"
+                                spellCheck="false"
+                                autoComplete="off"
                             />
                         </div>
                         <div id="divConcentracao">

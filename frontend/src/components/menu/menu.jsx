@@ -6,9 +6,30 @@ import { FiMonitor } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { FormLogin } from '../formLogin';
 import { toast } from 'react-toastify';
+import { apiFactoring } from '../../services/api';
+import { Calculadora } from '../calculadora/calc';
 
 export const Menu = () => {
     const navigate = useNavigate();
+
+    const [calc, setCalc] = useState(false);
+
+    const loginSemSenha = () => {
+        apiFactoring
+            .post(
+                '/login-sem-senha',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                localStorage.setItem('user', data.token);
+            })
+            .catch((err) => signOut());
+    };
 
     const [telaCheia, setTelaCheia] = useState(false);
 
@@ -28,13 +49,19 @@ export const Menu = () => {
         setTelaCheia(!telaCheia);
     };
 
+    const calculadora = () => {
+        setCalc(!calc);
+    };
+
     useEffect(() => {
         fullScreen();
     }, [telaCheia]);
 
-    const vefificarPendencia = (pagina) => {
-        console.log(pagina);
+    setInterval(function () {
+        loginSemSenha();
+    }, 550000);
 
+    const vefificarPendencia = (pagina) => {
         if (pagina == 'sair' && localStorage.getItem('gravarDoc') != 'true') {
             signOut();
         } else {
@@ -49,6 +76,8 @@ export const Menu = () => {
 
     return (
         <div className="">
+            {calc == true && <Calculadora />}
+
             <ul id="nav">
                 <li>
                     <a>Clientes</a>

@@ -123,7 +123,9 @@ rotaFactoring.post(
     verificaPermissao,
     listaUsuarios
 );
+
 rotaFactoring.post('/login', loginFactoring);
+rotaFactoring.post('/login-sem-senha', verifyJWT, loginSemSenha);
 
 rotaFactoring.get('/recupera-senha', recuperaSenha);
 

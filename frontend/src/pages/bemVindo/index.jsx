@@ -1,7 +1,8 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { FormFactoring } from '../../components/formFactoring';
 import { FormLogin } from '../../components/formLogin';
+import { apiFactoring } from '../../services/api';
 
 export const BemVindo = () => {
     const { autenticado, factoring } = useContext(AuthContext);

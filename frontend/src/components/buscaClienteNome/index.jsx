@@ -5,60 +5,56 @@ import { apiFactoring } from '../../services/api';
 import { useEffect, useRef, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { ImExit } from 'react-icons/im';
-import '../buscaClienteNome/buscaClienteDireto.css';
+import './buscaClienteDireto.css';
 import { FormCliente } from '../formCliente';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { keyDown } from '../../biblitoteca';
 
-export const BuscaEmitente = ({
-    setFormBusca,
-    setNomeEmitente,
-    emitenteFiltrado,
+export const BuscaClienteNomeDireto = ({
+    setFormBuscaDireto,
+    setIdCliente,
+    clienteFiltrado,
 }) => {
     const { signOut } = useContext(AuthContext);
-    const [emitente, setEmitente] = useState([]);
+
     const ref = useRef();
-    const dadosCliente = ref.current;
 
     const handleSubmit = (e) => {
         e.preventDefault();
     };
 
-    const handleSel = (nomeEmitente) => {
-        setNomeEmitente(nomeEmitente);
-        setFormBusca(false);
+    const handleSel = (idCli) => {
+        setIdCliente(idCli);
+        setFormBuscaDireto(false);
     };
 
     return (
         <div className="divBuscaNomeDireto">
-            <div className="divResultadoBuscaEmitente">
-                {emitenteFiltrado.map((emitente, index) => (
+            <div className="divResultadoBuscaCliente">
+                {clienteFiltrado.map((cli, index) => (
                     <div
                         className="divNomes"
                         key={index}
-                        onClick={() => handleSel(emitente.nome_cheque)}
+                        onClick={() => handleSel(cli.idcliente)}
                     >
                         <input
                             type="text"
-                            id={`inputEmitente` + index}
-                            $index
-                            value={emitente.nome_cheque}
+                            id={`inputCliente` + index}
+                            value={cli.nome}
                             spellCheck="false"
-                            onChange={(e) =>
-                                e.target.value(emitente.nome_cheque)
-                            }
+                            onChange={(e) => e.target.value(cli.nome)}
                             onKeyDown={(e) => {
                                 keyDown(
                                     e,
-                                    'inputNomeC',
-                                    'emitente',
-                                    `inputEmitente` + (index + 1),
-                                    `inputEmitente` + (index - 1)
+                                    'inputCliente',
+                                    'cliente',
+                                    `inputCliente` + (index + 1),
+                                    `inputCliente` + (index - 1)
                                 );
 
                                 if (e.key === 'Enter') {
-                                    handleSel(emitente.nome_cheque);
+                                    handleSel(cli.idcliente);
                                 }
                             }}
                         />
