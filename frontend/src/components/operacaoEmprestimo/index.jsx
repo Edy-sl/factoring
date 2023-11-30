@@ -767,10 +767,7 @@ export const FormOperacionalEmprestimo = () => {
 
         arrayParcelas.map((item) => {
             win.document.write(
-                '<label>----------------------------------------------</label>'
-            );
-            win.document.write(
-                '<table style="border: solid; padding: 10px; font: 13px Calibri; min-height:325px; max-height:325px;">'
+                '<table border="0" style="border: solid; margin-bottom: 32px; padding: 5px 10px 5px 10px ; font: 13px Calibri; min-height:325px; max-height:325px;">'
             );
             win.document.write('<tr>');
             win.document.write('<td>');
@@ -822,17 +819,15 @@ export const FormOperacionalEmprestimo = () => {
                     '<label style="text-transform: uppercase;font-weight: bold;">' +
                     valorParcela +
                     '</label>' +
-                    ', em moeda corrente desse país<br><br></td></tr>'
+                    ', em moeda corrente desse país</td></tr>'
             );
             //
             win.document.write('<tr>');
-            win.document.write(
-                '<td> Local de pagamento: GUARULHOS SP <br><br></td>'
-            );
+            win.document.write('<td> Local de pagamento: GUARULHOS SP </td>');
             win.document.write(
                 '<td colspan="2">Data de Emissão: ' +
                     inverteData(dadosEmprestimo.dataCadastro.value) +
-                    '<br><br></td>'
+                    '</td>'
             );
             win.document.write('</tr>');
 
@@ -842,7 +837,7 @@ export const FormOperacionalEmprestimo = () => {
                 '<td colspan="2">Nome do Emitente: ' +
                     '<label style="text-transform: uppercase;font-weight: bold;">' +
                     cliente +
-                    '</label><br><br></td>'
+                    '</label></td>'
             );
             win.document.write('</tr>');
 
@@ -1159,9 +1154,11 @@ export const FormOperacionalEmprestimo = () => {
                                 </button>
                             )}
                             {onEdit && (
-                                <button id="btnImprimir" onClick={imprimir}>
-                                    Imprimir
-                                </button>
+                                <>
+                                    <button id="btnImprimir" onClick={imprimir}>
+                                        Imprimir
+                                    </button>
+                                </>
                             )}
                             {onEdit && (
                                 <button
