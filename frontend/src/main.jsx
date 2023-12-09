@@ -44,7 +44,7 @@ import { Conta } from './components/conta/index.jsx';
 import { RelatorioMovimentoPorClienteVencimento } from './components/relatorioMovimentoClienteVencimento/index.jsx';
 import { RelatorioChequePorEmitenteVencimento } from './components/relatorioChequeEmitenteVencimento/index.jsx';
 
-const router = createHashRouter([
+const router = createBrowserRouter([
     {
         path: '/',
         element: (

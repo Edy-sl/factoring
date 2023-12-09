@@ -21,3 +21,12 @@
     background-color: rgba(244, 244, 244, 0.87);
     overflow: scroll;
 }
+
+#divPaginaErro {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
