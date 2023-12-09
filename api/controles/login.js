@@ -28,7 +28,7 @@ export const loginFactoring = async (req, res) => {
                             grupo: user.grupo,
                         },
                         SECRET,
-                        { expiresIn: 1800 }
+                        { expiresIn: 10 }
                     ); //1800 segundos 30min.
                     return res.json({
                         auth: true,
@@ -48,6 +48,9 @@ export const loginFactoring = async (req, res) => {
 export const loginSemSenha = async (req, res) => {
     const tokenReq = req.headers['x-access-token'];
     let idUsuario = 0;
+
+    console.log(tokenReq);
+
     if (tokenReq) {
         jwt.verify(tokenReq, SECRET, (err, decoded) => {
             idUsuario = decoded.userID;
@@ -72,7 +75,7 @@ export const loginSemSenha = async (req, res) => {
                             grupo: user.grupo,
                         },
                         SECRET,
-                        { expiresIn: 1800 }
+                        { expiresIn: 60 }
                     ); //1800 segundos 30 minutos
                     return res.json({
                         auth: true,

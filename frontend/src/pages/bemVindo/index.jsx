@@ -5,7 +5,7 @@ import { FormLogin } from '../../components/formLogin';
 import { apiFactoring } from '../../services/api';
 
 export const BemVindo = () => {
-    const { autenticado, factoring } = useContext(AuthContext);
+    const { autenticado, factoring, tempoLogin } = useContext(AuthContext);
 
     return (
         <>
@@ -16,6 +16,7 @@ export const BemVindo = () => {
             )}
 
             {factoring == 'null' && autenticado && <FormFactoring />}
+            {tempoLogin}
         </>
     );
 };

@@ -11,6 +11,8 @@ export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState();
     const [factoring, setFactoring] = useState(null);
 
+    const [tempoLogin, setTempoLogin] = useState(true);
+
     const navigate = useNavigate();
 
     const signIn = async (DadosLogin) => {
@@ -65,6 +67,46 @@ export const AuthProvider = ({ children }) => {
         window.location.reload();
     };
 
+    const loginSemSenha = async () => {
+        if (
+            localStorage.getItem('user') != null &&
+            localStorage.getItem('user') != ''
+        ) {
+            await apiFactoring
+                .post(
+                    '/login-sem-senha',
+                    {},
+                    {
+                        headers: {
+                            'x-access-token': localStorage.getItem('user'),
+                        },
+                    }
+                )
+                .then(({ data }) => {
+                    setUser(data.token);
+                    setAuth(data.auth);
+                    setFactoring(data.factoring);
+                })
+                .catch((data) => {
+                    toast.error(data);
+                    localStorage.setItem('user', '');
+                    localStorage.setItem('logado', false);
+                    console.log('nao logou');
+                    window.location.reload();
+                });
+        }
+    };
+
+    useEffect(() => {
+        loginSemSenha();
+    }, []);
+
+    setInterval(function () {
+        if (auth == true) {
+            loginSemSenha();
+        }
+    }, 30000); //60000 = 1 minuto
+
     return (
         <AuthContext.Provider
             value={{
@@ -74,6 +116,7 @@ export const AuthProvider = ({ children }) => {
                 user,
                 factoring,
                 setFactoring,
+                tempoLogin,
             }}
         >
             {children}
