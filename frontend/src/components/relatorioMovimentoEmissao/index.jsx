@@ -146,6 +146,10 @@ export const RelatorioMovimentoPorEmissao = () => {
         setIsCheckedDeducao(!isCheckedDeducao);
     };
 
+    useEffect(() => {
+        relatorioPorData();
+    }, []);
+
     return (
         <>
             {' '}

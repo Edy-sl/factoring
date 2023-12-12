@@ -11,8 +11,6 @@ export const AuthProvider = ({ children }) => {
     const [auth, setAuth] = useState();
     const [factoring, setFactoring] = useState(null);
 
-    const [tempoLogin, setTempoLogin] = useState(true);
-
     const navigate = useNavigate();
 
     const signIn = async (DadosLogin) => {
@@ -105,7 +103,7 @@ export const AuthProvider = ({ children }) => {
         if (auth == true) {
             loginSemSenha();
         }
-    }, 30000); //60000 = 1 minuto
+    }, 600000); //600000 = 10 minutos
 
     return (
         <AuthContext.Provider
@@ -116,7 +114,6 @@ export const AuthProvider = ({ children }) => {
                 user,
                 factoring,
                 setFactoring,
-                tempoLogin,
             }}
         >
             {children}

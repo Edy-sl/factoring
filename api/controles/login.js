@@ -28,7 +28,7 @@ export const loginFactoring = async (req, res) => {
                             grupo: user.grupo,
                         },
                         SECRET,
-                        { expiresIn: 10 }
+                        { expiresIn: 1800 }
                     ); //1800 segundos 30min.
                     return res.json({
                         auth: true,
@@ -75,7 +75,7 @@ export const loginSemSenha = async (req, res) => {
                             grupo: user.grupo,
                         },
                         SECRET,
-                        { expiresIn: 60 }
+                        { expiresIn: 1800 }
                     ); //1800 segundos 30 minutos
                     return res.json({
                         auth: true,
