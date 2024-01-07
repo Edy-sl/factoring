@@ -132,16 +132,8 @@ export const FormCliente = () => {
 
         const idFactoring = localStorage.getItem('factoring');
 
-        if (
-            !cnpjCpf ||
-            !nome ||
-            !rua ||
-            !numero ||
-            !bairro ||
-            !cidade ||
-            !uf ||
-            !taxaJuros
-        ) {
+        console.log(nome);
+        if (!cnpjCpf || !nome || !rua || !numero || !bairro || !cidade || !uf) {
             toast.error('( * ) Campos obrigatórios!');
         } else {
             await apiFactoring
@@ -228,16 +220,7 @@ export const FormCliente = () => {
         const limite = converteMoedaFloat(dadosCliente.limite.value);
         const idFactoring = localStorage.getItem('factoring');
 
-        if (
-            !cnpjCpf ||
-            !nome ||
-            !rua ||
-            !numero ||
-            !bairro ||
-            !cidade ||
-            !uf ||
-            !taxaJuros
-        ) {
+        if (!cnpjCpf || !nome || !rua || !numero || !bairro || !cidade || !uf) {
             toast.error('( * ) Campos obrigatórios!');
         } else {
             await apiFactoring

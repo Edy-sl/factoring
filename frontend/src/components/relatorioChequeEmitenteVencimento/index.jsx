@@ -17,9 +17,12 @@ import { impressaoRelCheque } from '../functions/impressaoRelCheque';
 import { BuscaEmitente } from '../buscaEmitente';
 
 export const RelatorioChequePorEmitenteVencimento = () => {
-    const [nomeEmitente, setNomeEmitente] = useState(0);
+    const [nomeEmitente, setNomeEmitente] = useState('');
+    const [emitenteFiltrado, setEmitenteFiltrado] = useState([]);
+    const [emitente, setEmitente] = useState([]);
     const [formBusca, setFormBusca] = useState();
     const [checkEspecial, setCheckEspecial] = useState('NAO');
+    const [formBuscaEmitente, setFormBuscaEmitente] = useState(false);
 
     let newArray = [];
 
@@ -133,8 +136,37 @@ export const RelatorioChequePorEmitenteVencimento = () => {
         );
     };
 
+    const buscaEmitente = async () => {
+        await apiFactoring
+            .post(
+                '/lista-emitentes',
+                { emitente: '' },
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setEmitente(data);
+            })
+            .catch((error) => {
+                toast.error(error.response.status);
+            });
+    };
+
+    const FiltraEmitente = (busca) => {
+        setEmitenteFiltrado(
+            emitente.filter((E) =>
+                E.nome_cheque.toUpperCase().includes(busca.toUpperCase())
+            )
+        );
+        console.log(formBuscaEmitente);
+    };
+
     useEffect(() => {
         !checkRel && setCheckRel('GERAL');
+        buscaEmitente();
     }, []);
 
     return (
@@ -173,16 +205,41 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                                     <label>Emitente</label>
                                     <div className="boxRow">
                                         <input
+                                            id="inputNomeC"
                                             type="text"
-                                            id="inputNomeCliTaxa"
-                                            name="nome"
-                                            placeholder=""
+                                            name="nomeCheque"
                                             value={nomeEmitente}
+                                            placeholder="Nome"
+                                            onKeyDown={(e) =>
+                                                keyDown(
+                                                    e,
+                                                    'inputVencimento',
+                                                    'emitente',
+                                                    'inputEmitente0'
+                                                )
+                                            }
+                                            autoComplete="off"
+                                            spellCheck="false"
+                                            onChange={(e) => {
+                                                FiltraEmitente(e.target.value);
+                                                setNomeEmitente(e.target.value);
+                                                setFormBuscaEmitente(true);
+                                            }}
+                                            onFocus={(e) => e.target.select()}
                                         />
-                                        <FiSearch
-                                            size="25"
-                                            onClick={exibeFormBusca}
-                                        />
+                                        {formBuscaEmitente == true && (
+                                            <BuscaEmitente
+                                                setFormBusca={
+                                                    setFormBuscaEmitente
+                                                }
+                                                setNomeEmitente={
+                                                    setNomeEmitente
+                                                }
+                                                emitenteFiltrado={
+                                                    emitenteFiltrado
+                                                }
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
