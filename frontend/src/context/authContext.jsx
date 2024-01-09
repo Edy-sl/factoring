@@ -84,6 +84,7 @@ export const AuthProvider = ({ children }) => {
                     setUser(data.token);
                     setAuth(data.auth);
                     setFactoring(data.factoring);
+                    localStorage.setItem('gravarDoc', 'false');
                 })
                 .catch((data) => {
                     toast.error(data);
