@@ -252,6 +252,7 @@ export const FormCliente = () => {
                     }
                 )
                 .then(({ data }) => {
+                    console.log(data);
                     if (data.code) {
                         toast.error('Cnpj ou Cpf já cadastrado!');
                     }
