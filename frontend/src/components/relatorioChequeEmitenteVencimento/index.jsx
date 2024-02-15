@@ -156,12 +156,19 @@ export const RelatorioChequePorEmitenteVencimento = () => {
     };
 
     const FiltraEmitente = (busca) => {
-        setEmitenteFiltrado(
-            emitente.filter((E) =>
-                E.nome_cheque.toUpperCase().includes(busca.toUpperCase())
-            )
+        let emitenteF = [];
+        emitenteF = emitente.filter((E) =>
+            E.nome_cheque
+                .toUpperCase()
+                .includes(busca.toUpperCase() || E.nome_cheque != ' ')
         );
-        console.log(formBuscaEmitente);
+        setEmitenteFiltrado(emitenteF);
+
+        if (emitenteF.length == 0) {
+            setFormBuscaEmitente(false);
+        } else {
+            setFormBuscaEmitente(true);
+        }
     };
 
     useEffect(() => {
@@ -223,7 +230,6 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                                             onChange={(e) => {
                                                 FiltraEmitente(e.target.value);
                                                 setNomeEmitente(e.target.value);
-                                                setFormBuscaEmitente(true);
                                             }}
                                             onFocus={(e) => e.target.select()}
                                         />

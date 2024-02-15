@@ -3,6 +3,9 @@ import { inverteData } from '../../biblitoteca';
 
 import { apiFactoring } from '../../services/api';
 import './relatorioClientes.css';
+import { Link } from 'react-router-dom';
+import { ImExit } from 'react-icons/im';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const RelatorioClientes = () => {
     const [listaClientes, setListaClientes] = useState([]);
@@ -29,7 +32,8 @@ export const RelatorioClientes = () => {
     };
 
     return (
-        <>
+        <form>
+            <TituloTela tituloTela="Relatório de Clientes" />
             <div className="gridTituloListaClientes">
                 <div>Código</div>
                 <div>Nome</div>
@@ -50,6 +54,6 @@ export const RelatorioClientes = () => {
                     </div>
                 ))}
             </div>
-        </>
+        </form>
     );
 };

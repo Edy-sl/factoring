@@ -24,6 +24,7 @@ import { ImBin, ImExit } from 'react-icons/im';
 import { useNavigate } from 'react-router-dom';
 import { BuscaEmitente } from '../buscaEmitente';
 import { BuscaClienteNomeDireto } from '../buscaClienteNome';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const FormOperacaoCheque = () => {
     const navigate = useNavigate();
@@ -1454,19 +1455,33 @@ export const FormOperacaoCheque = () => {
     };
 
     const FiltraCliente = (busca) => {
-        setClienteFiltrado(
-            clientes.filter((C) =>
-                C.nome.toUpperCase().includes(busca.toUpperCase())
-            )
+        let clienteF = [];
+        clienteF = clientes.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
         );
+        setClienteFiltrado(clienteF);
+        console.log(clienteF.length);
+        if (clienteF.length == 0) {
+            setFormBuscaDireto(false);
+        } else {
+            setFormBuscaDireto(true);
+        }
     };
 
     const FiltraEmitente = (busca) => {
-        setEmitenteFiltrado(
-            emitente.filter((E) =>
-                E.nome_cheque.toUpperCase().includes(busca.toUpperCase())
-            )
+        let emitenteF = [];
+        emitenteF = emitente.filter((E) =>
+            E.nome_cheque
+                .toUpperCase()
+                .includes(busca.toUpperCase() || E.nome_cheque != ' ')
         );
+        setEmitenteFiltrado(emitenteF);
+
+        if (emitenteF.length == 0) {
+            setFormBuscaEmitente(false);
+        } else {
+            setFormBuscaEmitente(true);
+        }
     };
 
     useEffect(() => {
@@ -1618,7 +1633,6 @@ export const FormOperacaoCheque = () => {
                                     )
                                 }
                                 onChange={(e) => {
-                                    setFormBuscaDireto(true);
                                     FiltraCliente(e.target.value);
                                 }}
                                 onFocus={(e) => e.target.select()}
@@ -1813,7 +1827,6 @@ export const FormOperacaoCheque = () => {
                                         onChange={(e) => {
                                             FiltraEmitente(e.target.value);
                                             setNomeEmitente(e.target.value);
-                                            setFormBuscaEmitente(true);
                                         }}
                                         onFocus={(e) => e.target.select()}
                                     />

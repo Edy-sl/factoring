@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { FormLogin } from '../formLogin';
 import { toast } from 'react-toastify';
 import { apiFactoring } from '../../services/api';
-import { Calculadora } from '../calculadora/calc';
 
 export const Menu = () => {
     const navigate = useNavigate();

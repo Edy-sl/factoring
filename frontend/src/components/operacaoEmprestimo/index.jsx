@@ -681,19 +681,31 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     const FiltraCliente = (busca) => {
-        setClienteFiltrado(
-            clientes.filter((C) =>
-                C.nome.toUpperCase().includes(busca.toUpperCase())
-            )
+        let clienteF = [];
+        clienteF = clientes.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
         );
+        setClienteFiltrado(clienteF);
+        console.log(clienteF.length);
+        if (clienteF.length == 0) {
+            setFormBuscaDireto(false);
+        } else {
+            setFormBuscaDireto(true);
+        }
     };
 
     const FiltraCredor = (busca) => {
-        setCredorFiltrado(
-            credor.filter((C) =>
-                C.nome.toUpperCase().includes(busca.toUpperCase())
-            )
+        let credorF = [];
+
+        credorF = credor.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
         );
+        setCredorFiltrado(credorF);
+        if (credorF.length == 0) {
+            setBuscaCredor(false);
+        } else {
+            setBuscaCredor(true);
+        }
     };
 
     useEffect(() => {
@@ -1237,10 +1249,10 @@ export const FormOperacionalEmprestimo = () => {
                                     }
                                     onChange={(e) => {
                                         FiltraCliente(e.target.value);
-                                        setFormBuscaDireto(true);
                                     }}
                                     onFocus={(e) => e.target.select()}
                                 />
+
                                 {formBuscaDireto == true && (
                                     <BuscaClienteNomeDireto
                                         clienteFiltrado={clienteFiltrado}
@@ -1292,7 +1304,6 @@ export const FormOperacionalEmprestimo = () => {
                                     }}
                                     onChange={(e) => {
                                         FiltraCredor(e.target.value);
-                                        setBuscaCredor(true);
                                     }}
                                 />
                                 {buscaCredor == true && (

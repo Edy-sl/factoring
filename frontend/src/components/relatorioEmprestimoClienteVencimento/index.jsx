@@ -15,12 +15,17 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 import { impressaoRelEmprestimo } from '../functions/impressaoRelEmprestimo';
+import { BuscaClienteNomeDireto } from '../buscaClienteNome';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const RelatorioEmprestimoPorClienteVencimento = () => {
     const [idCliente, setIdCliente] = useState(0);
     const [formBusca, setFormBusca] = useState();
     const [checkEspecial, setCheckEspecial] = useState('NAO');
 
+    const [clienteFiltrado, setClienteFiltrado] = useState([]);
+    const [formBuscaDireto, setFormBuscaDireto] = useState(false);
+    const [clientes, setClientes] = useState([]);
     const ref = useRef();
 
     const exibeFormBusca = () => {
@@ -114,6 +119,41 @@ export const RelatorioEmprestimoPorClienteVencimento = () => {
         );
     };
 
+    const FiltraCliente = (busca) => {
+        let clienteF = [];
+        clienteF = clientes.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
+        );
+        setClienteFiltrado(clienteF);
+        console.log(clienteF.length);
+        if (clienteF.length == 0) {
+            setFormBuscaDireto(false);
+        } else {
+            setFormBuscaDireto(true);
+        }
+    };
+
+    const listaClientes = async () => {
+        await apiFactoring
+            .post(
+                '/lista-clientes',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setClientes(data);
+            })
+            .catch((error) => {});
+    };
+
+    useEffect(() => {
+        listaClientes();
+    }, []);
+
     useEffect(() => {
         buscaClienteCodigo();
     }, [idCliente]);
@@ -144,14 +184,10 @@ export const RelatorioEmprestimoPorClienteVencimento = () => {
                 />
             )}
             <div className="divRelatorioEmprestimoData">
-                <div id="divTituloRelatorio">
-                    <label>
-                        Realtório de Empréstimo por Cliente e Data de Vencimento
-                    </label>
-                </div>
+                <TituloTela tituloTela=" Realtório de Empréstimo por Cliente e Data de Vencimento" />
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
-                    <div className="boxRow">
+                    <div id="divCentralizada">
                         <div className="boxRow">
                             <div className="boxRow">
                                 <div className="boxCol">
@@ -177,14 +213,36 @@ export const RelatorioEmprestimoPorClienteVencimento = () => {
                                     <div className="boxRow">
                                         <input
                                             type="text"
-                                            id="inputNomeCliTaxa"
+                                            id="inputCliente"
                                             name="nome"
                                             placeholder=""
+                                            onKeyDown={(e) =>
+                                                keyDown(
+                                                    e,
+                                                    'dataI',
+                                                    'cliente',
+                                                    'inputCliente0'
+                                                )
+                                            }
+                                            onChange={(e) => {
+                                                FiltraCliente(e.target.value);
+                                            }}
+                                            autoComplete="off"
                                         />
-                                        <FiSearch
-                                            size="25"
-                                            onClick={exibeFormBusca}
-                                        />
+                                        {formBuscaDireto == true && (
+                                            <BuscaClienteNomeDireto
+                                                clienteFiltrado={
+                                                    clienteFiltrado
+                                                }
+                                                setIdCliente={setIdCliente}
+                                                setFormBuscaDireto={
+                                                    setFormBuscaDireto
+                                                }
+                                                setClienteFiltrado={
+                                                    setClienteFiltrado
+                                                }
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -268,11 +326,11 @@ export const RelatorioEmprestimoPorClienteVencimento = () => {
                         </div>
                         <div id="divBtnRel">
                             <FiSearch
-                                className="icone2"
+                                className="icone3"
                                 onClick={relatorioPorData}
                             />
                             <FiPrinter
-                                className="icone2"
+                                className="icone3"
                                 onClick={(e) =>
                                     impressaoRelEmprestimo(
                                         listagem,

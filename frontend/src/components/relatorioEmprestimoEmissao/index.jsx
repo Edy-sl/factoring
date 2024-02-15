@@ -12,6 +12,7 @@ import {
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 import { impressaoRelEmprestimo } from '../functions/impressaoRelEmprestimo';
+import { TituloTela } from '../titulosTela/tituloTela.jsx';
 export const RelatorioEmprestimoPorEmissao = () => {
     const ref = useRef();
 
@@ -99,11 +100,10 @@ export const RelatorioEmprestimoPorEmissao = () => {
                 />
             )}
             <div className="divRelatorioEmprestimoData">
-                <div id="divTituloRelatorio">
-                    <label>Realtório de Empréstimo por Data de Emissão</label>
-                </div>
+                <TituloTela tituloTela="Realtório de Empréstimo por Data de Emissão" />
+
                 <form className="" ref={ref} onSubmit={handleSubmit}>
-                    <div className="boxRow">
+                    <div id="divCentralizada">
                         <div className="boxCol">
                             <label>A Receber</label>
                             <label>Recebidos</label>
@@ -182,12 +182,12 @@ export const RelatorioEmprestimoPorEmissao = () => {
                         </div>
                         <div id="divBtnRel">
                             <FiSearch
-                                className="icone2"
+                                className="icone3"
                                 onClick={relatorioPorData}
                             />
 
                             <FiPrinter
-                                className="icone2"
+                                className="icone3"
                                 onClick={(e) =>
                                     impressaoRelEmprestimo(
                                         listagem,

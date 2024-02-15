@@ -88,6 +88,13 @@ select {
     padding: 0px 7px 0px 7px;
 }
 
+.icone3 {
+    color: #585353;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 0px 7px 0px 7px;
+}
+
 .alignRight {
     text-align: right;
 }

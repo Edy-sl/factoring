@@ -10,6 +10,7 @@ import { FormCliente } from '../formCliente';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { keyDown } from '../../biblitoteca';
+import { FaLongArrowAltUp, FaLongArrowAltDown } from 'react-icons/fa';
 
 export const BuscaCredorNome = ({
     setBuscaCredor,
@@ -58,6 +59,12 @@ export const BuscaCredorNome = ({
 
     return (
         <div className="divBuscaCredorNome">
+            <label id="labelInfo">
+                Utilize
+                <FaLongArrowAltUp />
+                <FaLongArrowAltDown />
+                para navegar e ENTER para selecionar
+            </label>
             <div className="divResultadoBuscaCliente">
                 {credorFiltrado.map((cli, index) => (
                     <div

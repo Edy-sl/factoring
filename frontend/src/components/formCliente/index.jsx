@@ -13,13 +13,20 @@ import {
 } from '../../biblitoteca';
 import { BuscaClienteNome } from '../buscaCliente';
 import { FiSearch } from 'react-icons/fi';
-import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
+import { ImCheckboxChecked, ImCheckboxUnchecked, ImExit } from 'react-icons/im';
 import { CheckboxPersonalizado } from '../checkbox/checkboxPersonalizado';
 
 import { AuthProvider } from '../../context/authContext';
+import { BuscaClienteNomeDireto } from '../buscaClienteNome';
+import { Link } from 'react-router-dom';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const FormCliente = () => {
     const [formBusca, setFormBusca] = useState();
+
+    const [clienteFiltrado, setClienteFiltrado] = useState([]);
+    const [formBuscaDireto, setFormBuscaDireto] = useState(false);
+    const [clientes, setClientes] = useState([]);
 
     const [inputCep, setInputCep] = useState();
 
@@ -86,8 +93,6 @@ export const FormCliente = () => {
             dadosFactoring.bairro.value = respostaCep.data.bairro;
             dadosFactoring.cidade.value = respostaCep.data.localidade;
             dadosFactoring.uf.value = respostaCep.data.uf;
-
-            console.log(respostaCep.data.uf);
         } catch {
             toast.error('Erro ao buscar o CEP!');
         }
@@ -107,7 +112,6 @@ export const FormCliente = () => {
     };
 
     const gravarCliente = () => {
-        console.log(onEdit);
         onEdit == true ? atualizarDadosCliente() : gravarDadosCliente();
     };
 
@@ -132,7 +136,6 @@ export const FormCliente = () => {
 
         const idFactoring = localStorage.getItem('factoring');
 
-        console.log(nome);
         if (!cnpjCpf || !nome || !rua || !numero || !bairro || !cidade || !uf) {
             toast.error('( * ) Campos obrigatórios!');
         } else {
@@ -252,7 +255,6 @@ export const FormCliente = () => {
                     }
                 )
                 .then(({ data }) => {
-                    console.log(data);
                     if (data.code) {
                         toast.error('Cnpj ou Cpf já cadastrado!');
                     }
@@ -266,6 +268,7 @@ export const FormCliente = () => {
 
     const buscaCliente = async () => {
         const dadosCliente = ref.current;
+        setCheckEspecial('NAO');
 
         await apiFactoring
             .post(
@@ -318,6 +321,7 @@ export const FormCliente = () => {
 
     const buscaClienteCodigo = async () => {
         const dadosCliente = ref.current;
+        setCheckEspecial('NAO');
 
         await apiFactoring
             .post(
@@ -354,8 +358,6 @@ export const FormCliente = () => {
                         );
                         setOnEdit(true);
 
-                        console.log(vTaxaJuros);
-
                         setCheckEspecial(dados.especial);
                         setLimite(converteFloatMoeda(dados.limite));
                     });
@@ -366,10 +368,6 @@ export const FormCliente = () => {
             .catch(({ data }) => {
                 toast.error(data);
             });
-    };
-
-    const exibeFormBusca = () => {
-        setFormBusca(!formBusca);
     };
 
     const formataTaxa = () => {
@@ -394,6 +392,41 @@ export const FormCliente = () => {
             }
         }
     };
+
+    const FiltraCliente = (busca) => {
+        let clienteF = [];
+        clienteF = clientes.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
+        );
+        setClienteFiltrado(clienteF);
+
+        if (clienteF.length == 0) {
+            setFormBuscaDireto(false);
+        } else {
+            setFormBuscaDireto(true);
+        }
+    };
+
+    const listaClientes = async () => {
+        await apiFactoring
+            .post(
+                '/lista-clientes',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setClientes(data);
+            })
+            .catch((error) => {});
+    };
+
+    useEffect(() => {
+        listaClientes();
+    }, []);
 
     useEffect(() => {
         buscaCliente();
@@ -427,7 +460,8 @@ export const FormCliente = () => {
                     autoClose={3000}
                     position={toast.POSITION.BOTTOM_LEFT}
                 />
-                <h1>Cliente</h1>
+                <TituloTela tituloTela="Cadastro de Cliente" />
+
                 <div className="boxRow">
                     <div className="boxCol">
                         <label>CNPJ/CPF</label>
@@ -464,44 +498,62 @@ export const FormCliente = () => {
                             type="date"
                             name="dataNascimento"
                             placeholder=""
-                            onKeyDown={(e) => keyDown(e, 'inputNome')}
+                            onKeyDown={(e) => keyDown(e, 'inputCliente')}
                             autoComplete="off"
                         />
                     </div>
                 </div>
-
                 <div className="boxRow">
                     <div className="boxCol">
+                        {' '}
                         <label>Código</label>
-
+                    </div>
+                    <div className="boxCol">
+                        <label>&nbsp;&nbsp;&nbsp;Nome</label>
+                    </div>
+                </div>
+                <div className="boxRow">
+                    <div className="boxCol">
                         <input
                             type="text"
                             id="inputIdCliente"
                             name="idCliente"
                             placeholder=""
                             value={idCliente || ''}
-                            onKeyDown={(e) => keyDown(e, 'inputNome')}
+                            onKeyDown={(e) => keyDown(e, 'inputCliente')}
                             onChange={(e) => setIdCliente(e.target.value)}
                             autoComplete="off"
                         />
                     </div>
-
                     <div className="boxCol">
-                        <label>Nome</label>
-                        <div className="boxRow">
-                            <input
-                                type="text"
-                                id="inputNome"
-                                name="nome"
-                                placeholder=""
-                                onKeyDown={(e) => keyDown(e, 'inputCep')}
-                                autoComplete="off"
+                        <input
+                            type="text"
+                            id="inputCliente"
+                            name="nome"
+                            placeholder=""
+                            onKeyDown={(e) =>
+                                keyDown(
+                                    e,
+                                    'inputCep',
+                                    'cliente',
+                                    'inputCliente0'
+                                )
+                            }
+                            onChange={(e) => {
+                                FiltraCliente(e.target.value);
+                            }}
+                            autoComplete="off"
+                        />
+                        {formBuscaDireto == true && (
+                            <BuscaClienteNomeDireto
+                                clienteFiltrado={clienteFiltrado}
+                                setIdCliente={setIdCliente}
+                                setFormBuscaDireto={setFormBuscaDireto}
+                                setClienteFiltrado={setClienteFiltrado}
                             />
-                            <FiSearch size="25" onClick={exibeFormBusca} />
-                        </div>
+                        )}
                     </div>
                 </div>
-
                 <div className="boxRow">
                     <div className="boxCol">
                         <label>Cep</label>
@@ -567,7 +619,6 @@ export const FormCliente = () => {
                         />
                     </div>
                 </div>
-
                 <div className="boxRow">
                     <div className="boxCol">
                         <label>Cidade</label>

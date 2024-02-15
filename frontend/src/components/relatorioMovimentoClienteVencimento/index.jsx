@@ -8,12 +8,14 @@ import { GridChequeRelatorio } from '../gridRelatorioCheques/index.jsx';
 import {
     converteFloatMoeda,
     inverteData,
+    keyDown,
     retornaDataAtual,
 } from '../../biblitoteca.jsx';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo/index.jsx';
 
 import { impressaoMovimento } from '../functions/impressaoMovimento.jsx';
 import { BuscaClienteNome } from '../buscaCliente/index.jsx';
+import { BuscaClienteNomeDireto } from '../buscaClienteNome/index.jsx';
 
 export const RelatorioMovimentoPorClienteVencimento = () => {
     const ref = useRef();
@@ -21,6 +23,10 @@ export const RelatorioMovimentoPorClienteVencimento = () => {
     const [listagemCheque, setListagemCheque] = useState([]);
     const [listagemChequeDeducao, setListagemChequeDeducao] = useState([]);
     const [listagemEmprestimo, setListagemEmprestimo] = useState([]);
+
+    const [clienteFiltrado, setClienteFiltrado] = useState([]);
+    const [formBuscaDireto, setFormBuscaDireto] = useState(false);
+    const [clientes, setClientes] = useState([]);
 
     const [isCheckedDeducao, setIsCheckedDeducao] = useState(false);
 
@@ -182,6 +188,41 @@ export const RelatorioMovimentoPorClienteVencimento = () => {
             });
     };
 
+    const FiltraCliente = (busca) => {
+        let clienteF = [];
+        clienteF = clientes.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
+        );
+        setClienteFiltrado(clienteF);
+        console.log(clienteF.length);
+        if (clienteF.length == 0) {
+            setFormBuscaDireto(false);
+        } else {
+            setFormBuscaDireto(true);
+        }
+    };
+
+    const listaClientes = async () => {
+        await apiFactoring
+            .post(
+                '/lista-clientes',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setClientes(data);
+            })
+            .catch((error) => {});
+    };
+
+    useEffect(() => {
+        listaClientes();
+    }, []);
+
     useEffect(() => {
         buscaClienteCodigo();
     }, [idCliente]);
@@ -238,14 +279,36 @@ export const RelatorioMovimentoPorClienteVencimento = () => {
                                     <div className="boxRow">
                                         <input
                                             type="text"
-                                            id="inputNomeCliTaxa"
+                                            id="inputCliente"
                                             name="nome"
                                             placeholder=""
+                                            onKeyDown={(e) =>
+                                                keyDown(
+                                                    e,
+                                                    'dataI',
+                                                    'cliente',
+                                                    'inputCliente0'
+                                                )
+                                            }
+                                            onChange={(e) => {
+                                                FiltraCliente(e.target.value);
+                                            }}
+                                            autoComplete="off"
                                         />
-                                        <FiSearch
-                                            size="25"
-                                            onClick={exibeFormBusca}
-                                        />
+                                        {formBuscaDireto == true && (
+                                            <BuscaClienteNomeDireto
+                                                clienteFiltrado={
+                                                    clienteFiltrado
+                                                }
+                                                setIdCliente={setIdCliente}
+                                                setFormBuscaDireto={
+                                                    setFormBuscaDireto
+                                                }
+                                                setClienteFiltrado={
+                                                    setClienteFiltrado
+                                                }
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -280,6 +343,7 @@ export const RelatorioMovimentoPorClienteVencimento = () => {
                                 type="date"
                                 value={dataIni}
                                 name="dataI"
+                                id="dataI"
                                 onChange={(e) => setDataIni(e.target.value)}
                             />
                         </div>

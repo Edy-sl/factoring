@@ -41,18 +41,16 @@ export const FormLogin = (sair) => {
                 position={toast.POSITION.BOTTOM_LEFT}
             />
             <form className="formLogin" onSubmit={handleSubmit} ref={ref}>
-                <input type="text" name="nome" placeholder="Digite o Usuário" />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Digite a senha"
-                />
+                <input type="text" name="nome" placeholder="USUÁRIO" />
+                <input type="password" name="password" placeholder="SENHA" />
 
                 <button type="submit">Entrar</button>
 
-                <Link id="linkCadastro" to="/cadastro-usuario">
-                    Cadastrar usuário Admin
-                </Link>
+                {0 == 1 && (
+                    <Link id="linkCadastro" to="/cadastro-usuario">
+                        Cadastrar usuário Admin
+                    </Link>
+                )}
             </form>
         </>
     );

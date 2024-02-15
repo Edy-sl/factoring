@@ -15,11 +15,17 @@ import './conta.css';
 import { Entrada } from '../contaEntrada';
 import { Saida } from '../contaSaida';
 import { ContaMovimento } from '../contaGeral';
+import { BuscaClienteNomeDireto } from '../buscaClienteNome';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const Conta = () => {
     const [idCliente, setIdCliente] = useState();
     const [formBusca, setFormBusca] = useState();
     const [nomeCliente, setNomeCliente] = useState();
+
+    const [clienteFiltrado, setClienteFiltrado] = useState([]);
+    const [formBuscaDireto, setFormBuscaDireto] = useState(false);
+    const [clientes, setClientes] = useState([]);
 
     const [data, setData] = useState();
     const [dataF, setDataF] = useState();
@@ -235,6 +241,41 @@ export const Conta = () => {
         somaMovimento();
     };
 
+    const FiltraCliente = (busca) => {
+        let clienteF = [];
+        clienteF = clientes.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
+        );
+        setClienteFiltrado(clienteF);
+
+        if (clienteF.length == 0) {
+            setFormBuscaDireto(false);
+        } else {
+            setFormBuscaDireto(true);
+        }
+    };
+
+    const listaClientes = async () => {
+        await apiFactoring
+            .post(
+                '/lista-clientes',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setClientes(data);
+            })
+            .catch((error) => {});
+    };
+
+    useEffect(() => {
+        listaClientes();
+    }, []);
+
     useEffect(() => {
         buscaClienteCodigo();
     }, [idCliente]);
@@ -259,6 +300,7 @@ export const Conta = () => {
                 </AuthProvider>
             )}
             <form className="formCliente" onSubmit={handleSubmit} ref={ref}>
+                <TituloTela tituloTela="Conta" />
                 <div className="boxRow">
                     <div className="boxCol">
                         <label>Código</label>
@@ -280,16 +322,32 @@ export const Conta = () => {
                         <div className="boxRow">
                             <input
                                 type="text"
-                                id="inputNome"
+                                id="inputCliente"
                                 name="nome"
                                 value={nomeCliente}
                                 placeholder=""
+                                onKeyDown={(e) =>
+                                    keyDown(
+                                        e,
+                                        'inputCliente',
+                                        'cliente',
+                                        'inputCliente0'
+                                    )
+                                }
+                                onChange={(e) => {
+                                    FiltraCliente(e.target.value);
+                                    setNomeCliente(e.target.validationMessage);
+                                }}
                                 autoComplete="off"
                             />
-                            <FiSearch
-                                className="icone2"
-                                onClick={exibeFormBusca}
-                            />
+                            {formBuscaDireto == true && (
+                                <BuscaClienteNomeDireto
+                                    clienteFiltrado={clienteFiltrado}
+                                    setIdCliente={setIdCliente}
+                                    setFormBuscaDireto={setFormBuscaDireto}
+                                    setClienteFiltrado={setClienteFiltrado}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

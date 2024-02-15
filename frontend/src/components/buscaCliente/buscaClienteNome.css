@@ -5,11 +5,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: rgb(142, 151, 161);
+    background-color: rgb(193, 196, 202);
     padding: 20px;
     justify-content: center;
 
-    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+    box-shadow: rgb(10, 115, 227) 0px 20px 30px -10px;
 }
 
 .divResultadoBuscaCliente {

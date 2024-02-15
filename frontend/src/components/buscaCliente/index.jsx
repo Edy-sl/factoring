@@ -5,7 +5,8 @@ import { apiFactoring } from '../../services/api';
 import { useRef, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { ImExit } from 'react-icons/im';
-import './buscaClienteNome.css';
+import './BuscaClienteNome.css';
+
 import { FormCliente } from '../formCliente';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';

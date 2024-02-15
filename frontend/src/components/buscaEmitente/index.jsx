@@ -5,11 +5,12 @@ import { apiFactoring } from '../../services/api';
 import { useEffect, useRef, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { ImExit } from 'react-icons/im';
-import '../buscaClienteNome/buscaClienteDireto.css';
+
 import { FormCliente } from '../formCliente';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { keyDown } from '../../biblitoteca';
+import { FaLongArrowAltDown, FaLongArrowAltUp } from 'react-icons/fa';
 
 export const BuscaEmitente = ({
     setFormBusca,
@@ -32,6 +33,12 @@ export const BuscaEmitente = ({
 
     return (
         <div className="divBuscaNomeDireto">
+            <label id="labelInfo">
+                Utilize
+                <FaLongArrowAltUp />
+                <FaLongArrowAltDown />
+                para navegar e ENTER para selecionar
+            </label>
             <div className="divResultadoBuscaEmitente">
                 {emitenteFiltrado.map((emitente, index) => (
                     <div

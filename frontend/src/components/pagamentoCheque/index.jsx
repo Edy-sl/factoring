@@ -5,6 +5,7 @@ import { apiFactoring } from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { GravaPagamento } from '../gravaPagamento/inde';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const PagamentoCheque = () => {
     const ref = useRef();
@@ -53,10 +54,8 @@ export const PagamentoCheque = () => {
             />
 
             <div>
-                <div id="divTituloPagamento">
-                    <label>PAGAMENTO</label>
-                </div>
                 <form className="form" ref={ref}>
+                    <TituloTela tituloTela="Pagamento" />
                     <div>
                         <label>Nº do Cheque</label>
                         <input

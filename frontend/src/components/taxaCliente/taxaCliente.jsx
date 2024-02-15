@@ -6,18 +6,25 @@ import {
 } from '../../biblitoteca';
 import { FiSearch } from 'react-icons/fi';
 import { BuscaClienteNome } from '../buscaCliente';
-import { ImCheckboxChecked } from 'react-icons/im';
+import { ImCheckboxChecked, ImExit } from 'react-icons/im';
 import { ImCheckboxUnchecked } from 'react-icons/im';
 import { apiFactoring } from '../../services/api';
 import { Icons, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from '../../context/authContext';
+import { BuscaClienteNomeDireto } from '../buscaClienteNome';
+import { Link } from 'react-router-dom';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const TaxaCliente = () => {
     const [idCliente, setIdCliente] = useState(0);
     const [formBusca, setFormBusca] = useState();
     const [checkEspecial, setCheckEspecial] = useState('NAO');
     const [limite, setLimite] = useState();
+
+    const [clienteFiltrado, setClienteFiltrado] = useState([]);
+    const [formBuscaDireto, setFormBuscaDireto] = useState(false);
+    const [clientes, setClientes] = useState([]);
 
     const ref = useRef();
 
@@ -102,8 +109,6 @@ export const TaxaCliente = () => {
         if (checkEspecial == 'SIM') {
             setCheckEspecial('NAO');
         }
-
-        console.log(checkEspecial);
     };
 
     const formataTaxa = () => {
@@ -117,6 +122,41 @@ export const TaxaCliente = () => {
         const dadosLimite = ref.current;
         dadosLimite.limite.value = converteFloatMoeda(dadosLimite.limite.value);
     };
+
+    const FiltraCliente = (busca) => {
+        let clienteF = [];
+        clienteF = clientes.filter((C) =>
+            C.nome.toUpperCase().includes(busca.toUpperCase() || C.nome != ' ')
+        );
+        setClienteFiltrado(clienteF);
+
+        if (clienteF.length == 0) {
+            setFormBuscaDireto(false);
+        } else {
+            setFormBuscaDireto(true);
+        }
+    };
+
+    const listaClientes = async () => {
+        await apiFactoring
+            .post(
+                '/lista-clientes',
+                {},
+                {
+                    headers: {
+                        'x-access-token': localStorage.getItem('user'),
+                    },
+                }
+            )
+            .then(({ data }) => {
+                setClientes(data);
+            })
+            .catch((error) => {});
+    };
+
+    useEffect(() => {
+        listaClientes();
+    }, []);
 
     useEffect(() => {
         buscaClienteCodigo();
@@ -135,12 +175,14 @@ export const TaxaCliente = () => {
                     />
                 </AuthProvider>
             )}
+
             <form
                 className="form"
                 name="formTaxa"
                 ref={ref}
                 onSubmit={handleSubmit}
             >
+                <TituloTela tituloTela="Taxa e Limite" />
                 <div className="boxRow">
                     <div className="boxRow">
                         <div className="boxCol">
@@ -162,11 +204,30 @@ export const TaxaCliente = () => {
                             <div className="boxRow">
                                 <input
                                     type="text"
-                                    id="inputNome"
+                                    id="inputCliente"
                                     name="nome"
                                     placeholder=""
+                                    onKeyDown={(e) =>
+                                        keyDown(
+                                            e,
+                                            'inputCep',
+                                            'cliente',
+                                            'inputCliente0'
+                                        )
+                                    }
+                                    onChange={(e) => {
+                                        FiltraCliente(e.target.value);
+                                    }}
+                                    autoComplete="off"
                                 />
-                                <FiSearch size="25" onClick={exibeFormBusca} />
+                                {formBuscaDireto == true && (
+                                    <BuscaClienteNomeDireto
+                                        clienteFiltrado={clienteFiltrado}
+                                        setIdCliente={setIdCliente}
+                                        setFormBuscaDireto={setFormBuscaDireto}
+                                        setClienteFiltrado={setClienteFiltrado}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>

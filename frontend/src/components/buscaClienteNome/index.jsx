@@ -5,11 +5,11 @@ import { apiFactoring } from '../../services/api';
 import { useEffect, useRef, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { ImExit } from 'react-icons/im';
-import './buscaClienteDireto.css';
 import { FormCliente } from '../formCliente';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/authContext';
 import { keyDown } from '../../biblitoteca';
+import { FaLongArrowAltDown, FaLongArrowAltUp } from 'react-icons/fa';
 
 export const BuscaClienteNomeDireto = ({
     setFormBuscaDireto,
@@ -31,6 +31,12 @@ export const BuscaClienteNomeDireto = ({
 
     return (
         <div className="divBuscaNomeDireto">
+            <label id="labelInfo">
+                Utilize
+                <FaLongArrowAltUp />
+                <FaLongArrowAltDown />
+                para navegar e ENTER para selecionar
+            </label>
             <div className="divResultadoBuscaCliente">
                 {clienteFiltrado.map((cli, index) => (
                     <div

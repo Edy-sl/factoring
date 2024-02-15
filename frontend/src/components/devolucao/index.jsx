@@ -5,6 +5,7 @@ import { apiFactoring } from '../../services/api';
 import { GravaDevolucao } from '../gravaDevolucao/inde';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const Devolucao = () => {
     const ref = useRef();
@@ -52,10 +53,8 @@ export const Devolucao = () => {
                 position={toast.POSITION.BOTTOM_LEFT}
             />
             <div>
-                <div id="divTituloDevolucao">
-                    <label>DEVOLUÇÃO</label>
-                </div>
                 <form className="form" ref={ref}>
+                    <TituloTela tituloTela="Devolução" />
                     <div>
                         <label>Nº do Cheque</label>
                         <input
