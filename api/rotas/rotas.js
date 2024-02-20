@@ -53,6 +53,7 @@ import {
     gravarDataPagamento,
     listaEmitentes,
     relatorioChequePorEmitenteVencimento,
+    excluirOperacaoCheques,
 } from '../controles/bordero.js';
 
 import {
@@ -168,6 +169,12 @@ rotaFactoring.post('/busca-bordero', verifyJWT, buscaBordero);
 rotaFactoring.post('/busca-bordero-id', verifyJWT, buscaBorderoId);
 rotaFactoring.post('/gravar-lancamento', verifyJWT, gravarCheques);
 rotaFactoring.post('/listar-lancamento', verifyJWT, listarCheques);
+rotaFactoring.post(
+    '/excluir-operacao',
+    verifyJWT,
+    verificaPermissao,
+    excluirOperacaoCheques
+);
 
 rotaFactoring.post('/gravar-emprestimo', verifyJWT, gravarEmprestimo);
 rotaFactoring.post(

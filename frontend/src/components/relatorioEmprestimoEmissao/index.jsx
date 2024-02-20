@@ -84,7 +84,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
     }, []);
 
     return (
-        <>
+        <div id="divContainerRelatorio">
             {' '}
             <ToastContainer
                 autoClose={3000}
@@ -203,6 +203,6 @@ export const RelatorioEmprestimoPorEmissao = () => {
                 </form>
             </div>{' '}
             <GridRelatorioEmprestimo listagem={listagem} />
-        </>
+        </div>
     );
 };

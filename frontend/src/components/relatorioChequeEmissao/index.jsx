@@ -11,6 +11,7 @@ import {
 } from '../../biblitoteca.jsx';
 import { GridChequeRelatorio } from '../gridRelatorioCheques';
 import { impressaoRelCheque } from '../functions/impressaoRelCheque';
+import { TituloTela } from '../titulosTela/tituloTela.jsx';
 
 export const RelatorioChequePorEmissao = () => {
     const ref = useRef();
@@ -99,11 +100,8 @@ export const RelatorioChequePorEmissao = () => {
                 />
             )}
             <div className="divRelatorioChequeData">
-                <div id="divTituloRelatorio">
-                    <label>
-                        Realtório de Cheques por Data de Emissao da Operação
-                    </label>
-                </div>
+                <TituloTela tituloTela="Realtório de Cheques por Data de Emissao da Operação" />
+
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow">
                         <div className="boxCol">

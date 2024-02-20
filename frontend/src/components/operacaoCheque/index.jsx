@@ -1484,6 +1484,34 @@ export const FormOperacaoCheque = () => {
         }
     };
 
+    const excluirOperacao = async () => {
+        const dadosOperacao = ref.current;
+        var operacao = dadosOperacao.operacao.value;
+
+        var excluir = confirm('Deseja excluir Operacao  nº ' + operacao);
+
+        if (excluir == true) {
+            await apiFactoring
+                .post(
+                    '/excluir-operacao',
+                    { idOperacao: operacao },
+                    {
+                        headers: {
+                            'x-access-token': localStorage.getItem('user'),
+                        },
+                    }
+                )
+                .then(({ data }) => {
+                    toast.success(data);
+                    limpa();
+                })
+                .catch((error) => {
+                    toast.error(error.response.data);
+                });
+        } else {
+        }
+    };
+
     useEffect(() => {
         vefificaPermissao();
         listaClientes();
@@ -1574,6 +1602,15 @@ export const FormOperacaoCheque = () => {
                         {onEdit && gravarDoc == '' && (
                             <button id="btnImprimir" onClick={imprimir}>
                                 Imprimir
+                            </button>
+                        )}
+
+                        {onEdit && (
+                            <button
+                                id="btnImprimir"
+                                onClick={(e) => excluirOperacao()}
+                            >
+                                Excluir
                             </button>
                         )}
                         <ImExit id="iconeExit" onClick={(e) => sair()} />

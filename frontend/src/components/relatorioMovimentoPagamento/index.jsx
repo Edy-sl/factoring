@@ -12,6 +12,7 @@ import {
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 
 import { impressaoMovimento } from '../functions/impressaoMovimento';
+import { TituloTela } from '../titulosTela/tituloTela.jsx';
 
 export const RelatorioMovimentoPorPagamento = () => {
     const ref = useRef();
@@ -106,7 +107,7 @@ export const RelatorioMovimentoPorPagamento = () => {
     };
 
     return (
-        <>
+        <div id="divContainerRelatorio">
             {' '}
             <ToastContainer
                 autoClose={3000}
@@ -122,9 +123,8 @@ export const RelatorioMovimentoPorPagamento = () => {
                 />
             )}
             <div className="divRelatorioChequeData">
-                <div id="divTituloRelatorio">
-                    <label>Realtório por Data de Pagamento</label>
-                </div>
+                <TituloTela tituloTela="Realtório por Data de Pagamento" />
+
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow" id="divFiltroMovimentoEmissao">
                         <div className="boxCol">
@@ -167,6 +167,6 @@ export const RelatorioMovimentoPorPagamento = () => {
                 <GridChequeRelatorio listagem={listagemCheque} />
                 <GridRelatorioEmprestimo listagem={listagemEmprestimo} />{' '}
             </div>
-        </>
+        </div>
     );
 };

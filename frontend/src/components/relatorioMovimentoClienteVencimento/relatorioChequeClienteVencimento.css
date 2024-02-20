@@ -2,6 +2,15 @@
     max-height: 80vh;
 }
 
+#divContainerRelatorio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 60px;
+
+    min-height: 100vh;
+}
+
 .divRelatorioChequeData {
     display: flex;
     flex-direction: column;

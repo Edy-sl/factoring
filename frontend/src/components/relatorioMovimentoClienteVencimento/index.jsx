@@ -16,6 +16,7 @@ import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo/index.jsx';
 import { impressaoMovimento } from '../functions/impressaoMovimento.jsx';
 import { BuscaClienteNome } from '../buscaCliente/index.jsx';
 import { BuscaClienteNomeDireto } from '../buscaClienteNome/index.jsx';
+import { TituloTela } from '../titulosTela/tituloTela.jsx';
 
 export const RelatorioMovimentoPorClienteVencimento = () => {
     const ref = useRef();
@@ -227,7 +228,7 @@ export const RelatorioMovimentoPorClienteVencimento = () => {
         buscaClienteCodigo();
     }, [idCliente]);
     return (
-        <>
+        <div id="divContainerRelatorio">
             {' '}
             <ToastContainer
                 autoClose={3000}
@@ -249,9 +250,8 @@ export const RelatorioMovimentoPorClienteVencimento = () => {
                 />
             )}
             <div className="divRelatorioChequeData">
-                <div id="divTituloRelatorio">
-                    <label>Realtório por Cliente e Data de Vencimento</label>
-                </div>
+                <TituloTela tituloTela="Realtório por Cliente e Data de Vencimento" />
+
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow" id="divFiltroMovimentoEmissao">
                         <div className="boxRow">
@@ -378,6 +378,6 @@ export const RelatorioMovimentoPorClienteVencimento = () => {
                 <GridChequeRelatorio listagem={listagemCheque} />
                 <GridRelatorioEmprestimo listagem={listagemEmprestimo} />{' '}
             </div>
-        </>
+        </div>
     );
 };

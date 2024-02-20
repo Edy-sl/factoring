@@ -12,6 +12,7 @@ import {
 } from '../../biblitoteca.jsx';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 import { impressaoMovimento } from '../functions/impressaoMovimento';
+import { TituloTela } from '../titulosTela/tituloTela.jsx';
 
 export const RelatorioMovimentoPorEmissao = () => {
     const ref = useRef();
@@ -151,7 +152,7 @@ export const RelatorioMovimentoPorEmissao = () => {
     }, []);
 
     return (
-        <>
+        <div id="divContainerRelatorio">
             {' '}
             <ToastContainer
                 autoClose={3000}
@@ -167,9 +168,8 @@ export const RelatorioMovimentoPorEmissao = () => {
                 />
             )}
             <div className="divRelatorioChequeData">
-                <div id="divTituloRelatorio">
-                    <label>Realtório por Data de Emissão</label>
-                </div>
+                <TituloTela tituloTela="Realtório por Data de Emissão" />
+
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow" id="divFiltroMovimentoEmissao">
                         <div className="boxCol">
@@ -235,6 +235,6 @@ export const RelatorioMovimentoPorEmissao = () => {
                 <GridChequeRelatorio listagem={listagemCheque} />
                 <GridRelatorioEmprestimo listagem={listagemEmprestimo} />
             </div>
-        </>
+        </div>
     );
 };

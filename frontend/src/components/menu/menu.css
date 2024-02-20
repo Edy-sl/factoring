@@ -46,7 +46,7 @@ ul li a:hover {
 
 li:hover ul {
     display: block;
-    box-shadow: 5px 5px 5px black;
+    box-shadow: -5px 5px 15px black;
 }
 
 #fullScreen {

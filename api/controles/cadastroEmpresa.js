@@ -61,7 +61,6 @@ export const postFactoring = (req, res) => {
         const sql = 'UPDATE usuarios SET idfactoring = ? WHERE idusuario = ?';
         db.query(sql, [insertId, idUsuario], (err, data) => {
             if (err) console.log(err);
-            console.log('usuario alterado com sucesso! ');
         });
     };
 };

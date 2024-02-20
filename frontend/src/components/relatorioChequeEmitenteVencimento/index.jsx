@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { GridChequeRelatorio } from '../gridRelatorioCheques';
 import { impressaoRelCheque } from '../functions/impressaoRelCheque';
 import { BuscaEmitente } from '../buscaEmitente';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const RelatorioChequePorEmitenteVencimento = () => {
     const [nomeEmitente, setNomeEmitente] = useState('');
@@ -198,11 +199,7 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                 />
             )}
             <div className="divRelatorioChequeData">
-                <div id="divTituloRelatorio">
-                    <label>
-                        Realtório de Cheques por Emitente e Data de Vencimento
-                    </label>
-                </div>
+                <TituloTela tituloTela="Realtório de Cheques por Emitente e Data de Vencimento" />
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow">

@@ -49,8 +49,6 @@ export const loginSemSenha = async (req, res) => {
     const tokenReq = req.headers['x-access-token'];
     let idUsuario = 0;
 
-    console.log(tokenReq);
-
     if (tokenReq) {
         jwt.verify(tokenReq, SECRET, (err, decoded) => {
             idUsuario = decoded.userID;

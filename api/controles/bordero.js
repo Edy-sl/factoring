@@ -65,9 +65,7 @@ const gravarDeducao = (idBordero, arrayDeducao, dataDeducao) => {
                     deducao.juros_devolucao,
                     deducao.idlancamento,
                 ],
-                (err, data) => {
-                    if (err) console.log(err);
-                }
+                (err, data) => {}
             );
         });
     }
@@ -169,6 +167,22 @@ export const gravarCheques = (idBordero, arrayCheques) => {
                 (err, data) => {}
             );
         }
+    });
+};
+
+export const excluirOperacaoCheques = (req, res) => {
+    const { idOperacao } = req.body;
+
+    const sql1 = 'delete from borderos_lancamentos where idbordero = ? ';
+
+    db.query(sql1, [idOperacao], (err, data) => {
+        if (err) return res.json(err);
+    });
+
+    const sql2 = 'delete from borderos  where idbordero = ? ';
+    db.query(sql2, [idOperacao], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json('Operacão excluída!');
     });
 };
 

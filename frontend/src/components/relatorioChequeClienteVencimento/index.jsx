@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { GridChequeRelatorio } from '../gridRelatorioCheques';
 import { impressaoRelCheque } from '../functions/impressaoRelCheque';
 import { BuscaClienteNomeDireto } from '../buscaClienteNome';
+import { TituloTela } from '../titulosTela/tituloTela';
 
 export const RelatorioChequePorClienteVencimento = () => {
     const [idCliente, setIdCliente] = useState(0);
@@ -202,11 +203,7 @@ export const RelatorioChequePorClienteVencimento = () => {
                 />
             )}
             <div className="divRelatorioChequeData">
-                <div id="divTituloRelatorio">
-                    <label>
-                        Realtório de Cheques por Cliente e Data de Vencimento
-                    </label>
-                </div>
+                <TituloTela tituloTela="Realtório de Cheques por Cliente e Data de Vencimento" />
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow">

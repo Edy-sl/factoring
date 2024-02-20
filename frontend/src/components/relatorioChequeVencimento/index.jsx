@@ -11,6 +11,7 @@ import {
     retornaDataAtual,
 } from '../../biblitoteca.jsx';
 import { impressaoRelCheque } from '../functions/impressaoRelCheque';
+import { TituloTela } from '../titulosTela/tituloTela.jsx';
 
 export const RelatorioChequePorVencimento = () => {
     const ref = useRef();
@@ -99,9 +100,8 @@ export const RelatorioChequePorVencimento = () => {
                 />
             )}
             <div className="divRelatorioChequeData">
-                <div id="divTituloRelatorio">
-                    <label>Realtório de Cheques por Data de Vencimento</label>
-                </div>
+                <TituloTela tituloTela=" Realtório de Cheques por Data de Vencimento" />
+
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow">
                         <div className="boxCol">

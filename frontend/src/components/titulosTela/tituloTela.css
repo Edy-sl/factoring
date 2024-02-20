@@ -3,7 +3,13 @@
     flex-direction: row;
     justify-content: space-between;
     text-decoration: none;
-    padding: 10px;
+    padding: 5px;
+}
+
+#labelTituloTela {
+    font-size: 2em;
+    color: #828289;
+    margin: 0;
 }
 
 #iconeExitTitulo {

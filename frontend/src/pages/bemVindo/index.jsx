@@ -3,6 +3,7 @@ import { AuthContext } from '../../context/authContext';
 import { FormFactoring } from '../../components/formFactoring';
 import { FormLogin } from '../../components/formLogin';
 import { apiFactoring } from '../../services/api';
+import { Calculadora } from '../../components/calculadora/calculadora';
 
 export const BemVindo = () => {
     const { autenticado, factoring } = useContext(AuthContext);
