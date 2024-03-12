@@ -9,7 +9,9 @@ export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
     let totalJurosEmprestimo = 0;
 
     const win = window.open('', '', 'heigth=700, width=900');
-    win.document.write('<table border="0" width="900">');
+    win.document.write(
+        '<table border="0" width="900" style="font-family: courier; font-size: 14px; font-weight: 550;">'
+    );
 
     win.document.write('<tr>');
     win.document.write('<td colspan="8">');
@@ -20,7 +22,7 @@ export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
     win.document.write('<tr>');
     win.document.write('<td colspan="8">');
     win.document.write(
-        '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+        '----------------------------------------------------------------------------------------------------------'
     );
     win.document.write('</td>');
     win.document.write('</tr>');
@@ -117,8 +119,9 @@ export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
     win.document.write('<tr>');
     win.document.write('<td colspan="8">');
     win.document.write(
-        '-----------------------------------------------------------------------------------------------------------------------------------------------------------------------'
+        '----------------------------------------------------------------------------------------------------------'
     );
+
     win.document.write('</td>');
     win.document.write('</tr>');
 

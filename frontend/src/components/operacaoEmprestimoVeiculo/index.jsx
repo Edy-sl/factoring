@@ -29,7 +29,7 @@ import { BuscaClienteNomeDireto } from '../buscaClienteNome';
 import { BuscaCredorNome } from '../buscaCredorNome';
 import { BuscaAvalistaNome } from '../buscaAvalistaNome';
 
-export const FormOperacionalEmprestimo = () => {
+export const FormOperacionalEmprestimoVeiculo = () => {
     const navigate = useNavigate();
 
     const { tipo } = useParams();
@@ -443,7 +443,6 @@ export const FormOperacionalEmprestimo = () => {
 
     const buscaEmprestimo = async () => {
         const dadosEmprestimo = ref.current;
-
         await apiFactoring
             .post(
                 '/busca-emprestimo-id',
@@ -461,24 +460,39 @@ export const FormOperacionalEmprestimo = () => {
                     setOnEdit(true);
 
                     data.map((dados) => {
-                        setIdCliente(dados.idcliente);
-                        setCnpjCpfCredor(dados.cnpj_cpf_credor);
-                        setCnpjCpfAvalista(dados.cnpj_cpf_avalista);
                         setPlacaVeiculo(dados.placa);
                         setNomeVeiculo(dados.nome_veiculo);
 
-                        dadosEmprestimo.valorParcela.value = (
-                            dados.valor_parcela * 1
+                        dadosEmprestimo.dataCadastro.value =
+                            dados.data_cadastro;
+
+                        setIdCliente(dados.idcliente);
+
+                        valorTotalEmprestimo = dados.valor_emprestimo * 1;
+
+                        dadosEmprestimo.nomeClienteEmprestimo.value =
+                            dados.nome;
+                        setCnpjCpfCredor(dados.cnpj_cpf_credor);
+                        setCnpjCpfAvalista(dados.cnpj_cpf_avalista);
+
+                        dadosEmprestimo.nomeCredor.value = dados.nome_credor;
+                        dadosEmprestimo.nomeAvalista.value =
+                            dados.nome_avalista;
+
+                        dadosEmprestimo.jurosMensal.value = dados.juros_mensal;
+
+                        dadosEmprestimo.valorEmprestimo.value = (
+                            dados.valor_emprestimo * 1
                         ).toLocaleString('pt-BR', {
                             style: 'decimal',
                             minimumFractionDigits: 2,
                         });
-
                         dadosEmprestimo.parcelas.value =
                             dados.quantidade_parcelas;
-
-                        dadosEmprestimo.valorEmprestimo.value = (
-                            dados.valor_emprestimo * 1
+                        dadosEmprestimo.dataBase.value = dados.data_base;
+                        dadosEmprestimo.intervalo.value = dados.intervalo;
+                        dadosEmprestimo.valorParcela.value = (
+                            dados.valor_parcela * 1
                         ).toLocaleString('pt-BR', {
                             style: 'decimal',
                             minimumFractionDigits: 2,
@@ -491,22 +505,19 @@ export const FormOperacionalEmprestimo = () => {
                             minimumFractionDigits: 2,
                         });
 
-                        dadosEmprestimo.dataCadastro.value =
-                            dados.data_cadastro;
+                        dadosEmprestimo.valorTotalJuros.value = (
+                            dados.valor_juros * 1
+                        ).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
 
-                        valorTotalEmprestimo = dados.valor_emprestimo;
-
-                        dadosEmprestimo.nomeClienteEmprestimo.value =
-                            dados.nome;
-
-                        dadosEmprestimo.nomeCredor.value = dados.nome_credor;
-                        dadosEmprestimo.nomeAvalista.value =
-                            dados.nome_avalista;
-
-                        dadosEmprestimo.jurosMensal.value = dados.juros_mensal;
-
-                        dadosEmprestimo.dataBase.value = dados.data_base;
-                        dadosEmprestimo.intervalo.value = dados.intervalo;
+                        dadosEmprestimo.valorTotal.value = (
+                            dados.valor_total * 1
+                        ).toLocaleString('pt-BR', {
+                            style: 'decimal',
+                            minimumFractionDigits: 2,
+                        });
 
                         calculaJurosDiario();
                     });
@@ -655,6 +666,8 @@ export const FormOperacionalEmprestimo = () => {
         setIntervalo('0');
         setIdCliente();
         setOnEdit(false);
+        setCnpjCpfAvalista('');
+        setAvalista('');
 
         dadosEmprestimo.dataCadastro.value = retornaDataAtual();
         dadosEmprestimo.idClienteEmprestimo.value = '';
@@ -878,7 +891,10 @@ export const FormOperacionalEmprestimo = () => {
 
         arrayParcelas.map((item) => {
             win.document.write(
-                '<table border="0" style="border: solid; margin-bottom: 32px; padding: 5px 10px 5px 10px ; font: 13px Calibri; min-height:325px; max-height:325px;">'
+                '<table border="0" ' +
+                    'style="border: solid; margin-bottom: 32px;' +
+                    'padding: 5px 10px 5px 10px ; ' +
+                    'font: 13px Calibri; min - height: 325px; max - height: 325px; " > '
             );
             win.document.write('<tr>');
             win.document.write('<td>');
@@ -906,12 +922,12 @@ export const FormOperacionalEmprestimo = () => {
 
             win.document.write(
                 '<tr><td colspan="2" style="text-align:right;">' +
-                    '<label style="text-transform: uppercase; font-weight: bold;">' +
+                    '<br><label style="text-transform: uppercase; font-weight: bold;">' +
                     (item.valorPrestacao * 1).toLocaleString('pt-BR', {
                         style: 'currency',
                         currency: 'BRL',
                     }) +
-                    '</label></td></tr>'
+                    '</label><br><br></td></tr>'
             );
             //terceiro bloco
             win.document.write(
@@ -930,7 +946,7 @@ export const FormOperacionalEmprestimo = () => {
                     '<label style="text-transform: uppercase;font-weight: bold;">' +
                     valorParcela +
                     '</label>' +
-                    ', em moeda corrente desse país</td></tr>'
+                    ', em moeda corrente desse país<br><br></td></tr>'
             );
             //
             win.document.write('<tr>');
@@ -945,7 +961,7 @@ export const FormOperacionalEmprestimo = () => {
             ///
             win.document.write('<tr>');
             win.document.write(
-                '<td colspan="2">Nome do Emitente: ' +
+                '<td colspan="2"><br>Nome do Emitente: ' +
                     '<label style="text-transform: uppercase;font-weight: bold;">' +
                     cliente +
                     '</label></td>'
@@ -971,21 +987,41 @@ export const FormOperacionalEmprestimo = () => {
                     uf +
                     ' - CEP: ' +
                     cep +
-                    '</label><br><br>'
+                    '</label>'
             );
             win.document.write('</td>');
             win.document.write('</tr>');
             win.document.write('<tr>');
-            win.document.write('<td colspan="2" style="text-align:center">');
+            win.document.write('<td colspan="2">');
             win.document.write(
-                '-------------------------------------------------'
+                '<br>Avalista: <label style="text-transform: uppercase;font-weight: bold;">' +
+                    nomeAvalista +
+                    '</label>' +
+                    '  - <label style="text-transform: uppercase; font-weight: bold;">CPF: ' +
+                    cnpjCpfAvalista +
+                    '</label>'
             );
             win.document.write('</td>');
             win.document.write('</tr>');
 
             win.document.write('<tr>');
-            win.document.write('<td colspan="2" style="text-align:center">');
+            win.document.write('<td colspan="0" style="text-align:center">');
+            win.document.write(
+                '<br><br>--------------------------------------------------------------'
+            );
+            win.document.write('</td>');
+            win.document.write('<td colspan="0" style="text-align:center">');
+            win.document.write(
+                '<br><br>--------------------------------------------------------------'
+            );
+            win.document.write('</td>');
+            win.document.write('</tr>');
+            win.document.write('<tr>');
+            win.document.write('<td colspan="" style="text-align:center">');
             win.document.write('Assinatura do Emitente');
+            win.document.write('</td>');
+            win.document.write('<td colspan="" style="text-align:center">');
+            win.document.write('Assinatura do Avalista');
             win.document.write('</td>');
             win.document.write('</tr>');
             win.document.write('</table>');
@@ -1038,10 +1074,19 @@ export const FormOperacionalEmprestimo = () => {
         win.document.write('<tr ><td colspan="4" style="text-align : center">');
         win.document.write('------------------------------------------------');
         win.document.write('</td></tr >');
+        win.document.write('<tr>');
+        win.document.write('<td colspan="4">');
+        win.document.write(
+            'Veículo: ' +
+                dadosEmprestimo.nomeVeiculo.value.toLowerCase() +
+                '  -   Placa: ' +
+                dadosEmprestimo.placaVeiculo.value
+        );
+        win.document.write('</td>');
+        win.document.write('</tr>');
 
         win.document.write('<tr>');
         win.document.write('<td colspan="4">');
-
         win.document.write(
             'Observação: ' + dadosEmprestimo.obsEmprestimo.value.toLowerCase()
         );
@@ -1465,7 +1510,7 @@ export const FormOperacionalEmprestimo = () => {
                         {tipo == 'veiculo' && (
                             <div className="boxRow">
                                 <div className="boxCol">
-                                    <label>Cnpj Avalista</label>
+                                    <label>CNPJ/CPF Avalista</label>
                                     <input
                                         id="inputCnpjCpfAvalista"
                                         name="cnpjCpfAvalista"

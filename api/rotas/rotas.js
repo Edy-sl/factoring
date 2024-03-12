@@ -33,6 +33,7 @@ import {
     alterarValorParcela,
     atualizarEmprestimo,
     excluirEmprestimo,
+    atualizarVeiculoEmprestimo,
 } from '../controles/emprestimo.js';
 import {
     gravarBordero,
@@ -54,6 +55,7 @@ import {
     listaEmitentes,
     relatorioChequePorEmitenteVencimento,
     excluirOperacaoCheques,
+    buscaEmitentes,
 } from '../controles/bordero.js';
 
 import {
@@ -190,6 +192,12 @@ rotaFactoring.post(
     verifyJWT,
     verificaPermissao,
     atualizarEmprestimo
+);
+rotaFactoring.post(
+    '/atualizar-veiculo_emprestimo',
+    verifyJWT,
+    verificaPermissao,
+    atualizarVeiculoEmprestimo
 );
 
 rotaFactoring.post(
@@ -427,5 +435,8 @@ rotaFactoring.post(
     verifyJWT,
     relatorioChequePorEmitenteVencimento
 );
+
+//relatorio emitentes
+rotaFactoring.post('/busca-emitentes', verifyJWT, buscaEmitentes);
 
 export default rotaFactoring;

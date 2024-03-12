@@ -60,7 +60,7 @@ export const Menu = () => {
         loginSemSenha();
     }, 550000);
 
-    const vefificarPendencia = (pagina) => {
+    const verificarPendencia = (pagina) => {
         if (pagina == 'sair' && localStorage.getItem('gravarDoc') != 'true') {
             signOut();
         } else {
@@ -75,8 +75,6 @@ export const Menu = () => {
 
     return (
         <div className="">
-            {calc == true && <Calculadora />}
-
             <ul id="nav">
                 <li>
                     <a>Clientes</a>
@@ -84,14 +82,15 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia('/cadastro-cliente')
+                                verificarPendencia('/cadastro-cliente')
                             }
                         >
                             Cadastro
                         </Link>
+
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/taxa-cliente')}
+                            onClick={(e) => verificarPendencia('/taxa-cliente')}
                         >
                             Taxa e Limite
                         </Link>
@@ -99,10 +98,21 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia('/relatorio-clientes')
+                                verificarPendencia('/relatorio-clientes')
                             }
                         >
                             Relatório de Clientes
+                        </Link>
+                    </ul>
+                </li>
+                <li>
+                    <a>Emitentes</a>
+                    <ul>
+                        <Link
+                            to="#"
+                            onClick={(e) => verificarPendencia('/emitentes')}
+                        >
+                            Relatório de Emitentes
                         </Link>
                     </ul>
                 </li>
@@ -112,7 +122,7 @@ export const Menu = () => {
                     <ul>
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/conta')}
+                            onClick={(e) => verificarPendencia('/conta')}
                         >
                             Lançamento
                         </Link>
@@ -124,7 +134,9 @@ export const Menu = () => {
                     <ul>
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/emprestimo')}
+                            onClick={(e) =>
+                                verificarPendencia('/emprestimo/dinheiro')
+                            }
                         >
                             Lançamento
                         </Link>
@@ -132,8 +144,8 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
-                                    '/relatorio-emprestimo-vencimento'
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-vencimento/dinheiro'
                                 )
                             }
                         >
@@ -143,8 +155,8 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
-                                    '/relatorio-emprestimo-emissao'
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-emissao/dinheiro'
                                 )
                             }
                         >
@@ -154,8 +166,8 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
-                                    '/relatorio-emprestimo-cliente-vencimento'
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-cliente-vencimento/dinheiro'
                                 )
                             }
                         >
@@ -164,8 +176,8 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
-                                    '/relatorio-emprestimo-cliente-emissao'
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-cliente-emissao/dinheiro'
                                 )
                             }
                         >
@@ -175,23 +187,79 @@ export const Menu = () => {
                 </li>
 
                 <li>
+                    <a>Veículos</a>
+                    <ul>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                verificarPendencia('/financiamento/veiculo')
+                            }
+                        >
+                            Lançamento
+                        </Link>
+                        <label>-------------------</label>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-emissao/veiculo'
+                                )
+                            }
+                        >
+                            Relatório por Emissão
+                        </Link>
+
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-vencimento/veiculo'
+                                )
+                            }
+                        >
+                            Relatório por Vencimento
+                        </Link>
+                        <label>-------------------</label>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-cliente-vencimento/veiculo'
+                                )
+                            }
+                        >
+                            Relatório por Cliente / Vencimento
+                        </Link>
+                        <Link
+                            to="#"
+                            onClick={(e) =>
+                                verificarPendencia(
+                                    '/relatorio-emprestimo-cliente-emissao/veiculo'
+                                )
+                            }
+                        >
+                            Relatório por Cliente / Emissão
+                        </Link>
+                    </ul>
+                </li>
+                <li>
                     <a>Cheques</a>
                     <ul>
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/bordero')}
+                            onClick={(e) => verificarPendencia('/bordero')}
                         >
                             Lançamento
                         </Link>
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/devolucao')}
+                            onClick={(e) => verificarPendencia('/devolucao')}
                         >
                             Devolução
                         </Link>
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/pagamento')}
+                            onClick={(e) => verificarPendencia('/pagamento')}
                         >
                             Pagamento
                         </Link>
@@ -199,7 +267,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-cheque-vencimento'
                                 )
                             }
@@ -209,7 +277,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia('/relatorio-cheque-emissao')
+                                verificarPendencia('/relatorio-cheque-emissao')
                             }
                         >
                             Relatório por Emissao Op.
@@ -218,7 +286,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-cheque-cliente-vencimento'
                                 )
                             }
@@ -228,7 +296,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-cheque-cliente-emissao'
                                 )
                             }
@@ -239,7 +307,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-cheque-emitente-vencimento'
                                 )
                             }
@@ -255,7 +323,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-movimento-vencimento'
                                 )
                             }
@@ -265,7 +333,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-movimento-emissao'
                                 )
                             }
@@ -275,7 +343,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-movimento-pagamento'
                                 )
                             }
@@ -286,7 +354,7 @@ export const Menu = () => {
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/relatorio-movimento-cliente-vencimento'
                                 )
                             }
@@ -301,20 +369,20 @@ export const Menu = () => {
                     <ul>
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/empresa')}
+                            onClick={(e) => verificarPendencia('/empresa')}
                         >
                             Cadastro da Empresa
                         </Link>
                         <Link
                             to="#"
-                            onClick={(e) => vefificarPendencia('/permissoes')}
+                            onClick={(e) => verificarPendencia('/permissoes')}
                         >
                             Permissões
                         </Link>
                         <Link
                             to="#"
                             onClick={(e) =>
-                                vefificarPendencia(
+                                verificarPendencia(
                                     '/cadastro-usuario-secundario'
                                 )
                             }
@@ -325,7 +393,7 @@ export const Menu = () => {
                 </li>
 
                 <li>
-                    <a id="sair" onClick={(e) => vefificarPendencia('sair')}>
+                    <a id="sair" onClick={(e) => verificarPendencia('sair')}>
                         Sair
                     </a>
                 </li>

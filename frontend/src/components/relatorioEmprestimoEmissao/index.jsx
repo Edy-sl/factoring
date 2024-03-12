@@ -13,8 +13,11 @@ import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 import { impressaoRelEmprestimo } from '../functions/impressaoRelEmprestimo';
 import { TituloTela } from '../titulosTela/tituloTela.jsx';
+import { useParams } from 'react-router-dom';
 export const RelatorioEmprestimoPorEmissao = () => {
     const ref = useRef();
+
+    const { tipo } = useParams();
 
     const [listagem, setListagem] = useState([]);
 
@@ -36,6 +39,8 @@ export const RelatorioEmprestimoPorEmissao = () => {
 
     const [atualizaParcelas, setAtualizaParcelas] = useState(false);
 
+    const [nomeRelatorio, setNomeRelatorio] = useState('');
+
     const handleSubmit = (e) => {
         e.preventDefault();
     };
@@ -52,6 +57,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
                     dataI: dataI,
                     dataF: dataF,
                     tipoRel: checkRel,
+                    tipoEmprestimo: tipo,
                 },
                 {
                     headers: {
@@ -83,6 +89,14 @@ export const RelatorioEmprestimoPorEmissao = () => {
         !checkRel && setCheckRel('GERAL');
     }, []);
 
+    useEffect(() => {
+        if (tipo == 'dinheiro') {
+            setNomeRelatorio('Relatório de Empréstimo por data de Emissão');
+        } else {
+            setNomeRelatorio('Relatório de Financiamento por data de Emissão');
+        }
+    }, [tipo]);
+
     return (
         <div id="divContainerRelatorio">
             {' '}
@@ -100,7 +114,11 @@ export const RelatorioEmprestimoPorEmissao = () => {
                 />
             )}
             <div className="divRelatorioEmprestimoData">
-                <TituloTela tituloTela="Realtório de Empréstimo por Data de Emissão" />
+                {tipo == 'dinheiro' ? (
+                    <TituloTela tituloTela="Realtório de Empréstimo por Data de Emissão" />
+                ) : (
+                    <TituloTela tituloTela="Realtório de Financiamento por Data de Emissão" />
+                )}
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div id="divCentralizada">
@@ -191,7 +209,8 @@ export const RelatorioEmprestimoPorEmissao = () => {
                                 onClick={(e) =>
                                     impressaoRelEmprestimo(
                                         listagem,
-                                        'Realtório de Empréstimo por Data de Emissão de: ' +
+                                        nomeRelatorio +
+                                            ': ' +
                                             inverteData(dataIni) +
                                             ' - ' +
                                             inverteData(dataFim)

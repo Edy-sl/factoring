@@ -17,6 +17,7 @@ import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 import { impressaoRelEmprestimo } from '../functions/impressaoRelEmprestimo';
 import { BuscaClienteNomeDireto } from '../buscaClienteNome';
 import { TituloTela } from '../titulosTela/tituloTela';
+import { useParams } from 'react-router-dom';
 
 export const RelatorioEmprestimoPorClienteEmissao = () => {
     const [idCliente, setIdCliente] = useState(0);
@@ -26,6 +27,10 @@ export const RelatorioEmprestimoPorClienteEmissao = () => {
     const [clienteFiltrado, setClienteFiltrado] = useState([]);
     const [formBuscaDireto, setFormBuscaDireto] = useState(false);
     const [clientes, setClientes] = useState([]);
+
+    const [nomeRelatorio, setNomeRelatorio] = useState('');
+
+    const { tipo } = useParams();
 
     const ref = useRef();
 
@@ -72,6 +77,7 @@ export const RelatorioEmprestimoPorClienteEmissao = () => {
                     dataF: dataF,
                     tipoRel: checkRel,
                     idCliente: idCliente,
+                    tipoEmprestimo: tipo,
                 },
                 {
                     headers: {
@@ -184,6 +190,18 @@ export const RelatorioEmprestimoPorClienteEmissao = () => {
         !checkRel && setCheckRel('GERAL');
     }, []);
 
+    useEffect(() => {
+        if (tipo == 'dinheiro') {
+            setNomeRelatorio(
+                'Realtório de Empréstimo por Cliente e Data de Emissão'
+            );
+        } else {
+            setNomeRelatorio(
+                'Realtório de Financiamento por Cliente e Data de Emissão'
+            );
+        }
+    }, [tipo]);
+
     return (
         <div id="divContainerRelatorio">
             <ToastContainer
@@ -206,7 +224,11 @@ export const RelatorioEmprestimoPorClienteEmissao = () => {
                 />
             )}
             <div className="divRelatorioEmprestimoData">
-                <TituloTela tituloTela="Realtório de Empréstimo por Cliente e Data de Emissão" />
+                {tipo == 'dinheiro' ? (
+                    <TituloTela tituloTela="Realtório de Empréstimo por Cliente e Data de Emissão" />
+                ) : (
+                    <TituloTela tituloTela="Realtório de Financiamento por Cliente e Data de Emissão" />
+                )}
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div id="divCentralizada">
@@ -356,7 +378,8 @@ export const RelatorioEmprestimoPorClienteEmissao = () => {
                                 onClick={(e) =>
                                     impressaoRelEmprestimo(
                                         listagem,
-                                        'Realtório de Empréstimo por Cliente e Data de Emissão de: ' +
+                                        nomeRelatorio +
+                                            ': ' +
                                             inverteData(dataIni) +
                                             ' - ' +
                                             inverteData(dataFim)

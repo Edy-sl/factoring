@@ -348,6 +348,7 @@ export const FormCliente = () => {
                         dadosCliente.complemento.value = dados.complemento;
                         dadosCliente.bairro.value = dados.bairro;
                         dadosCliente.cidade.value = dados.cidade;
+                        dadosCliente.uf.value = dados.uf;
                         dadosCliente.telefone.value = dados.telefone;
                         dadosCliente.dataNascimento.value =
                             dados.data_nascimento;

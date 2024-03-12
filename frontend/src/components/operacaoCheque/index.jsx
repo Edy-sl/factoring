@@ -174,6 +174,8 @@ export const FormOperacaoCheque = () => {
     };
 
     const buscaOperacao = async () => {
+        console.log('buscar op');
+        console.log(idBordero);
         if (idBordero > 0) {
             setLancamentos([]);
             const dadosOperacao = ref.current;
@@ -272,6 +274,8 @@ export const FormOperacaoCheque = () => {
             .catch((error) => {
                 toast.error(error.response.data);
             });
+
+        BuscaCheques();
     };
 
     const gravarBorderdo = async () => {
@@ -361,6 +365,8 @@ export const FormOperacaoCheque = () => {
         setGravarDoc(true);
         localStorage.setItem('gravarDoc', true);
 
+        console.log('disparou aqui ***********');
+
         if (varIncluirCheque === true) {
             let checado = true;
 
@@ -447,6 +453,8 @@ export const FormOperacaoCheque = () => {
     };
 
     const gravarAlteracaoCheque = (idIndexCheque) => {
+        console.log('diaparou aqui....');
+
         setGravarDoc(true);
         localStorage.setItem('gravarDoc', true);
 

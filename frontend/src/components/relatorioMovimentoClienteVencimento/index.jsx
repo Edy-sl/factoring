@@ -17,6 +17,7 @@ import { impressaoMovimento } from '../functions/impressaoMovimento.jsx';
 import { BuscaClienteNome } from '../buscaCliente/index.jsx';
 import { BuscaClienteNomeDireto } from '../buscaClienteNome/index.jsx';
 import { TituloTela } from '../titulosTela/tituloTela.jsx';
+import { useParams } from 'react-router-dom';
 
 export const RelatorioMovimentoPorClienteVencimento = () => {
     const ref = useRef();

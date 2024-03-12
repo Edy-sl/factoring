@@ -1,0 +1,9 @@
+#divGridEmitentes {
+    max-height: 500px;
+    overflow: scroll;
+}
+
+#divNomeEmitente {
+    border-bottom: 1px solid silver;
+    text-transform: uppercase;
+}

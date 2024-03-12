@@ -154,13 +154,11 @@
     width: 35px;
 }
 
-#inputPlacaVeiculo {
-    width: 80px;
+#inputNomeVeiculo {
 }
 
-#checkP {
-    width: 30px;
-    height: 30px;
+#inputPlacaVeiculo {
+    width: 80px;
 }
 
 @media only screen and (max-width: 700px) {

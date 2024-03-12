@@ -43,6 +43,8 @@ import { RelatorioMovimentoPorPagamento } from './components/relatorioMovimentoP
 import { Conta } from './components/conta/index.jsx';
 import { RelatorioMovimentoPorClienteVencimento } from './components/relatorioMovimentoClienteVencimento/index.jsx';
 import { RelatorioChequePorEmitenteVencimento } from './components/relatorioChequeEmitenteVencimento/index.jsx';
+import { Emitentes } from './components/emitentes/emitentes.jsx';
+import { FormOperacionalEmprestimoVeiculo } from './components/operacaoEmprestimoVeiculo/index.jsx';
 
 const router = createBrowserRouter([
     {
@@ -113,7 +115,7 @@ const router = createBrowserRouter([
             },
 
             {
-                path: '/relatorio-emprestimo-vencimento',
+                path: '/relatorio-emprestimo-vencimento/:tipo',
                 element: (
                     <PrivateRouter>
                         <RelatorioEmprestimoPorVencimento />
@@ -150,6 +152,14 @@ const router = createBrowserRouter([
                 ),
             },
             {
+                path: '/emitentes',
+                element: (
+                    <PrivateRouter>
+                        <Emitentes />
+                    </PrivateRouter>
+                ),
+            },
+            {
                 path: '/taxa-cliente',
                 element: (
                     <PrivateRouter>
@@ -165,11 +175,20 @@ const router = createBrowserRouter([
                     </PrivateRouter>
                 ),
             },
+
             {
-                path: '/emprestimo',
+                path: '/emprestimo/:tipo',
                 element: (
                     <PrivateRouter>
                         <FormOperacionalEmprestimo />
+                    </PrivateRouter>
+                ),
+            },
+            {
+                path: '/financiamento/:tipo',
+                element: (
+                    <PrivateRouter>
+                        <FormOperacionalEmprestimoVeiculo />
                     </PrivateRouter>
                 ),
             },
@@ -198,7 +217,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: '/relatorio-emprestimo-emissao',
+                path: '/relatorio-emprestimo-emissao/:tipo',
                 element: (
                     <PrivateRouter>
                         <RelatorioEmprestimoPorEmissao />
@@ -206,7 +225,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: '/relatorio-emprestimo-cliente-vencimento',
+                path: '/relatorio-emprestimo-cliente-vencimento/:tipo',
                 element: (
                     <PrivateRouter>
                         <RelatorioEmprestimoPorClienteVencimento />
@@ -214,7 +233,7 @@ const router = createBrowserRouter([
                 ),
             },
             {
-                path: '/relatorio-emprestimo-cliente-emissao',
+                path: '/relatorio-emprestimo-cliente-emissao/:tipo',
                 element: (
                     <PrivateRouter>
                         <RelatorioEmprestimoPorClienteEmissao />

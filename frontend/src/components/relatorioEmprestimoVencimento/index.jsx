@@ -14,6 +14,7 @@ import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo';
 import { GridRelatorioEmprestimo } from '../gridRelatorioEmprestimo';
 import { impressaoRelEmprestimo } from '../functions/impressaoRelEmprestimo';
 import { TituloTela } from '../titulosTela/tituloTela.jsx';
+import { useParams } from 'react-router-dom';
 export const RelatorioEmprestimoPorVencimento = () => {
     const ref = useRef();
 
@@ -28,6 +29,10 @@ export const RelatorioEmprestimoPorVencimento = () => {
     const [parcelaN, setParcelaN] = useState(0);
 
     const [atualizaParcelas, setAtualizaParcelas] = useState(false);
+
+    const [nomeRelatorio, setNomeRelatorio] = useState('');
+
+    const { tipo } = useParams();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -45,6 +50,7 @@ export const RelatorioEmprestimoPorVencimento = () => {
                     dataI: dataI,
                     dataF: dataF,
                     tipoRel: checkRel,
+                    tipoEmprestimo: tipo,
                 },
                 {
                     headers: {
@@ -65,6 +71,16 @@ export const RelatorioEmprestimoPorVencimento = () => {
         !checkRel && setCheckRel('GERAL');
     }, []);
 
+    useEffect(() => {
+        if (tipo == 'dinheiro') {
+            setNomeRelatorio('Relatório de Empréstimo por data de vencimento');
+        } else {
+            setNomeRelatorio(
+                'Relatório de Financiamento por data de vencimento'
+            );
+        }
+    }, [tipo]);
+
     return (
         <div id="divContainerRelatorio">
             {' '}
@@ -82,7 +98,11 @@ export const RelatorioEmprestimoPorVencimento = () => {
                 />
             )}
             <div className="divRelatorioEmprestimoData">
-                <TituloTela tituloTela="Realtório de Empréstimo por Data de Vencimento" />
+                {tipo == 'dinheiro' ? (
+                    <TituloTela tituloTela="Realtório de Empréstimo por Data de Vencimento" />
+                ) : (
+                    <TituloTela tituloTela="Realtório de Financiamento por Data de Vencimento" />
+                )}
 
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div id="divCentralizada">
@@ -173,7 +193,8 @@ export const RelatorioEmprestimoPorVencimento = () => {
                                 onClick={(e) => {
                                     impressaoRelEmprestimo(
                                         listagem,
-                                        'Realtório de Empréstimo por Data de Vencimento de: ' +
+                                        nomeRelatorio +
+                                            ': ' +
                                             inverteData(dataIni) +
                                             ' - ' +
                                             inverteData(dataFim)

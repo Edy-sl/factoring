@@ -63,6 +63,18 @@ export const keyDown = (e, elemento, target, elemento2, elemento3) => {
         }
     }
 
+    if (target == 'avalista' && e.key == 'ArrowDown') {
+        if (document.getElementById(elemento2)) {
+            document.getElementById(elemento2).focus();
+        }
+    }
+
+    if (target == 'avalista' && e.key == 'ArrowUp') {
+        if (document.getElementById(elemento3)) {
+            document.getElementById(elemento3).focus();
+        }
+    }
+
     if (e.key === 'Enter') {
         e.preventDefault();
         document.getElementById(elemento).focus();

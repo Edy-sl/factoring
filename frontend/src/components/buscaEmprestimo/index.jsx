@@ -6,13 +6,16 @@ import { useEffect, useRef, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { ImExit } from 'react-icons/im';
 import './buscaEmprestimo.css';
-import { keyDown, retornaDataAtual } from '../../biblitoteca';
+import { inverteData, keyDown, retornaDataAtual } from '../../biblitoteca';
 
 export const BuscaEmprestimo = ({
     setIdEmprestimo,
     setFormBuscaEmprestimo,
+    tipoEmprestimo,
 }) => {
     const ref = useRef();
+
+    console.log(tipoEmprestimo);
 
     const [emprestimo, setEmprestimo] = useState([]);
     const [dataAtualI, setDataAtualI] = useState();
@@ -31,6 +34,7 @@ export const BuscaEmprestimo = ({
                 {
                     dataI: dadosBusca.dataI.value,
                     dataF: dadosBusca.dataF.value,
+                    tipoEmprestimo: tipoEmprestimo,
                 },
                 {
                     headers: {
@@ -93,7 +97,9 @@ export const BuscaEmprestimo = ({
                         >
                             <div id="divIdEmprestimo">{oper.idemprestimo}</div>
                             <div id="divNome">{oper.nome}</div>
-                            <div id="divData">{oper.data_cadastro}</div>
+                            <div id="divData">
+                                {inverteData(oper.data_cadastro)}
+                            </div>
                         </div>
                     ))}
                 </div>

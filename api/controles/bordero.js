@@ -539,3 +539,13 @@ export const relatorioChequePorEmitenteVencimento = (req, res) => {
         return res.status(200).json(data);
     });
 };
+
+export const buscaEmitentes = (req, res) => {
+    const sql =
+        'SELECT nome_cheque FROM borderos_lancamentos group by nome_cheque order by nome_cheque';
+
+    db.query(sql, [], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json(data);
+    });
+};

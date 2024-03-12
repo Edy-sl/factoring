@@ -6,7 +6,8 @@ export const gravarEmprestimo = (req, res) => {
     const { idCliente } = req.body;
     const { cnpjCpfCredor } = req.body;
     const { nomeCredor } = req.body;
-
+    const { cnpjCpfAvalista } = req.body;
+    const { nomeAvalista } = req.body;
     const { jurosMensal } = req.body;
     const { valorEmprestimo } = req.body;
     const { quatidadeParcelas } = req.body;
@@ -18,8 +19,19 @@ export const gravarEmprestimo = (req, res) => {
     const { idFactoring } = req.body;
     const { arrayParcelas } = req.body;
 
+    const { tipoEmprestimo } = req.body;
+    const { nomeVeiculo } = req.body;
+    const { placaVeiculo } = req.body;
+
     const sql =
-        'insert into emprestimos (data_cadastro,juros_mensal,idcliente,cnpj_cpf_credor,nome_credor,valor_emprestimo,quantidade_parcelas,data_base,intervalo,valor_parcela,valor_juros,valor_total,idfactoring) values (?,?,?,?,?,?,?,?,?,?,?,?,?)';
+        'insert into emprestimos ' +
+        '(data_cadastro, juros_mensal, idcliente, ' +
+        'cnpj_cpf_credor, nome_credor, ' +
+        'valor_emprestimo, quantidade_parcelas, ' +
+        'data_base, intervalo, valor_parcela, ' +
+        'valor_juros, valor_total, idfactoring, ' +
+        'tipo_emprestimo, nome_veiculo, placa, cnpj_cpf_avalista, nome_avalista)' +
+        'values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
     db.query(
         sql,
@@ -37,6 +49,11 @@ export const gravarEmprestimo = (req, res) => {
             valorJuros,
             valorTotal,
             idFactoring,
+            tipoEmprestimo,
+            nomeVeiculo,
+            placaVeiculo,
+            cnpjCpfAvalista,
+            nomeAvalista,
         ],
         (err, data) => {
             if (err) return res.json(err);
@@ -92,6 +109,21 @@ export const atualizarEmprestimo = (req, res) => {
     });
 };
 
+//alterar veiculo
+export const atualizarVeiculoEmprestimo = (req, res) => {
+    const { nomeVeiculo } = req.body;
+    const { placaVeiculo } = req.body;
+    const { idEmprestimo } = req.body;
+
+    const sql =
+        'update emprestimos set nome_veiculo = ?, placa = ? where idEmprestimo = ?';
+
+    db.query(sql, [nomeVeiculo, placaVeiculo, idEmprestimo], (err, data) => {
+        if (err) return res.json(err);
+        return res.status(200).json('Veículo Atualizado!');
+    });
+};
+
 export const gravarParcelas = (idemprestimo, arrayParcelas) => {
     arrayParcelas.map((item) => {
         const sql2 =
@@ -107,10 +139,16 @@ export const gravarParcelas = (idemprestimo, arrayParcelas) => {
 export const buscaEmprestimo = (req, res) => {
     const { dataI } = req.body;
     const { dataF } = req.body;
+    const { tipoEmprestimo } = req.body;
 
     const sql =
-        'select emprestimos.idemprestimo,emprestimos.data_cadastro, clientes.idcliente, clientes.nome from emprestimos, clientes  where emprestimos.idcliente = clientes.idcliente and emprestimos.data_cadastro between ? and ? order by `idemprestimo` desc';
-    db.query(sql, [dataI, dataF], (err, data) => {
+        'select emprestimos.idemprestimo,emprestimos.data_cadastro, ' +
+        'clientes.idcliente, clientes.nome ' +
+        'from emprestimos, clientes  ' +
+        'where emprestimos.idcliente = clientes.idcliente ' +
+        'and emprestimos.data_cadastro between  ? and ? ' +
+        'and tipo_emprestimo = ? order by `idemprestimo` desc';
+    db.query(sql, [dataI, dataF, tipoEmprestimo], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });
@@ -120,7 +158,17 @@ export const buscaEmprestimoId = (req, res) => {
     const { emprestimo } = req.body;
 
     const sql =
-        'select emprestimos.idemprestimo, emprestimos.data_cadastro,emprestimos.idcliente,emprestimos.nome_credor,emprestimos.cnpj_cpf_credor,emprestimos.data_base,emprestimos.juros_mensal,emprestimos.valor_emprestimo,emprestimos.quantidade_parcelas,emprestimos.intervalo,emprestimos.valor_parcela,emprestimos.valor_total,emprestimos.valor_juros, clientes.idcliente, clientes.nome from emprestimos, clientes  where emprestimos.idcliente = clientes.idcliente and emprestimos.idemprestimo = ?';
+        'select emprestimos.idemprestimo, ' +
+        'emprestimos.data_cadastro, emprestimos.idcliente, ' +
+        'emprestimos.nome_credor, emprestimos.cnpj_cpf_credor, ' +
+        'emprestimos.data_base, emprestimos.juros_mensal, ' +
+        'emprestimos.valor_emprestimo, emprestimos.quantidade_parcelas, ' +
+        'emprestimos.intervalo, emprestimos.valor_parcela, emprestimos.valor_total, ' +
+        'emprestimos.valor_juros, clientes.idcliente, ' +
+        'emprestimos.tipo_emprestimo, placa, nome_veiculo, ' +
+        'emprestimos.cnpj_cpf_avalista, emprestimos.nome_avalista, ' +
+        'clientes.nome from emprestimos, clientes  ' +
+        'where emprestimos.idcliente = clientes.idcliente and emprestimos.idemprestimo = ? ';
     db.query(sql, [emprestimo], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
@@ -130,7 +178,12 @@ export const buscaEmprestimoId = (req, res) => {
 export const buscaParcelasIdEmprestimo = (req, res) => {
     const { idEmprestimo } = req.body;
     const sql =
-        'SELECT parcelas_emprestimo.idparcela,parcelas_emprestimo.parcela,parcelas_emprestimo.vencimento,parcelas_emprestimo.valor, round(ifnull(sum(pagamentos_parcelas.valor_pago),0),2)  as valor_pago FROM parcelas_emprestimo left join  pagamentos_parcelas on pagamentos_parcelas.idparcela=parcelas_emprestimo.idparcela where  parcelas_emprestimo.idemprestimo=? group by parcelas_emprestimo.idparcela';
+        'SELECT parcelas_emprestimo.idparcela,parcelas_emprestimo.parcela,' +
+        'parcelas_emprestimo.vencimento, parcelas_emprestimo.valor,' +
+        'round(ifnull(sum(pagamentos_parcelas.valor_pago), 0), 2) ' +
+        'as valor_pago FROM parcelas_emprestimo left join  pagamentos_parcelas ' +
+        'on pagamentos_parcelas.idparcela = parcelas_emprestimo.idparcela ' +
+        'where  parcelas_emprestimo.idemprestimo =? group by parcelas_emprestimo.idparcela';
     db.query(sql, [idEmprestimo], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
@@ -193,6 +246,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
     var { dataI } = req.body;
     var { dataF } = req.body;
     var { tipoRel } = req.body;
+    const { tipoEmprestimo } = req.body;
 
     /*por data de vencimento - nao pagar*/
     if (tipoRel == 'PAGAR') {
@@ -209,6 +263,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -217,6 +272,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_parcelas.parcela, ' +
             'tmp_parcelas.idparcela, ' +
             'tmp_parcelas.valor, ' +
+            'emp.tipo_emprestimo, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
@@ -244,8 +300,8 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'on emp.idemprestimo = tmp_parcelas.idemprestimo ' +
             'where tmp_parcelas.valor > tmp_parcelas.valor_pago) as tmp_emp ' +
             'left join clientes as cli ' +
-            'on cli.idcliente = tmp_emp.idcliente ' +
-            'order by idemprestimo, parcela ';
+            'on cli.idcliente = tmp_emp.idcliente where  tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento';
     }
 
     /*por data de vencimento - pagas */
@@ -263,6 +319,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -271,6 +328,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_parcelas.parcela, ' +
             'tmp_parcelas.idparcela, ' +
             'tmp_parcelas.valor, ' +
+            'emp.tipo_emprestimo, ' +
             'emp.idcliente, ' +
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
@@ -298,8 +356,8 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'on emp.idemprestimo = tmp_parcelas.idemprestimo ' +
             'where tmp_parcelas.valor_pago > 0) as tmp_emp ' +
             'left join clientes as cli ' +
-            'on cli.idcliente = tmp_emp.idcliente ' +
-            'order by idemprestimo, parcela ';
+            'on cli.idcliente = tmp_emp.idcliente where  tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
     /*por data de vencimento - Geral*/
@@ -317,6 +375,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -328,6 +387,7 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'emp.idcliente, ' +
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
+            'emp.tipo_emprestimo, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from ' +
@@ -351,11 +411,11 @@ export const relatorioEmprestimoVencimento = (req, res) => {
             'left join emprestimos as emp  ' +
             'on emp.idemprestimo = tmp_parcelas.idemprestimo) as tmp_emp ' +
             'left join clientes as cli ' +
-            'on cli.idcliente = tmp_emp.idcliente ' +
-            'order by idemprestimo, parcela ';
+            'on cli.idcliente = tmp_emp.idcliente where  tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
-    db.query(sql, [dataI, dataF], (err, data) => {
+    db.query(sql, [dataI, dataF, tipoEmprestimo], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });
@@ -366,6 +426,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
     var { dataI } = req.body;
     var { dataF } = req.body;
     var { tipoRel } = req.body;
+    const { tipoEmprestimo } = req.body;
 
     /*por data de emissao - nao pagar*/
     if (tipoRel == 'PAGAR') {
@@ -382,6 +443,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -394,6 +456,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
+            'emp.tipo_emprestimo, ' +
             'data_cadastro ' +
             'from  ' +
             '(select ' +
@@ -417,7 +480,8 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
             'where tmp_emp.data_cadastro between ? and ? ' +
-            'order by idemprestimo, parcela ';
+            'and tmp_emp.tipo_emprestimo = ?';
+        ('order by idemprestimo, vencimento ');
     }
 
     /*por data de vencimento - pagas */
@@ -435,6 +499,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -447,6 +512,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
+            'emp.tipo_emprestimo, ' +
             'data_cadastro ' +
             'from  ' +
             '(select ' +
@@ -470,7 +536,8 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
             'where tmp_emp.data_cadastro between ? and ? ' +
-            'order by idemprestimo, parcela ';
+            'and tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
     /*por data de vencimento - Geral*/
@@ -488,6 +555,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -500,6 +568,7 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
+            'emp.tipo_emprestimo, ' +
             'data_cadastro ' +
             'from ' +
             '(select ' +
@@ -521,11 +590,11 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'on emp.idemprestimo = tmp_parcelas.idemprestimo) as tmp_emp ' +
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
-            'where tmp_emp.data_cadastro between ? and ? ' +
-            'order by idemprestimo, parcela ';
+            'where tmp_emp.data_cadastro between ? and ? and tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
-    db.query(sql, [dataI, dataF], (err, data) => {
+    db.query(sql, [dataI, dataF, tipoEmprestimo], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });
@@ -538,6 +607,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
     var { dataF } = req.body;
     var { tipoRel } = req.body;
     var { idCliente } = req.body;
+    const { tipoEmprestimo } = req.body;
 
     /*por data de vencimento - nao pagar*/
     if (tipoRel == 'PAGAR') {
@@ -549,6 +619,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_emp.parcela, ' +
             'tmp_emp.idparcela, ' +
             'tmp_emp.idcliente, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
@@ -566,6 +637,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
+            'emp.tipo_emprestimo, ' +
             'data_cadastro ' +
             'from  ' +
             '(select ' +
@@ -590,8 +662,8 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'where tmp_parcelas.valor > tmp_parcelas.valor_pago) as tmp_emp ' +
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
-            'where tmp_emp.idcliente = ? ' +
-            'order by idemprestimo, parcela ';
+            'where tmp_emp.idcliente = ? and tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
     /*por data de vencimento - pagas */
@@ -609,6 +681,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -621,6 +694,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
+            'emp.tipo_emprestimo, ' +
             'data_cadastro ' +
             'from  ' +
             '(select ' +
@@ -645,8 +719,8 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'where tmp_parcelas.valor_pago > 0) as tmp_emp ' +
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
-            'where tmp_emp.idcliente = ? ' +
-            'order by idemprestimo, parcela ';
+            'where tmp_emp.idcliente = ? and tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
     /*por data de vencimento - Geral*/
@@ -658,6 +732,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'tmp_emp.vencimento, ' +
             'tmp_emp.parcela, ' +
             'tmp_emp.idparcela, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'tmp_emp.idcliente, ' +
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
@@ -676,6 +751,7 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
+            'emp.tipo_emprestimo, ' +
             'data_cadastro ' +
             'from ' +
             '(select ' +
@@ -699,11 +775,11 @@ export const relatorioEmprestimoClienteVencimento = (req, res) => {
             'on emp.idemprestimo = tmp_parcelas.idemprestimo) as tmp_emp ' +
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
-            'where tmp_emp.idcliente = ? ' +
-            'order by idemprestimo, parcela ';
+            'where tmp_emp.idcliente = ? and tmp_emp.tipo_emprestimo = ?' +
+            'order by idemprestimo, vencimento ';
     }
 
-    db.query(sql, [dataI, dataF, idCliente], (err, data) => {
+    db.query(sql, [dataI, dataF, idCliente, tipoEmprestimo], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });
@@ -715,6 +791,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
     var { dataF } = req.body;
     var { tipoRel } = req.body;
     var { idCliente } = req.body;
+    const { tipoEmprestimo } = req.body;
 
     /*por data de emissao - nao pagar*/
     if (tipoRel == 'PAGAR') {
@@ -731,6 +808,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -742,6 +820,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'emp.idcliente, ' +
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
+            'emp.tipo_emprestimo, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -766,8 +845,8 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
             'where tmp_emp.data_cadastro between ? and ? ' +
-            'and tmp_emp.idcliente = ? ' +
-            'order by idemprestimo, parcela ';
+            'and tmp_emp.idcliente = ? and tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
     /*por data de vencimento - pagas */
@@ -785,6 +864,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -796,6 +876,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'emp.idcliente, ' +
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
+            'emp.tipo_emprestimo, ' +
             'emp.quantidade_parcelas, ' +
             'data_cadastro ' +
             'from  ' +
@@ -820,8 +901,8 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
             'where tmp_emp.data_cadastro between ? and ? ' +
-            'and tmp_emp.idcliente = ? ' +
-            'order by idemprestimo, parcela ';
+            'and tmp_emp.idcliente = ? and tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
     /*por data de vencimento - Geral*/
@@ -839,6 +920,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_emp.valor, ' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
+            'tmp_emp.tipo_emprestimo, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -848,6 +930,7 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'tmp_parcelas.idparcela, ' +
             'tmp_parcelas.valor, ' +
             'emp.idcliente, ' +
+            'emp.tipo_emprestimo, ' +
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
             'emp.quantidade_parcelas, ' +
@@ -873,11 +956,11 @@ export const relatorioEmprestimoClienteEmissao = (req, res) => {
             'left join clientes as cli ' +
             'on cli.idcliente = tmp_emp.idcliente ' +
             'where tmp_emp.data_cadastro between ? and ? ' +
-            'and tmp_emp.idcliente = ? ' +
-            'order by idemprestimo, parcela ';
+            'and tmp_emp.idcliente = ? and tmp_emp.tipo_emprestimo = ? ' +
+            'order by idemprestimo, vencimento ';
     }
 
-    db.query(sql, [dataI, dataF, idCliente], (err, data) => {
+    db.query(sql, [dataI, dataF, idCliente, tipoEmprestimo], (err, data) => {
         if (err) return res.json(err);
         return res.status(200).json(data);
     });
