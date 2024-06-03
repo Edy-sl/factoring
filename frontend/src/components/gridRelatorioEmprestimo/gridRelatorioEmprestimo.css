@@ -4,6 +4,8 @@
 
     max-height: 430px;
     overflow: scroll;
+    background-color: rgb(214, 210, 210);
+    gap: 2px;
 }
 
 .divListaR {

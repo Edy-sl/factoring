@@ -553,9 +553,12 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'tmp_emp.data_cadastro, ' +
             'tmp_emp.quantidade_parcelas, ' +
             'tmp_emp.valor, ' +
+            'tmp_emp.valor_parcela,' +
             'tmp_emp.valor_juros, ' +
             'tmp_emp.valor_total, ' +
             'tmp_emp.tipo_emprestimo, ' +
+            'tmp_emp.nome_veiculo, ' +
+            'tmp_emp.placa, ' +
             'cli.nome ' +
             'from ' +
             '(select tmp_parcelas.idemprestimo, ' +
@@ -567,8 +570,11 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'emp.idcliente, ' +
             'emp.valor_total, ' +
             'emp.valor_juros, ' +
+            'emp.valor_parcela, ' +
             'emp.quantidade_parcelas, ' +
             'emp.tipo_emprestimo, ' +
+            'emp.nome_veiculo, ' +
+            'emp.placa, ' +
             'data_cadastro ' +
             'from ' +
             '(select ' +
@@ -592,6 +598,25 @@ export const relatorioEmprestimoEmissao = (req, res) => {
             'on cli.idcliente = tmp_emp.idcliente ' +
             'where tmp_emp.data_cadastro between ? and ? and tmp_emp.tipo_emprestimo = ? ' +
             'order by idemprestimo, vencimento ';
+    }
+
+    /*por data de vencimento - Geral*/
+    if (tipoRel == 'AGRUPADO') {
+        var sql =
+            'SELECT emp.idemprestimo, (emp.valor_total*0)  as valor_pago,' +
+            'emp.data_base as vencimento, emp.quantidade_parcelas as parcela,' +
+            'emp.data_cadastro, emp.quantidade_parcelas, emp.valor_parcela,' +
+            'emp.valor_juros,emp.valor_total,' +
+            'emp.tipo_emprestimo,' +
+            'emp.nome_veiculo, ' +
+            'emp.placa, ' +
+            'cli.nome ' +
+            'FROM emprestimos as emp ' +
+            'left join clientes as cli on cli.idcliente = emp.idcliente ' +
+            'left join parcelas_emprestimo as pe on pe.idemprestimo = emp.idemprestimo ' +
+            'where ' +
+            'emp.data_cadastro between ? and ? ' +
+            'and emp.tipo_emprestimo = ? group by idemprestimo';
     }
 
     db.query(sql, [dataI, dataF, tipoEmprestimo], (err, data) => {

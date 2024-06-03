@@ -12,11 +12,7 @@ import { AuthContext } from '../../context/authContext';
 import { keyDown } from '../../biblitoteca';
 import { FaLongArrowAltDown, FaLongArrowAltUp } from 'react-icons/fa';
 
-export const BuscaEmitente = ({
-    setFormBusca,
-    setNomeEmitente,
-    emitenteFiltrado,
-}) => {
+export const BuscaEmitente = (props) => {
     const { signOut } = useContext(AuthContext);
     const [emitente, setEmitente] = useState([]);
     const ref = useRef();
@@ -26,9 +22,29 @@ export const BuscaEmitente = ({
         e.preventDefault();
     };
 
-    const handleSel = (nomeEmitente) => {
-        setNomeEmitente(nomeEmitente);
-        setFormBusca(false);
+    const handleSel = (nomeSelecionado) => {
+        let arrayEmitente = [];
+
+        if (props.listaEmitente) {
+            if (props.listaEmitente) {
+                props.listaEmitente.map((E) => {
+                    arrayEmitente = [
+                        ...arrayEmitente,
+                        {
+                            emitente: E.emitente,
+                        },
+                    ];
+                });
+            }
+            arrayEmitente = [...arrayEmitente, { emitente: nomeSelecionado }];
+            props.setListaEmitente(arrayEmitente);
+        }
+
+        props.setNomeEmitente(nomeSelecionado);
+
+        props.setFormBusca(false);
+
+        //setFormBusca(false);
     };
 
     return (
@@ -40,7 +56,7 @@ export const BuscaEmitente = ({
                 para navegar e ENTER para selecionar
             </label>
             <div className="divResultadoBuscaEmitente">
-                {emitenteFiltrado.map((emitente, index) => (
+                {props.emitenteFiltrado.map((emitente, index) => (
                     <div
                         className="divNomes"
                         key={index}
@@ -66,6 +82,7 @@ export const BuscaEmitente = ({
 
                                 if (e.key === 'Enter') {
                                     handleSel(emitente.nome_cheque);
+                                    props.setFormBusca(false);
                                 }
                             }}
                         />

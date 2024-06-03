@@ -26,13 +26,15 @@ export const RelatorioEmprestimoPorEmissao = () => {
     const [dataIni, setDataIni] = useState(retornaDataAtual());
     const [dataFim, setDataFim] = useState(retornaDataAtual());
 
-    var totalValor = 0;
-    var totalRecebido = 0;
-    var totalReceber = 0;
+    let totalValor = 0;
+    let totalRecebido = 0;
+    let totalReceber = 0;
+    let totalJuros = 0;
 
     const [totalValorR, setTotalValorR] = useState(0);
     const [totalValorRecebido, setTotalValorRecebido] = useState(0);
     const [totalValorReceber, setTotalValorReceber] = useState(0);
+    const [totalValorJuros, setTotalValorJurosE] = useState();
 
     const [idParcela, setIdParcela] = useState(0);
     const [parcelaN, setParcelaN] = useState(0);
@@ -76,13 +78,38 @@ export const RelatorioEmprestimoPorEmissao = () => {
 
     useEffect(() => {
         listagem.map((somaTotais) => {
-            totalValor = totalValor + parseFloat(somaTotais.valor);
-            totalRecebido = totalRecebido + parseFloat(somaTotais.valor_pago);
-            totalReceber = totalValor - totalRecebido;
+            if (checkRel != 'AGRUPADO') {
+                totalValor =
+                    totalValor +
+                    parseFloat(
+                        (somaTotais.valor_total * 1) /
+                            somaTotais.quantidade_parcelas
+                    );
+
+                totalRecebido =
+                    totalRecebido + parseFloat(somaTotais.valor_pago * 1);
+                totalReceber = totalValor - totalRecebido;
+                totalJuros =
+                    totalJuros +
+                    parseFloat(
+                        somaTotais.valor_juros / somaTotais.quantidade_parcelas
+                    );
+            } else {
+                totalValor =
+                    totalValor + parseFloat(somaTotais.valor_total * 1);
+
+                console.log(totalValor);
+                totalRecebido =
+                    totalRecebido + parseFloat(somaTotais.valor_pago * 1);
+                totalReceber = totalValor - totalRecebido;
+                totalJuros = totalJuros + parseFloat(somaTotais.valor_juros);
+            }
         });
+
         setTotalValorR(totalValor);
         setTotalValorRecebido(totalRecebido);
         setTotalValorReceber(totalReceber);
+        setTotalValorJurosE(totalJuros);
     }, [listagem]);
 
     useEffect(() => {
@@ -96,6 +123,10 @@ export const RelatorioEmprestimoPorEmissao = () => {
             setNomeRelatorio('Relatório de Financiamento por data de Emissão');
         }
     }, [tipo]);
+
+    useEffect(() => {
+        relatorioPorData();
+    }, [checkRel]);
 
     return (
         <div id="divContainerRelatorio">
@@ -126,6 +157,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
                             <label>A Receber</label>
                             <label>Recebidos</label>
                             <label>Geral</label>
+                            <label>Agrupado</label>
                         </div>
 
                         <div className="boxCol" id="divCheckbox">
@@ -176,6 +208,21 @@ export const RelatorioEmprestimoPorEmissao = () => {
                                     onChange={(e) => setCheckRel('GERAL')}
                                 />
                             )}
+                            {checkRel == 'AGRUPADO' ? (
+                                <input
+                                    type="checkbox"
+                                    name="chekedAgrupado"
+                                    id="checkRel"
+                                    checked
+                                />
+                            ) : (
+                                <input
+                                    type="checkbox"
+                                    name="chekedAgrupado"
+                                    id="checkRel"
+                                    onChange={(e) => setCheckRel('AGRUPADO')}
+                                />
+                            )}
                         </div>
 
                         <div className="boxCol">
@@ -213,7 +260,12 @@ export const RelatorioEmprestimoPorEmissao = () => {
                                             ': ' +
                                             inverteData(dataIni) +
                                             ' - ' +
-                                            inverteData(dataFim)
+                                            inverteData(dataFim),
+                                        checkRel,
+                                        totalValorR,
+                                        totalValorRecebido,
+                                        totalValorReceber,
+                                        totalValorJuros
                                     )
                                 }
                             />
@@ -221,7 +273,7 @@ export const RelatorioEmprestimoPorEmissao = () => {
                     </div>
                 </form>
             </div>{' '}
-            <GridRelatorioEmprestimo listagem={listagem} />
+            <GridRelatorioEmprestimo listagem={listagem} checkRel={checkRel} />
         </div>
     );
 };

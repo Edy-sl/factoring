@@ -76,6 +76,8 @@ export const FormOperacionalEmprestimo = () => {
 
     const [onEdit, setOnEdit] = useState(false);
 
+    const [calculado, setCalculado] = useState(false);
+
     const [idParcela, setIdParcela] = useState(0);
     const [parcelaN, setParcelaN] = useState(0);
 
@@ -109,6 +111,8 @@ export const FormOperacionalEmprestimo = () => {
 
     const calculaEmprestimo = () => {
         localStorage.setItem('gravarDoc', true);
+
+        setCalculado(true);
 
         const dadosEmprestimo = ref.current;
 
@@ -325,62 +329,66 @@ export const FormOperacionalEmprestimo = () => {
     };
 
     const gravarEmprestimo = async () => {
-        localStorage.setItem('gravarDoc', false);
-        const dadosEmprestimo = ref.current;
+        if (calculado == false) {
+            toast.info('Clique em Calcular antes de Gravar!');
+        } else {
+            localStorage.setItem('gravarDoc', false);
+            const dadosEmprestimo = ref.current;
 
-        const data = new Date();
-        const dia = data.getDate().toString().padStart(2, '0');
-        const mes = (data.getMonth() + 1).toString().padStart(2, '0');
-        const ano = data.getFullYear();
-        const dataCadastro = ano + '-' + mes + '-' + dia;
-        dadosEmprestimo.dataCadastro.value = dataCadastro;
+            const data = new Date();
+            const dia = data.getDate().toString().padStart(2, '0');
+            const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+            const ano = data.getFullYear();
+            const dataCadastro = ano + '-' + mes + '-' + dia;
+            dadosEmprestimo.dataCadastro.value = dataCadastro;
 
-        await apiFactoring
-            .post(
-                '/gravar-emprestimo',
-                {
-                    tipoEmprestimo: tipo,
-                    placaVeiculo: placaVeiculo,
-                    nomeVeiculo: nomeVeiculo,
-                    dataCadastro: dadosEmprestimo.dataCadastro.value,
-                    idCliente: dadosEmprestimo.idClienteEmprestimo.value,
-                    cnpjCpfCredor: dadosEmprestimo.cnpjCpfCredor.value,
-                    nomeCredor: dadosEmprestimo.nomeCredor.value,
-                    cnpjCpfAvalista: cnpjCpfAvalista,
-                    nomeAvalista: nomeAvalista,
-                    jurosMensal: dadosEmprestimo.jurosMensal.value * 1,
-                    valorEmprestimo: converteMoedaFloat(
-                        dadosEmprestimo.valorEmprestimo.value
-                    ),
-                    quatidadeParcelas: dadosEmprestimo.parcelas.value,
-                    dataBase: dadosEmprestimo.dataBase.value,
-                    intervalo: dadosEmprestimo.intervalo.value,
-                    valorParcela: converteMoedaFloat(
-                        dadosEmprestimo.valorParcela.value
-                    ),
-                    valorJuros: converteMoedaFloat(
-                        dadosEmprestimo.valorTotalJuros.value
-                    ),
-                    valorTotal: converteMoedaFloat(
-                        dadosEmprestimo.valorTotal.value
-                    ),
-                    idFactoring: localStorage.getItem('factoring'),
-                    arrayParcelas: arrayParcelas,
-                },
-                {
-                    headers: {
-                        'x-access-token': localStorage.getItem('user'),
+            await apiFactoring
+                .post(
+                    '/gravar-emprestimo',
+                    {
+                        tipoEmprestimo: tipo,
+                        placaVeiculo: placaVeiculo,
+                        nomeVeiculo: nomeVeiculo,
+                        dataCadastro: dadosEmprestimo.dataCadastro.value,
+                        idCliente: dadosEmprestimo.idClienteEmprestimo.value,
+                        cnpjCpfCredor: dadosEmprestimo.cnpjCpfCredor.value,
+                        nomeCredor: dadosEmprestimo.nomeCredor.value,
+                        cnpjCpfAvalista: cnpjCpfAvalista,
+                        nomeAvalista: nomeAvalista,
+                        jurosMensal: dadosEmprestimo.jurosMensal.value * 1,
+                        valorEmprestimo: converteMoedaFloat(
+                            dadosEmprestimo.valorEmprestimo.value
+                        ),
+                        quatidadeParcelas: dadosEmprestimo.parcelas.value,
+                        dataBase: dadosEmprestimo.dataBase.value,
+                        intervalo: dadosEmprestimo.intervalo.value,
+                        valorParcela: converteMoedaFloat(
+                            dadosEmprestimo.valorParcela.value
+                        ),
+                        valorJuros: converteMoedaFloat(
+                            dadosEmprestimo.valorTotalJuros.value
+                        ),
+                        valorTotal: converteMoedaFloat(
+                            dadosEmprestimo.valorTotal.value
+                        ),
+                        idFactoring: localStorage.getItem('factoring'),
+                        arrayParcelas: arrayParcelas,
                     },
-                }
-            )
-            .then(({ data }) => {
-                toast.success(data.msg);
-                setIdEmprestimo(data.insertId);
-                setOnEdit(true);
-            })
-            .catch(({ data }) => {
-                toast.error(data);
-            });
+                    {
+                        headers: {
+                            'x-access-token': localStorage.getItem('user'),
+                        },
+                    }
+                )
+                .then(({ data }) => {
+                    toast.success(data.msg);
+                    setIdEmprestimo(data.insertId);
+                    setOnEdit(true);
+                })
+                .catch(({ data }) => {
+                    toast.error(data);
+                });
+        }
     };
 
     //atualizar valores emprestimo
@@ -655,6 +663,7 @@ export const FormOperacionalEmprestimo = () => {
         setIntervalo('0');
         setIdCliente();
         setOnEdit(false);
+        setCalculado(false);
 
         dadosEmprestimo.dataCadastro.value = retornaDataAtual();
         dadosEmprestimo.idClienteEmprestimo.value = '';
@@ -1226,7 +1235,7 @@ export const FormOperacionalEmprestimo = () => {
             >
                 <ToastContainer
                     autoClose={3000}
-                    position={toast.POSITION.BOTTOM_CENTER}
+                    position={toast.POSITION.TOP_CENTER}
                 />
 
                 {tipo == 'veiculo' ? (

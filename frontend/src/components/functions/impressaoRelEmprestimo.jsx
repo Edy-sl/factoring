@@ -4,10 +4,15 @@ import {
     tamanhoMaximo,
 } from '../../biblitoteca';
 
-export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
-    let totalValorEmprestimo = 0;
-    let totalJurosEmprestimo = 0;
-
+export const impressaoRelEmprestimo = (
+    listagemEmprestimo,
+    nomeRelatorio,
+    checkRel,
+    totalValorR,
+    totalValorRecebido,
+    totalValorReceber,
+    totalValorJuros
+) => {
     const win = window.open('', '', 'heigth=700, width=900');
     win.document.write(
         '<table border="0" width="900" style="font-family: courier; font-size: 14px; font-weight: 550;">'
@@ -89,33 +94,59 @@ export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
         win.document.write('</td style="text-align : right">');
 
         win.document.write('<td style="text-align : right">');
+
         win.document.write(
-            (emprestimo.valor * 1).toLocaleString('pt-BR', {
+            (emprestimo.valor_parcela * 1).toLocaleString('pt-BR', {
                 style: 'decimal',
                 minimumFractionDigits: 2,
             })
         );
+
         win.document.write('</td>');
 
         win.document.write('<td style="text-align : right">');
-        win.document.write(
-            (
-                emprestimo.valor_juros / emprestimo.quantidade_parcelas
-            ).toLocaleString('pt-BR', {
-                style: 'decimal',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            })
-        );
+        if (checkRel != 'AGRUPADO') {
+            win.document.write(
+                (
+                    (emprestimo.valor_juros / emprestimo.quantidade_parcelas) *
+                    1
+                ).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+        } else {
+            win.document.write(
+                (emprestimo.valor_juros * 1).toLocaleString('pt-BR', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                })
+            );
+        }
         win.document.write('</td>');
 
         win.document.write('</tr>');
 
-        totalValorEmprestimo = totalValorEmprestimo + emprestimo.valor * 1;
-        totalJurosEmprestimo =
-            totalJurosEmprestimo +
-            emprestimo.valor_juros / emprestimo.quantidade_parcelas;
+        if (emprestimo.tipo_emprestimo == 'veiculo') {
+            win.document.write('<tr>');
+            win.document.write('<td colspan="5">');
+            win.document.write(
+                'Veículo: ' +
+                    emprestimo.nome_veiculo +
+                    '   Placa: ' +
+                    emprestimo.placa
+            );
+            win.document.write('</td>');
+            win.document.write('</tr>');
+            win.document.write('<tr>');
+            win.document.write('<td colspan="8">');
+            win.document.write('<br>');
+
+            win.document.write('</td>');
+            win.document.write('</tr>');
+        }
     });
+
     win.document.write('<tr>');
     win.document.write('<td colspan="8">');
     win.document.write(
@@ -143,7 +174,7 @@ export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
 
     win.document.write('<td style="text-align : right">');
     win.document.write(
-        (totalValorEmprestimo * 1).toLocaleString('pt-BR', {
+        (totalValorR * 1).toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
         })
@@ -152,7 +183,7 @@ export const impressaoRelEmprestimo = (listagemEmprestimo, nomeRelatorio) => {
 
     win.document.write('<td style="text-align : right">');
     win.document.write(
-        (totalJurosEmprestimo * 1).toLocaleString('pt-BR', {
+        (totalValorJuros * 1).toLocaleString('pt-BR', {
             style: 'decimal',
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,

@@ -8,7 +8,7 @@ import { FiSearch, FiDollarSign } from 'react-icons/fi';
 import { FormPagamentoEmprestimo } from '../pagamentoEmprestimo/index.jsx';
 import './gridRelatorioEmprestimo.css';
 import { apiFactoring } from '../../services/api.jsx';
-export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
+export const GridRelatorioEmprestimo = (props) => {
     let totalValor = 0;
     let totalRecebido = 0;
     let totalReceber = 0;
@@ -72,22 +72,41 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
     };
 
     useEffect(() => {
-        listagem.map((somaTotais) => {
-            totalValor = totalValor + parseFloat(somaTotais.valor * 1);
-            totalRecebido =
-                totalRecebido + parseFloat(somaTotais.valor_pago * 1);
-            totalReceber = totalValor - totalRecebido;
-            totalJuros =
-                totalJuros +
-                parseFloat(
-                    somaTotais.valor_juros / somaTotais.quantidade_parcelas
-                );
+        props.listagem.map((somaTotais) => {
+            console.log(props.checkRel);
+            if (props.checkRel != 'AGRUPADO') {
+                totalValor =
+                    totalValor +
+                    parseFloat(
+                        (somaTotais.valor_total * 1) /
+                            somaTotais.quantidade_parcelas
+                    );
+
+                totalRecebido =
+                    totalRecebido + parseFloat(somaTotais.valor_pago * 1);
+                totalReceber = totalValor - totalRecebido;
+                totalJuros =
+                    totalJuros +
+                    parseFloat(
+                        somaTotais.valor_juros / somaTotais.quantidade_parcelas
+                    );
+            } else {
+                totalValor =
+                    totalValor + parseFloat(somaTotais.valor_total * 1);
+
+                console.log(totalValor);
+                totalRecebido =
+                    totalRecebido + parseFloat(somaTotais.valor_pago * 1);
+                totalReceber = totalValor - totalRecebido;
+                totalJuros = totalJuros + parseFloat(somaTotais.valor_juros);
+            }
         });
+
         setTotalValorR(totalValor);
         setTotalValorRecebido(totalRecebido);
         setTotalValorReceber(totalReceber);
         setTotalValorJurosE(totalJuros);
-    }, [listagem]);
+    }, [props.listagem]);
     return (
         <>
             {idParcela != 0 && (
@@ -119,91 +138,111 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
                         />
                     </div>
                 </div>
+
                 <div className="divListaRContainer">
-                    {listagem.map((lista, i) => (
-                        <div key={i} className="divListaR">
-                            <div className="alignLet">{lista.idemprestimo}</div>
-                            <div className="alignLeft">
-                                {tamanhoMaximo(lista.nome, 19)}
-                            </div>
-                            <div className="alignRight">
-                                {lista.parcela}/{lista.quantidade_parcelas}
-                            </div>
-                            <div className="alignRight">
-                                {inverteData(lista.data_cadastro)}
-                            </div>
-                            <div className="alignRight">
-                                {inverteData(lista.vencimento)}
-                            </div>
-                            <div className="alignRight">
-                                {(lista.valor_total * 1).toLocaleString(
-                                    'pt-BR',
-                                    {
-                                        style: 'decimal',
-                                        minimumFractionDigits: 2,
-                                    }
-                                )}
-                            </div>
-                            <div className="alignRight">
-                                {(lista.valor * 1).toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-
-                            <div className="alignRight">
-                                {(
-                                    (lista.valor_juros /
-                                        lista.quantidade_parcelas) *
-                                    1
-                                ).toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-
-                            <div className="alignRight">
-                                {(lista.valor_pago * 1).toLocaleString(
-                                    'pt-BR',
-                                    {
-                                        style: 'decimal',
-                                        minimumFractionDigits: 2,
-                                    }
-                                )}
-                            </div>
-                            <div className="alignRight">
-                                {(
-                                    (lista.valor - lista.valor_pago) *
-                                    1
-                                ).toLocaleString('pt-BR', {
-                                    style: 'decimal',
-                                    minimumFractionDigits: 2,
-                                })}
-                            </div>
-                            <div className="alignRight">
-                                <FiDollarSign
-                                    id="iconeDollarPagar"
-                                    onClick={(e) => {
-                                        setIdParcela(lista.idparcela);
-                                        setParcelaN(lista.parcela);
-                                    }}
-                                />
-                            </div>
-                            <div className="alignRight">
-                                {lista.valor - lista.valor_pago > 1 && (
-                                    <input
-                                        type="checkbox"
-                                        value={lista.idparcela}
-                                        onClick={(e) =>
-                                            filtraEmprestimo(
-                                                e.target.value,
-                                                lista.valor - lista.valor_pago
-                                            )
+                    {props.listagem.map((lista, i) => (
+                        <>
+                            <div key={i} className="divListaR">
+                                <div className="alignLet">
+                                    {lista.idemprestimo}
+                                </div>
+                                <div className="alignLeft">
+                                    {tamanhoMaximo(lista.nome, 19)}
+                                </div>
+                                <div className="alignRight">
+                                    {lista.parcela}/{lista.quantidade_parcelas}
+                                </div>
+                                <div className="alignRight">
+                                    {inverteData(lista.data_cadastro)}
+                                </div>
+                                <div className="alignRight">
+                                    {inverteData(lista.vencimento)}
+                                </div>
+                                <div className="alignRight">
+                                    {(lista.valor_total * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
                                         }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {(lista.valor_parcela * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {props.checkRel != 'AGRUPADO'
+                                        ? (
+                                              (lista.valor_juros /
+                                                  lista.quantidade_parcelas) *
+                                              1
+                                          ).toLocaleString('pt-BR', {
+                                              style: 'decimal',
+                                              minimumFractionDigits: 2,
+                                          })
+                                        : (
+                                              lista.valor_juros * 1
+                                          ).toLocaleString('pt-BR', {
+                                              style: 'decimal',
+                                              minimumFractionDigits: 2,
+                                          })}
+                                </div>
+                                <div className="alignRight">
+                                    {(lista.valor_pago * 1).toLocaleString(
+                                        'pt-BR',
+                                        {
+                                            style: 'decimal',
+                                            minimumFractionDigits: 2,
+                                        }
+                                    )}
+                                </div>
+                                <div className="alignRight">
+                                    {(
+                                        (lista.valor - lista.valor_pago) *
+                                        1
+                                    ).toLocaleString('pt-BR', {
+                                        style: 'decimal',
+                                        minimumFractionDigits: 2,
+                                    })}
+                                </div>
+                                <div className="alignRight">
+                                    <FiDollarSign
+                                        id="iconeDollarPagar"
+                                        onClick={(e) => {
+                                            setIdParcela(lista.idparcela);
+                                            setParcelaN(lista.parcela);
+                                        }}
                                     />
+                                </div>
+                                <div className="alignRight">
+                                    {lista.valor - lista.valor_pago > 1 && (
+                                        <input
+                                            type="checkbox"
+                                            value={lista.idparcela}
+                                            onClick={(e) =>
+                                                filtraEmprestimo(
+                                                    e.target.value,
+                                                    lista.valor -
+                                                        lista.valor_pago
+                                                )
+                                            }
+                                        />
+                                    )}
+                                </div>{' '}
+                                {lista.tipo_emprestimo == 'veiculo' && (
+                                    <>
+                                        <div>{lista.placa}</div>{' '}
+                                        <div>{lista.nome_veiculo}</div>
+                                    </>
                                 )}
                             </div>
-                        </div>
+                        </>
                     ))}
                 </div>
 
@@ -218,6 +257,7 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
                         {(totalValorR * 1).toLocaleString('pt-BR', {
                             style: 'decimal',
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                         })}
                     </div>
 
@@ -225,6 +265,7 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
                         {(totalValorJuros * 1).toLocaleString('pt-BR', {
                             style: 'decimal',
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                         })}
                     </div>
 
@@ -232,12 +273,14 @@ export const GridRelatorioEmprestimo = ({ listagem = [] }) => {
                         {(totalValorRecebido * 1).toLocaleString('pt-BR', {
                             style: 'decimal',
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                         })}
                     </div>
                     <div className="alignRight">
                         {(totalValorReceber * 1).toLocaleString('pt-BR', {
                             style: 'decimal',
                             minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
                         })}
                     </div>
                 </div>

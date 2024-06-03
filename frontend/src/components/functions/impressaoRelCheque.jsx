@@ -19,7 +19,9 @@ export const impressaoRelCheque = (listagemCheque, nomeRelatorio) => {
     win.document.write('<title></title>');
     win.document.write('</head>');
     win.document.write('<body>');
-    win.document.write('<table border="0" width="900">');
+    win.document.write(
+        '<table border="0" width="900"     style="font-family: courier; font-size: 10px; font-weight: 550;"  >'
+    );
 
     win.document.write('<tr>');
     win.document.write('<td colspan="10">');

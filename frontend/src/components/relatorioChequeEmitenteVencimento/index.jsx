@@ -18,7 +18,8 @@ import { BuscaEmitente } from '../buscaEmitente';
 import { TituloTela } from '../titulosTela/tituloTela';
 
 export const RelatorioChequePorEmitenteVencimento = () => {
-    const [nomeEmitente, setNomeEmitente] = useState('');
+    const [nomeEmitente, setNomeEmitente] = useState();
+    const [listaEmitente, setListaEmitente] = useState([]);
     const [emitenteFiltrado, setEmitenteFiltrado] = useState([]);
     const [emitente, setEmitente] = useState([]);
     const [formBusca, setFormBusca] = useState();
@@ -61,7 +62,7 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                     dataI: dataI,
                     dataF: dataF,
                     status: checkRel,
-                    emitente: nomeEmitente,
+                    emitente: listaEmitente,
                 },
                 {
                     headers: {
@@ -70,6 +71,8 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                 }
             )
             .then(({ data }) => {
+                console.log(data);
+
                 data.map((item) => {
                     newArray = [
                         ...newArray,
@@ -177,6 +180,11 @@ export const RelatorioChequePorEmitenteVencimento = () => {
         buscaEmitente();
     }, []);
 
+    useEffect(() => {
+        setListagem([]);
+        relatorioPorData();
+    }, [listaEmitente]);
+
     return (
         <>
             <ToastContainer
@@ -187,6 +195,8 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                 <BuscaEmitente
                     setFormBusca={setFormBusca}
                     setNomeEmitente={setNomeEmitente}
+                    setListaEmitente={setListaEmitente}
+                    listaEmitente={listaEmitente}
                 />
             )}
             {idParcela != 0 && (
@@ -200,7 +210,6 @@ export const RelatorioChequePorEmitenteVencimento = () => {
             )}
             <div className="divRelatorioChequeData">
                 <TituloTela tituloTela="Realtório de Cheques por Emitente e Data de Vencimento" />
-
                 <form className="" ref={ref} onSubmit={handleSubmit}>
                     <div className="boxRow">
                         <div className="boxRow">
@@ -241,6 +250,11 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                                                 emitenteFiltrado={
                                                     emitenteFiltrado
                                                 }
+                                                nomeEmitente={nomeEmitente}
+                                                setListaEmitente={
+                                                    setListaEmitente
+                                                }
+                                                listaEmitente={listaEmitente}
                                             />
                                         )}
                                     </div>
@@ -343,6 +357,32 @@ export const RelatorioChequePorEmitenteVencimento = () => {
                                 }
                             />
                         </div>
+                    </div>
+                    <div
+                        style={{
+                            display: 'flex',
+                            gap: '5px',
+                            margin: '10px',
+                            maxWidth: '900px',
+                            flexWrap: 'wrap',
+                        }}
+                    >
+                        {listaEmitente.map((E, index) => (
+                            <div style={{ background: '#F2F3F5' }} key={index}>
+                                <label>{E.emitente.toUpperCase()}</label>
+                                <label
+                                    style={{ color: 'red' }}
+                                    onClick={(e) => {
+                                        let filtro = listaEmitente.filter(
+                                            (FE) => FE.emitente != E.emitente
+                                        );
+                                        setListaEmitente(filtro);
+                                    }}
+                                >
+                                    X
+                                </label>
+                            </div>
+                        ))}
                     </div>
                 </form>
             </div>{' '}

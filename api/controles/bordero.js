@@ -498,19 +498,31 @@ export const relatorioChequePorEmitenteVencimento = (req, res) => {
     const { dataI } = req.body;
     const { dataF } = req.body;
     const { status } = req.body;
-    const { emitente } = req.body;
+    let { emitente } = req.body;
+    let nomeEmitente = `'xxxxxxxxxxxxxxxxxxxxxxx',`;
+
+    if (emitente.length > 0) {
+        emitente.map((E, index) => {
+            nomeEmitente = nomeEmitente + `'` + E.emitente + `'`;
+            if (index + 1 < emitente.length) {
+                nomeEmitente = nomeEmitente + ',';
+            }
+        });
+    }
 
     let sql = '';
 
     if (status === 'GERAL') {
         sql =
-            'SELECT * FROM dbfactoring.borderos_lancamentos ' +
-            'as cheques inner join dbfactoring.borderos as operacao ' +
-            'on cheques.idbordero = operacao.idbordero ' +
+            `SELECT * FROM dbfactoring.borderos_lancamentos ` +
+            `as cheques inner join dbfactoring.borderos as operacao ` +
+            `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
-            'where cheques.data_vencimento between  ? and ? ' +
-            `and cheques.nome_cheque = ? ` +
-            'order by cheques.data_vencimento';
+            `where cheques.data_vencimento between  ? and ? ` +
+            `and cheques.nome_cheque in (` +
+            nomeEmitente +
+            `) ` +
+            `order by cheques.data_vencimento`;
     }
     if (status === 'DEVOLVIDO') {
         sql =
@@ -519,7 +531,9 @@ export const relatorioChequePorEmitenteVencimento = (req, res) => {
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where cheques.data_vencimento between  ? and ? ` +
-            `and cheques.nome_cheque = ? ` +
+            `and cheques.nome_cheque  in (` +
+            nomeEmitente +
+            `)  ` +
             `cheques.status = 'DEVOLVIDO' order by cheques.data_vencimento`;
     }
     if (status === 'PAGO') {
@@ -529,14 +543,16 @@ export const relatorioChequePorEmitenteVencimento = (req, res) => {
             `on cheques.idbordero = operacao.idbordero ` +
             `inner join clientes as cli on operacao.idcliente = cli.idcliente ` +
             `where cheques.data_vencimento between  ? and ? ` +
-            `and cheques.nome_cheque = ? ` +
+            `and cheques.nome_cheque  in (` +
+            nomeEmitente +
+            `)  ` +
             `cheques.status = 'PAGO' order by cheques.data_vencimento`;
     }
 
-    db.query(sql, [dataI, dataF, emitente], (err, data) => {
+    db.query(sql, [dataI, dataF, nomeEmitente], (err, data) => {
         if (err) return res.json(err);
-
         return res.status(200).json(data);
+        //return res.status(200).json(data);
     });
 };
 

@@ -233,7 +233,10 @@ export const RelatorioMovimentoPorEmissao = () => {
             </div>
             <div id="divListagemMovimento">
                 <GridChequeRelatorio listagem={listagemCheque} />
-                <GridRelatorioEmprestimo listagem={listagemEmprestimo} />
+                <GridRelatorioEmprestimo
+                    listagem={listagemEmprestimo}
+                    checked={'GERAL'}
+                />
             </div>
         </div>
     );

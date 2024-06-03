@@ -102,6 +102,7 @@ export const relatorioMovimentoEmprestimoEmissao = (req, res) => {
         'tmp_emp.data_cadastro, ' +
         'tmp_emp.quantidade_parcelas, ' +
         'tmp_emp.valor, ' +
+        'tmp_emp.valor_parcela, ' +
         'tmp_emp.valor_juros, ' +
         'tmp_emp.valor_total, ' +
         'cli.nome ' +
@@ -114,6 +115,7 @@ export const relatorioMovimentoEmprestimoEmissao = (req, res) => {
         'tmp_parcelas.valor, ' +
         'emp.idcliente, ' +
         'emp.valor_total, ' +
+        'emp.valor_parcela,' +
         'emp.valor_juros, ' +
         'emp.quantidade_parcelas, ' +
         'data_cadastro ' +
